@@ -1,0 +1,681 @@
+{
+ "duration_s": 899.0251960390003,
+ "markets": 67,
+ "signals": 243,
+ "impulses": 14,
+ "cfo": {
+  "equity": 10000.0,
+  "peak": 10000.0,
+  "drawdown_frac": 0.0,
+  "closed_pnl": 0.0,
+  "fees_paid": 0.0,
+  "evaluated": 243,
+  "approved": 0,
+  "reasons": {
+   "net_edge_below_hurdle": 238,
+   "quarantined": 5
+  },
+  "halted": false,
+  "halt_reason": "",
+  "gross_exposure": 0,
+  "blacklist": {
+   "PENGUUSDT": "negative_markouts",
+   "ASTERUSDT": "negative_markouts",
+   "XLMUSDT": "negative_markouts",
+   "APTUSDT": "negative_markouts",
+   "ADAUSDT": "negative_markouts",
+   "TAOUSDT": "negative_markouts",
+   "kraken:SOL/USD": "negative_markouts",
+   "ENAUSDT": "negative_markouts",
+   "SEIUSDT": "negative_markouts",
+   "TRUMPUSDT": "negative_markouts"
+  },
+  "hurdle_bps": 1.0,
+  "edge_credit": 1.0,
+  "mode_policy": "auto",
+  "size_mult": 1.0,
+  "p_fill_maker": 0.2
+ },
+ "engine": {
+  "submitted": 0,
+  "filled": 0,
+  "partial": 0,
+  "closed": 0,
+  "open": 0,
+  "pending": 0,
+  "dropped": {}
+ },
+ "interventions": [
+  {
+   "iid": 1,
+   "t": 1524.928157146,
+   "wall": "19:08:18",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 58% over 12 signals, regime normal-vol (vol ratio 1.00)",
+   "evidence": {
+    "n_signals": 12,
+    "gross5": 1.11,
+    "net5": -16.251,
+    "false_gap": 0.583,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 1.0
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 2,
+   "t": 1705.083726374,
+   "wall": "19:11:18",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 71% over 14 signals, regime normal-vol (vol ratio 1.06)",
+   "evidence": {
+    "n_signals": 14,
+    "gross5": -1.29,
+    "net5": -18.11,
+    "false_gap": 0.714,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 1.06
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.5,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 3,
+   "t": 1825.23607901,
+   "wall": "19:13:18",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 34% over 41 signals, regime normal-vol (vol ratio 1.12)",
+   "evidence": {
+    "n_signals": 41,
+    "gross5": 1.343,
+    "net5": -15.763,
+    "false_gap": 0.341,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 1.12
+   },
+   "before": {
+    "z_thr": 3.5,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.5,
+    "window_mult": 1.75
+   }
+  },
+  {
+   "iid": 4,
+   "t": 1855.28613544,
+   "wall": "19:13:49",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 21% over 80 signals, regime normal-vol (vol ratio 1.07)",
+   "evidence": {
+    "n_signals": 80,
+    "gross5": 2.767,
+    "net5": -14.637,
+    "false_gap": 0.212,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 1.07
+   },
+   "before": {
+    "z_thr": 3.5,
+    "window_mult": 1.75
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 1.75
+   }
+  },
+  {
+   "iid": 5,
+   "t": 1885.288354712,
+   "wall": "19:14:19",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 0% over 0 signals, regime normal-vol (vol ratio 1.05)",
+   "evidence": {
+    "n_signals": 0,
+    "gross5": 0.0,
+    "net5": 0.0,
+    "false_gap": 0.0,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 1.045
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 1.75
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 6,
+   "t": 2005.430732892,
+   "wall": "19:16:19",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 80% over 25 signals, regime normal-vol (vol ratio 0.97)",
+   "evidence": {
+    "n_signals": 25,
+    "gross5": -0.136,
+    "net5": -17.403,
+    "false_gap": 0.8,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 0.97
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.5,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 7,
+   "t": 2065.490147892,
+   "wall": "19:17:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "PENGUUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=-0.34 gross@5s=-0.78 net@5s=-17.23bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": -0.782,
+    "net": -17.233,
+    "hit_net": 0.0,
+    "gross1": -0.335
+   },
+   "before": {},
+   "after": {
+    "until": 2665.5
+   }
+  },
+  {
+   "iid": 8,
+   "t": 2065.490147892,
+   "wall": "19:17:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "ASTERUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.71 gross@5s=+1.19 net@5s=-15.24bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 1.19,
+    "net": -15.238,
+    "hit_net": 0.0,
+    "gross1": 0.714
+   },
+   "before": {},
+   "after": {
+    "until": 2665.5
+   }
+  },
+  {
+   "iid": 9,
+   "t": 2065.490147892,
+   "wall": "19:17:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "XLMUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.00 gross@5s=+0.95 net@5s=-19.74bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 0.947,
+    "net": -19.737,
+    "hit_net": 0.0,
+    "gross1": 0.0
+   },
+   "before": {},
+   "after": {
+    "until": 2665.5
+   }
+  },
+  {
+   "iid": 10,
+   "t": 2065.490147892,
+   "wall": "19:17:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "APTUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=-0.44 gross@5s=+0.22 net@5s=-16.10bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 0.22,
+    "net": -16.096,
+    "hit_net": 0.0,
+    "gross1": -0.44
+   },
+   "before": {},
+   "after": {
+    "until": 2665.5
+   }
+  },
+  {
+   "iid": 11,
+   "t": 2065.490147892,
+   "wall": "19:17:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "ADAUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.00 gross@5s=+1.54 net@5s=-18.08bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 1.541,
+    "net": -18.079,
+    "hit_net": 0.0,
+    "gross1": 0.0
+   },
+   "before": {},
+   "after": {
+    "until": 2665.5
+   }
+  },
+  {
+   "iid": 12,
+   "t": 2065.490147892,
+   "wall": "19:17:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "TAOUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.00 gross@5s=+1.26 net@5s=-17.51bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 1.258,
+    "net": -17.513,
+    "hit_net": 0.0,
+    "gross1": 0.001
+   },
+   "before": {},
+   "after": {
+    "until": 2665.5
+   }
+  },
+  {
+   "iid": 13,
+   "t": 2065.490147892,
+   "wall": "19:17:19",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 93% over 42 signals, regime normal-vol (vol ratio 1.00)",
+   "evidence": {
+    "n_signals": 42,
+    "gross5": -2.122,
+    "net5": -19.065,
+    "false_gap": 0.929,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 0.997
+   },
+   "before": {
+    "z_thr": 3.5,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.75,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 14,
+   "t": 2155.584962676,
+   "wall": "19:18:49",
+   "kind": "QUARANTINE_MARKET",
+   "target": "kraken:SOL/USD",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.24 gross@5s=+0.40 net@5s=-15.96bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 0.401,
+    "net": -15.963,
+    "hit_net": 0.0,
+    "gross1": 0.24
+   },
+   "before": {},
+   "after": {
+    "until": 2755.6
+   }
+  },
+  {
+   "iid": 15,
+   "t": 2155.584962676,
+   "wall": "19:18:49",
+   "kind": "QUARANTINE_MARKET",
+   "target": "ENAUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.90 gross@5s=-0.89 net@5s=-21.28bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": -0.893,
+    "net": -21.276,
+    "hit_net": 0.0,
+    "gross1": 0.899
+   },
+   "before": {},
+   "after": {
+    "until": 2755.6
+   }
+  },
+  {
+   "iid": 16,
+   "t": 2155.584962676,
+   "wall": "19:18:49",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 67% over 12 signals, regime normal-vol (vol ratio 0.98)",
+   "evidence": {
+    "n_signals": 12,
+    "gross5": 0.104,
+    "net5": -19.448,
+    "false_gap": 0.667,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 0.977
+   },
+   "before": {
+    "z_thr": 3.75,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 4.0,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 17,
+   "t": 2185.598151649,
+   "wall": "19:19:19",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 0% over 0 signals, regime normal-vol (vol ratio 0.94)",
+   "evidence": {
+    "n_signals": 0,
+    "gross5": 0.0,
+    "net5": 0.0,
+    "false_gap": 0.0,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 0.937
+   },
+   "before": {
+    "z_thr": 4.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 4.0,
+    "window_mult": 2.25
+   }
+  },
+  {
+   "iid": 18,
+   "t": 2305.72996498,
+   "wall": "19:21:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "SEIUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.28 gross@5s=+0.00 net@5s=-16.67bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 0.002,
+    "net": -16.673,
+    "hit_net": 0.0,
+    "gross1": 0.28
+   },
+   "before": {},
+   "after": {
+    "until": 2905.7
+   }
+  },
+  {
+   "iid": 19,
+   "t": 2305.72996498,
+   "wall": "19:21:19",
+   "kind": "QUARANTINE_MARKET",
+   "target": "TRUMPUSDT",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+0.98 gross@5s=+1.96 net@5s=-18.92bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 1.958,
+    "net": -18.918,
+    "hit_net": 0.0,
+    "gross1": 0.978
+   },
+   "before": {},
+   "after": {
+    "until": 2905.7
+   }
+  },
+  {
+   "iid": 20,
+   "t": 2305.72996498,
+   "wall": "19:21:19",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 79% over 24 signals, regime normal-vol (vol ratio 0.89)",
+   "evidence": {
+    "n_signals": 24,
+    "gross5": -0.206,
+    "net5": -17.144,
+    "false_gap": 0.792,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.0,
+    "vol_ratio": 0.894
+   },
+   "before": {
+    "z_thr": 4.0,
+    "window_mult": 2.25
+   },
+   "after": {
+    "z_thr": 4.25,
+    "window_mult": 2.25
+   }
+  }
+ ],
+ "ceo_state": "NORMAL",
+ "scan_latency_us": {
+  "n": 78075,
+  "p50": 0.2690003384486772,
+  "p90": 41.22060017834884,
+  "p99": 192.40968020312633,
+  "max": 334648.3279997301,
+  "mean": 136.4574737749892
+ },
+ "decide_latency_us": {
+  "n": 0
+ },
+ "markout_all": {
+  "1.0": {
+   "n": 243,
+   "gross": 0.22973153341358554,
+   "net": -17.03000430556934,
+   "hit_gross": 0.205761316872428,
+   "hit_net": 0.0,
+   "net_se": 0.3144375022848605,
+   "gross_se": 0.14059636039651727,
+   "n_imp": 12,
+   "closure": 0.3407644599672636,
+   "pred": -15.532423769298243
+  },
+  "3.0": {
+   "n": 243,
+   "gross": 0.682431282891171,
+   "net": -16.587235097449035,
+   "hit_gross": 0.40329218106995884,
+   "hit_net": 0.0,
+   "net_se": 0.3048926741155272,
+   "gross_se": 0.2601323340491438,
+   "n_imp": 12,
+   "closure": 0.49958381716817346,
+   "pred": -15.532423769298243
+  },
+  "5.0": {
+   "n": 243,
+   "gross": 0.5996061079881357,
+   "net": -16.670435637085216,
+   "hit_gross": 0.43209876543209874,
+   "hit_net": 0.0,
+   "net_se": 0.48652003938251337,
+   "gross_se": 0.49049760813111876,
+   "n_imp": 12,
+   "closure": 0.5310572311304379,
+   "pred": -15.532423769298243
+  },
+  "10.0": {
+   "n": 243,
+   "gross": 0.5435343562274746,
+   "net": -16.7177863423469,
+   "hit_gross": 0.43209876543209874,
+   "hit_net": 0.0,
+   "net_se": 0.9925432946009125,
+   "gross_se": 0.9907702576508308,
+   "n_imp": 12,
+   "closure": 0.4647072878888242,
+   "pred": -15.532423769298243
+  },
+  "30.0": {
+   "n": 243,
+   "gross": 1.0555643255201452,
+   "net": -16.206437926435534,
+   "hit_gross": 0.5555555555555556,
+   "hit_net": 0.02880658436213992,
+   "net_se": 1.6065928404156367,
+   "gross_se": 1.5615433096096194,
+   "n_imp": 12,
+   "closure": 0.5066188201822576,
+   "pred": -15.532423769298243
+  }
+ },
+ "markout_approved": {
+  "1.0": {
+   "n": 0,
+   "gross": 0.0,
+   "net": 0.0,
+   "hit_gross": 0.0,
+   "hit_net": 0.0,
+   "closure": 0.0,
+   "pred": 0.0,
+   "net_se": 0.0,
+   "gross_se": 0.0
+  },
+  "3.0": {
+   "n": 0,
+   "gross": 0.0,
+   "net": 0.0,
+   "hit_gross": 0.0,
+   "hit_net": 0.0,
+   "closure": 0.0,
+   "pred": 0.0,
+   "net_se": 0.0,
+   "gross_se": 0.0
+  },
+  "5.0": {
+   "n": 0,
+   "gross": 0.0,
+   "net": 0.0,
+   "hit_gross": 0.0,
+   "hit_net": 0.0,
+   "closure": 0.0,
+   "pred": 0.0,
+   "net_se": 0.0,
+   "gross_se": 0.0
+  },
+  "10.0": {
+   "n": 0,
+   "gross": 0.0,
+   "net": 0.0,
+   "hit_gross": 0.0,
+   "hit_net": 0.0,
+   "closure": 0.0,
+   "pred": 0.0,
+   "net_se": 0.0,
+   "gross_se": 0.0
+  },
+  "30.0": {
+   "n": 0,
+   "gross": 0.0,
+   "net": 0.0,
+   "hit_gross": 0.0,
+   "hit_net": 0.0,
+   "closure": 0.0,
+   "pred": 0.0,
+   "net_se": 0.0,
+   "gross_se": 0.0
+  }
+ }
+}

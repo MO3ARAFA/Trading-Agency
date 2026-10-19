@@ -44,7 +44,7 @@ quant_agency/
   agency.py             wiring (sync, clock-injected)        feeds.py   asyncio/uvloop/orjson websockets
   telemetry.py          markdown report                      sim.py     synthetic lead-lag market
   run_live.py           CLI: live | --sim | --replay tape    sweep.py   replay one tape under many fee tiers
-tests/                  79+ tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
+tests/                  88 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
 docs/RESEARCH.md        Phase 1 reconnaissance → code map
 ```
 
@@ -61,3 +61,7 @@ python -m quant_agency.sweep tapes/t.npz --fees 7.5 4.5 1 0
 python -m quant_agency.run_live --sim --duration 300 --fee-bps 0
 ```
 Each run writes `runs/<tag>_<ts>/` with `report.md`, `summary.json`, `signals.jsonl`, `payloads.jsonl`, `trades.jsonl`, `ceo_audit.jsonl`, `config.json`.
+
+## Results
+See **[docs/LIVE_RESULTS.md](docs/LIVE_RESULTS.md)** (live telemetry, markout tables, fee×latency sweep, CEO→CFO audit trail) and `docs/live_runs/`.
+Short version: lead-lag gaps exist but are ≲1 bp gross vs ~2 bp spread and 15 bp fees — the agency detects them, refuses to trade them, and the CEO governs accordingly.

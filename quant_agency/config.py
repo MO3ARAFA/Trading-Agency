@@ -49,6 +49,7 @@ class HunterConfig:
     window_max_s: float = 6.0
     max_spread_bps: float = 15.0
     min_tick_rate: float = 0.05          # ticks/s; below this the quote is unobservable
+    max_quote_age_s: float = 30.0        # hard liveness guard: older quote => market considered dead
     cooldown_s: float = 5.0
     scan_min_interval_s: float = 0.002
     # calibration
@@ -81,7 +82,7 @@ class CFOConfig:
     slip_depth_coeff: float = 0.5
     slip_vol_coeff: float = 0.25
     latency_s: float = 0.15              # assumed order-entry round trip from this gateway
-    p_fill_maker: float = 0.5
+    p_fill_maker: float = 0.2            # prior: a resting bid is rarely hit while price is rising; learned online
     kelly_fraction: float = 0.25
     risk_per_trade_frac: float = 0.002   # of equity at the adverse stop
     max_notional_frac: float = 0.05

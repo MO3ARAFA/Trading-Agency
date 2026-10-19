@@ -236,7 +236,7 @@ def test_high_vol_regime_raises_z_and_shortens_lag_window():
     ivs = ag.ceo.review(NOW)
     assert "RETUNE_IMPULSE" in kinds(ivs)
     assert ag.hunter.cfg.z_thr == pytest.approx(3.25)
-    assert ag.hunter.cfg.window_mult == pytest.approx(2.0 / 1.6)
+    assert ag.hunter.cfg.window_mult == pytest.approx(1.25)            # 2.0/1.6 quantised to quarter steps
     ag.oracle.m2[:] = (0.5e-4) ** 2                                               # calm regime: relax
     ag.ceo.review(NOW + 30)
     assert ag.hunter.cfg.z_thr == pytest.approx(2.75) and ag.hunter.cfg.window_mult > 2.0

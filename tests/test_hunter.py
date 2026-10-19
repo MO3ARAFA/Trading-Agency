@@ -94,3 +94,23 @@ def test_directive_whitelist():
     h = InefficiencyHunter(MarketBook(metas), BtcOracle(), HunterConfig())
     before = h.apply_directive({"z_thr": 4.5, "bogus": 1, "window_mult": 1.5})
     assert before == {"z_thr": 3.0, "window_mult": 2.0} and h.cfg.z_thr == 4.5 and not hasattr(h.cfg, "bogus")
+
+
+def test_dead_market_quote_is_never_a_gap():
+    """A market silent for minutes must not generate signals from its frozen quote."""
+    metas, ev, truth = make_sim(n_alts=6, duration_s=360, seed=9, noise_alts=0)
+    dead = "ALT03USDT"
+    book = MarketBook(metas); o = BtcOracle(); h = InefficiencyHunter(book, o, HunterConfig())
+    idx_dead = book.index[dead]
+    sigs = []
+    for (t, i, b, a, bq, aq) in ev:
+        if i == idx_dead and t > ev[0][0] + 200.0:        # feed for this market dies at t=200 s
+            continue
+        book.on_quote(i, t, b, a, bq, aq)
+        if i == 0:
+            o.on_book(t, b, a, bq, aq); h.dirty = True
+        if h.dirty:
+            sigs += h.scan(t)
+    late = [s for s in sigs if s.market == dead and s.t > ev[0][0] + 200.0 + h.cfg.max_quote_age_s + 1.0]
+    assert not late
+    assert any(s.market != dead and s.t > ev[0][0] + 260 for s in sigs)         # the rest keep working

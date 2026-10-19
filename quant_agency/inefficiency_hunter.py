@@ -162,7 +162,7 @@ def _resid_update(rt, rb, ra, n, cap, state, btc_t, btc_lmid, btc_n, btc_cap, t,
 @njit(cache=True)
 def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmin, lag, decay, calibrated, tradable,
           cooldown_until, res_m2, res_n, min_gap_bps, gap_z_thr, rho_min, max_repriced, window_mult,
-          window_base, window_min, window_max, max_spread_bps, min_rate, age, out_idx):
+          window_base, window_min, window_max, max_spread_bps, min_rate, max_quote_age, age, out_idx):
     M = beta.shape[0]
     cnt = 0
     for i in range(1, M):
@@ -170,8 +170,8 @@ def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmi
             continue
         if cooldown_until[i] > t or state[i, NTICK] < 30.0 or rho[i] < rho_min or beta[i] <= 0.0 or tstat[i] < tmin:
             continue
-        if 1.0 / state[i, MEAN_DT] < min_rate:
-            continue
+        if 1.0 / state[i, MEAN_DT] < min_rate or t - state[i, LAST_T] > max_quote_age:
+            continue                        # dead / halted market: the quote can't be hit
         mid = state[i, MID]
         if (state[i, ASK] - state[i, BID]) / mid * 1e4 > max_spread_bps:
             continue
@@ -417,7 +417,7 @@ class InefficiencyHunter:
                   float(st.delta[hk]), float(self.dir), m.beta, m.rho, m.tstat, c.beta_tmin, m.lag, m.decay, m.calibrated, m.tradable,
                   self.cooldown_until, m.res_m2, m.res_n, c.min_gap_bps, c.gap_z_thr, c.rho_min, c.max_repriced,
                   c.window_mult, c.window_base_s, c.window_min_s, c.window_max_s, c.max_spread_bps,
-                  c.min_tick_rate, age, self._out)
+                  c.min_tick_rate, c.max_quote_age_s, age, self._out)
         sigs: List[Signal] = []
         bk = self.book
         for k in range(n):

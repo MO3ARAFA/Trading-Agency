@@ -248,14 +248,15 @@ class CEOAgent:
         vr = k["vol_ratio"]
         regime_adj = c.z_step if vr > c.vol_ratio_hi else (-c.z_step if vr < c.vol_ratio_lo else 0.0)
         z = _clip(self.z_base + self.z_quality_adj + regime_adj, c.z_min, c.z_max)
-        wm = _clip(self.wm_base / _clip(vr, 0.6, 1.6), 1.0, 3.0)
-        if abs(z - hc.z_thr) > 1e-9 or abs(wm - hc.window_mult) > 0.15:
+        wm = round(_clip(self.wm_base / _clip(vr, 0.6, 1.6), 1.0, 3.0) * 4.0) / 4.0     # quarter steps: log regimes, not jitter
+        if abs(z - hc.z_thr) > 1e-9 or abs(wm - hc.window_mult) > 1e-9:
             after = {"z_thr": round(z, 3), "window_mult": round(wm, 3)}
             self.hunter.apply_directive({"z_thr": z, "window_mult": wm})
             regime = "high-vol" if vr > c.vol_ratio_hi else ("low-vol" if vr < c.vol_ratio_lo else "normal-vol")
             out.append(self._log(now, "RETUNE_IMPULSE", "hunter",
-                                 f"false-gap {k['false_gap_rate']:.0%} over {k['n_signals']} signals, regime {regime} "
-                                 f"(vol ratio {vr:.2f})", self._compact(k), before, after))
+                                 (f"false-gap {k['false_gap_rate']:.0%} over {k['n_signals']} fresh signals, " if k["n_signals"] >= c.n_min_global
+                                  else f"only {k['n_signals']} fresh signals (quality unchanged), ")
+                                 + f"regime {regime} (vol ratio {vr:.2f})", self._compact(k), before, after))
 
     def _audit_cfo(self, now, k, out):
         c = self.cfg
