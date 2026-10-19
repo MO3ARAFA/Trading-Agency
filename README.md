@@ -77,7 +77,7 @@ python -m quant_agency.run_live --phase4 --duration 1200 --record tapes/p4.npz
 ## Phase 5 — queue-aware passive maker sniper (Hyperliquid + Polymarket)
 `maker_sniper.py`: post-only join / penny-jump entries with a queue model (strict / depletion / real trade prints), cancel latency, oracle cancel shield,
 passive exits, six variants scored on identical signals. **Result: not supported** — makers either don't fill (HL 3–15 %) or fill adversely (PM conditional markout
-−400…−1,600 bps). See **[docs/PHASE5.md](docs/PHASE5.md)**; also documents a binary-contract risk-sizing flaw found live and fixed.
+−400…−1,600 bps under the strict/trades fill models; the optimistic depletion bound is the only one that is not negative). See **[docs/PHASE5.md](docs/PHASE5.md)**; also documents a binary-contract risk-sizing flaw found live and fixed.
 ```bash
 python -m quant_agency.run_live --phase5 --duration 1500 --record tapes/p5.npz
 python -m quant_agency.p5_pool tapes/p4_tape_1.npz tapes/p5_tape_1.npz

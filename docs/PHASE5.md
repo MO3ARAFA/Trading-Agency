@@ -1,8 +1,8 @@
 # Phase 5 — queue-aware passive maker sniper on Hyperliquid + Polymarket (2026-10-19)
 
 **Bottom line: the thesis is not supported.** Resting post-only orders at the touch (or one tick inside) does not convert the Binance→venue lag into profit on
-either battleground. Orders either don't fill (Hyperliquid: 3–15 %) or fill disproportionately when the impulse fails (Polymarket: conditional 5 s markout
-−400…−1,600 bps against an unconditional +36…+250 bps). The oracle cancel shield showed no measurable benefit. Everything below is measured; nothing is tuned to the data.
+either battleground. Orders either don't fill (Hyperliquid: 3–15 %) or fill disproportionately when the impulse fails (Polymarket, `strict`/`trades` models: conditional 5 s markout
+−400…−1,600 bps against an unconditional +36…+250 bps; under the optimistic `depletion` bound it is +69…+248 bps, which is why that bound is only an upper limit). The oracle cancel shield showed no measurable benefit. Everything below is measured; nothing is tuned to the data.
 
 ## 0. Audit of the premises
 | Premise | Finding |
@@ -48,7 +48,7 @@ Pooled over both sessions, shadow variants on **identical signals**, `net` after
 
 ## 3. Why — measured mechanisms
 1. **The lag wave runs away from a resting bid.** HL orders ended `converged` (venue already did ≥ 80 % of the gap) in 74/92 (Step A) and 16/35 (Step B) cases, TTL in most of the rest. When the signal is right, the order doesn't fill; fills come from the cases where price moves back through us.
-2. **Adverse selection is huge on Polymarket**: conditional markout after a passive fill is −400…−1,600 bps vs the unconditional +36…+250 bps.
+2. **Adverse selection is huge on Polymarket under the certain-fill models**: conditional markout after a passive fill is −400…−1,600 bps (`strict`, and live `trades`) vs the unconditional +36…+250 bps. Under the optimistic `depletion` bound the conditional markout is *positive* (+69…+248 bps) — that bound credits fills no one can confirm, so the truth lies between; the live `trades` model sits on the adverse side, and the pooled net is negative at both bounds except penny/depletion, which is statistically zero.
 3. **Passive exits rarely fill**, so fills pay taker on the way out: HL fees per fill ≈ 5–6 bps (maker 1.5 + taker 4.5) against a gross of −1.7…+0.1 bps. Lowering the maker fee helps only the entry leg: pooled `join/passive+shield` net/fill at maker **1.5 → 1.0 → 0.0 bps: −6.6 → −6.1 → −5.1 (strict), −5.3 → −4.7 → −3.4 (depletion)** — still negative at zero.
 4. **The shield did not earn its keep**: fill rate 3 % vs 3 % (HL), 9 % vs 11 % (PM); net per attempt identical within noise; on PM the shielded variant's net per fill is *worse* (it pulls the benign orders, not the toxic ones). Most orders are cancelled by convergence or TTL before the shield matters. Cancel-window fills: **0** under `strict`/`trades`; 23 under `depletion` on PM (a model artifact of its "level vanished ⇒ filled" rule), mean −519 bps.
 5. Gap vs price grid: median HL gap 2.2–3.1 bps ≈ 5–9 ticks, PM gap ≈ 1.4–1.6 ticks. (My first guess — "gap < 1 tick" — was wrong and was checked before being written down.)
