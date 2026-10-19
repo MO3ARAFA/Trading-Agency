@@ -217,6 +217,7 @@ class HighConvictionSniper(MakerSniper):
         self.sleeves = sleeves
         self.n_floor_ok = 0
         self.n_signals_seen = 0
+        self.n_floor_fills = 0                                           # Polymarket floor-passed filled entries (sample-size counter for the Phase 8 stopping rule)
         self._ph_t: List[float] = []                                     # Binance micro-price history for the oracle-guided exits
         self._ph_l: List[float] = []
 
@@ -304,6 +305,8 @@ class HighConvictionSniper(MakerSniper):
         r.setdefault("scratched", False)
         r.setdefault("arch", "taker/taker")
         self.results.append(r)
+        if r.get("variant") == "B/trail" and r.get("model") == "strict" and r.get("floor_ok") and r.get("outcome") == "filled" and r.get("venue") == "polymarket":
+            self.n_floor_fills += 1
         if len(self.results) > 400_000:
             del self.results[:100_000]
         if at.account:

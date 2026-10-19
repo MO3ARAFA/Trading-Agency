@@ -48,6 +48,8 @@ def parse():
     p.add_argument("--phase7", action="store_true", help="Pure Architecture B on isolated per-venue risk sleeves (Architecture A shelved)")
     p.add_argument("--b-exit", default=None, help="exit policy of the ACCOUNT: fixed0.7|fixed1.0|wide1.5|wide2.0|adaptive|trail")
     p.add_argument("--sleeve-capital", type=float, default=None)
+    p.add_argument("--stop-fills", type=int, default=0, help="Phase 8 stopping rule: stop when prior-fills + live floor-passed Polymarket fills >= this")
+    p.add_argument("--prior-fills", type=int, default=0)
     p.add_argument("--calm-z", type=float, default=None, help="A: quote only while every fast-horizon |BTC Z| is below this")
     p.add_argument("--impulse-z", type=float, default=None, help="A: cancel the vulnerable side at this Z")
     p.add_argument("--b-floor", type=float, default=None, help="B: absolute floor multiple of (spread + taker-in + maker-out fee)")
@@ -242,6 +244,7 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     t_end = ag.t0 + a.duration
     try:
         next_status = ag.t0 + a.status_every
+        next_chk = ag.t0 + 60.0
         while True:
             await asyncio.sleep(0.05)
             t = perf()
@@ -249,8 +252,17 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
             if t >= next_status:
                 next_status += a.status_every
                 print(status_line(ag, t, fm.stats), flush=True)
+                if ag.hc is not None:
+                    print(f"          floor-passed Polymarket fills this session: {ag.hc.n_floor_fills} (stop at {a.stop_fills - a.prior_fills} more)" if a.stop_fills else
+                          f"          floor-passed Polymarket fills this session: {ag.hc.n_floor_fills}", flush=True)
             if t >= t_end:
                 break
+            if a.stop_fills and ag.hc is not None and t >= next_chk:
+                next_chk = t + 5.0
+                if a.prior_fills + ag.hc.n_floor_fills >= a.stop_fills:       # a count-only rule: it never looks at P&L
+                    print(f"[{t-ag.t0:6.0f}s] STOP: {a.prior_fills} prior + {ag.hc.n_floor_fills} live floor-passed fills >= {a.stop_fills}", flush=True)
+                    t_end = t
+                    break
         for st in fm.stats.values():
             st.up_at_end = st.connected
     finally:

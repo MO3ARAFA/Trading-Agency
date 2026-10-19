@@ -1,0 +1,23 @@
+{
+ "phase7_base_commit": "6840614e579e2501f983d23f93bfa1278c70b55a",
+ "frozen_sha256": {
+  "quant_agency/high_conviction_sniper.py": "51e6d3cf70788b234a8917c2a07309ebaab408066bf5536c44f77966e49b93f1",
+  "quant_agency/sleeves.py": "31853cf8df6d954328f6ac2428c999b2c4ebb0b7db746cd0929a2bd5e6476cd4",
+  "quant_agency/config.py": "9589378f473c3df26026b32544eb5b7fe5f82da7d42f15dda3bc9c009024c0ad",
+  "quant_agency/cfo_agent.py": "c829cf08f83b2953b357db7cf9c4d50886aa48bba804a44090f3fdc61e12c1b7",
+  "quant_agency/maker_sniper.py": "6b6194cd8060f173efd95224587d1caa9daab88e623ba8dd074cb33980930880",
+  "quant_agency/queue_model.py": "33225a7c8504d5081ff9459fc2870cac6fe4849e7ce8a3f2f9c7da2d76143731",
+  "quant_agency/polymarket_watcher.py": "dbdd54ba8bc28f5437e4c3085f49e334e97c36253dd7834b374d59dbc8b77c96",
+  "quant_agency/inefficiency_hunter.py": "9700ecb477de5ecdacc15bffc0b6af5b6126ea9d1811fdad2dd56989521f080f",
+  "quant_agency/btc_oracle.py": "4192eb9736c013a6141a3e79549836c07b93c997b5a0abb6335d80e74f68b162",
+  "quant_agency/market_watchers.py": "7bc25cd279dfda1a6186b8ec7455bf2a6d3162ff3112cd9d896f25cadf0ec6a9",
+  "quant_agency/mathkit.py": "8c6592407f0a3413b9337eb047ed3b93bd141ff2c57aa3655e265e89563fa7a9",
+  "quant_agency/agency.py": "f1d1f716046e9958c0fd6a459f0731400b4d43e7a6d6beb3fd8af8819a006f95",
+  "quant_agency/execution_engine.py": "e67843bcfee58ba0494a6a71b9849f530a50df01ce7f4556c610c2f8b6f7db3c",
+  "quant_agency/ceo_agent.py": "27fe555fdaa1c16e7230295b6400d98ef81e5318553b8cf11c22fcca203ee5cc",
+  "quant_agency/run_live.py": "693ebd15019ca2c45046b410106913829a264e311925c6296d331774831651b8",
+  "quant_agency/p7_pool.py": "58b2f884c5385ea0cab1aecae37eccbcaf388fd01c36a04bbf607d5bd5dec5fb",
+  "quant_agency/p8_eval.py": "e3f8eb69cfe43644100ad79fe897e9ccdadd7bbed6995887f540c8c6935dd814"
+ },
+ "note": "SHA-256 of every file that decides which entries are taken, how they are exited, how fills are simulated, and how the test is computed. Recorded before any Phase 8 data exists."
+}
