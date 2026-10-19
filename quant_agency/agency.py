@@ -1,0 +1,177 @@
+"""Wires the four tiers. Fully synchronous & clock-injected: drive it with ``on_quote`` / ``step``
+from the live asyncio feeds or from a deterministic replay (tests, offline sim)."""
+from __future__ import annotations
+
+import json
+import os
+import time
+from array import array
+from typing import List, Optional, Sequence
+
+import numpy as np
+
+from .btc_oracle import BtcOracle
+from .ceo_agent import CEOAgent
+from .cfo_agent import CFOAgent
+from .config import AgencyConfig
+from .execution_engine import ExecutionEngine, TradeResult
+from .inefficiency_hunter import InefficiencyHunter, Signal
+from .market_watchers import MarketBook, MarketMeta
+
+
+class LatencyStats:
+    """Fixed-size sample ring of microsecond latencies."""
+
+    def __init__(self, cap: int = 200_000):
+        self.a = np.zeros(cap)
+        self.n = 0
+        self.cap = cap
+
+    def add(self, us: float) -> None:
+        self.a[self.n % self.cap] = us
+        self.n += 1
+
+    def summary(self) -> dict:
+        m = min(self.n, self.cap)
+        if m == 0:
+            return {"n": 0}
+        x = self.a[:m]
+        return {"n": self.n, "p50": float(np.percentile(x, 50)), "p90": float(np.percentile(x, 90)),
+                "p99": float(np.percentile(x, 99)), "max": float(x.max()), "mean": float(x.mean())}
+
+
+class Agency:
+    def __init__(self, metas: Sequence[MarketMeta], cfg: Optional[AgencyConfig] = None, out_dir: Optional[str] = None,
+                 t0: float = 0.0, wall0: Optional[float] = None, perf=time.perf_counter):
+        self.cfg = cfg or AgencyConfig()
+        self.perf = perf
+        self.book = MarketBook(metas, self.cfg.watchers)
+        self.oracle = BtcOracle(self.cfg.oracle)
+        self.hunter = InefficiencyHunter(self.book, self.oracle, self.cfg.hunter)
+        self.cfo = CFOAgent(self.book, self.cfg.cfo)
+        self.engine = ExecutionEngine(self.book, self.cfo, self.cfg.exec)
+        self.out_dir = out_dir
+        self._files = {}
+        if out_dir:
+            os.makedirs(out_dir, exist_ok=True)
+        wall0 = time.time() if wall0 is None else wall0
+        self.ceo = CEOAgent(self.cfo, self.hunter, self.engine, self.oracle, self.cfg.ceo,
+                            audit_path=os.path.join(out_dir, "ceo_audit.jsonl") if out_dir else None,
+                            wall0=wall0, t0=t0)
+        self.t0 = t0
+        self.scan_lat = LatencyStats()
+        self.decide_lat = LatencyStats()          # BTC tick received -> executable payload ready
+        self.signals: List[Signal] = []
+        self.max_signal_keep = 5000
+        self.n_events = 0
+        self.n_btc = 0
+        self._recv_wall = 0.0
+        self.last_step = -1.0
+        self.tape = None                       # set record=True to capture every event for replay
+        self.last_t = t0
+
+    # ------------------------------------------------------------------ ingestion
+    def start_recording(self) -> None:
+        self.tape = tuple(array("d") for _ in range(6))
+
+    def save_tape(self, path: str) -> None:
+        import dataclasses
+        t, i, b, a, bq, aq = (np.frombuffer(x, dtype=np.float64) for x in self.tape)
+        metas = json.dumps([dataclasses.asdict(m) for m in self.book.metas])
+        np.savez_compressed(path, t=t, i=i.astype(np.int32), b=b, a=a, bq=bq, aq=aq, metas=np.array(metas))
+
+    def on_quote(self, i: int, t: float, bid: float, ask: float, bq: float, aq: float) -> None:
+        tp = self.tape
+        if tp is not None:
+            tp[0].append(t); tp[1].append(i); tp[2].append(bid); tp[3].append(ask); tp[4].append(bq); tp[5].append(aq)
+        self.n_events += 1
+        if not self.book.on_quote(i, t, bid, ask, bq, aq):
+            return
+        if i == 0:
+            self._recv_wall = self.perf()
+            self.oracle.on_book(t, bid, ask, bq, aq)
+            self.hunter.dirty = True
+            self.n_btc += 1
+        else:
+            self.engine.on_quote(i, t)
+        self.last_t = t
+
+    def on_trade(self, t: float, price: float, qty: float, buyer_is_maker: bool) -> None:
+        tp = self.tape
+        if tp is not None:                      # trades are stored as idx=-1: (price, qty, maker_flag)
+            tp[0].append(t); tp[1].append(-1); tp[2].append(price); tp[3].append(qty); tp[4].append(float(buyer_is_maker)); tp[5].append(0.0)
+        self.oracle.on_trade(t, price, qty, buyer_is_maker)
+
+    def on_feed_reset(self, t: float, idxs=None, hold_s: float = 15.0) -> None:
+        """A feed reconnected: quiet the affected markets so stale quotes can't masquerade as gaps."""
+        if idxs is None or 0 in idxs:
+            self.oracle.reset_feed(t)
+        if idxs is None:
+            self.hunter.cooldown_until[:] = np.maximum(self.hunter.cooldown_until, t + hold_s)
+        else:
+            for i in idxs:
+                self.hunter.cooldown_until[i] = max(self.hunter.cooldown_until[i], t + hold_s)
+
+    # ------------------------------------------------------------------ main step
+    def housekeeping(self, t: float) -> None:
+        """Markout resolution, paper-exchange state machines, CEO cadence. ~20 Hz is plenty."""
+        self.last_t = t
+        self.cfo.markouts.poll(t)
+        for tr in self.engine.poll(t):
+            self._write("trades", tr.as_dict())
+        self.ceo.maybe_review(t)
+        if self.cfo.flatten_requested:
+            self.engine.flatten_all(t, "breaker_flatten")
+            self.cfo.flatten_requested = False
+
+    def scan(self, t: float, force: bool = False) -> List[Signal]:
+        """Latency-critical path: hunter scan -> CFO gate -> payload -> paper order."""
+        if not (self.hunter.dirty or force):
+            return []
+        t1 = self.perf()
+        sigs = self.hunter.scan(t, self._recv_wall)
+        self.scan_lat.add((self.perf() - t1) * 1e6)
+        for s in sigs:
+            self._handle_signal(s, t)
+        return sigs
+
+    def step(self, t: float, force_scan: bool = False) -> List[Signal]:
+        """Deterministic combined step for replay/tests."""
+        self.housekeeping(t)
+        return self.scan(t, force_scan)
+
+    def _handle_signal(self, s: Signal, t: float) -> None:
+        meta = self.book.metas[s.idx]
+        dec = self.cfo.evaluate(s, t, has_position=self.engine.has_position(s.idx), tradable=meta.tradable)
+        s.decision = dec
+        payload = None
+        if dec.approved:
+            lat = (self.perf() - self._recv_wall) * 1e6 if self._recv_wall else 0.0
+            payload = self.engine.prepare(s, dec, t, lat)
+            if payload is None:
+                self.cfo.revoke(dec, "size_below_min")
+            else:
+                payload.prep_latency_us = (self.perf() - self._recv_wall) * 1e6 if self._recv_wall else lat
+                self.decide_lat.add(payload.prep_latency_us)
+                self.engine.submit(payload, s, dec, t)
+                self._write("payloads", payload.as_dict())
+        self.cfo.markouts.register(s, dec)
+        self._write("signals", {**s.as_dict(), "decision": dec.as_dict()})
+        self.signals.append(s)
+        if len(self.signals) > self.max_signal_keep:
+            del self.signals[: self.max_signal_keep // 5]
+
+    # ------------------------------------------------------------------ io
+    def _write(self, name: str, obj: dict) -> None:
+        if not self.out_dir:
+            return
+        f = self._files.get(name)
+        if f is None:
+            f = self._files[name] = open(os.path.join(self.out_dir, f"{name}.jsonl"), "a", buffering=1 << 16)
+        f.write(json.dumps(obj, default=float) + "\n")
+
+    def close(self) -> None:
+        for f in self._files.values():
+            f.flush()
+            f.close()
+        self._files.clear()
