@@ -303,3 +303,17 @@ def test_edge_haircut_does_not_compound_on_the_same_evidence():
     c1 = ag.cfo.cfg.edge_credit
     ag.ceo.review(NOW + 30); ag.ceo.review(NOW + 60)
     assert ag.cfo.cfg.edge_credit == pytest.approx(c1)
+
+
+def test_noisy_profits_are_not_mistaken_for_a_good_review():
+    """GOOD needs the *lower* confidence bound above the threshold (mirror of the POOR guard)."""
+    ag = mk_agency()
+    ag.ceo.state = CEOState.TIGHTENED
+    for k in range(8):                                    # mean +5 bps but driven by one huge winner among losers
+        add_trades(ag, 1, net_bps=(+60.0 if k == 0 else -2.0), t_exit=NOW + 500)
+    assert ag.ceo.review(NOW + 1) == [] and ag.ceo.good_streak == 0
+    ag2 = mk_agency()
+    ag2.ceo.state = CEOState.TIGHTENED
+    add_trades(ag2, 8, net_bps=+3.0, t_exit=NOW + 500)    # consistent profits do count
+    ag2.ceo.review(NOW + 1)
+    assert ag2.ceo.good_streak == 1

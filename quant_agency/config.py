@@ -143,6 +143,34 @@ class ExecConfig:
 
 
 @dataclass
+class ArbConfig:
+    record_gap_bps: float = 0.3          # shadow-track every basis-adjusted locked gap above this
+    max_quote_age_s: float = 3.0         # both quotes must be live
+    scan_min_interval_s: float = 0.01
+    basis_halflife_s: float = 300.0
+    basis_update_s: float = 1.0
+    basis_min_samples: int = 60
+
+
+@dataclass
+class PolyConfig:
+    enabled: bool = True
+    z_thr: float = 2.0                   # BTC impulse Z that triggers a prediction-market scan
+    min_impulse_bps: float = 1.0
+    min_gap_prob: float = 0.01           # |fair move - market move| >= 1 cent
+    max_repriced: float = 0.6
+    window_s: float = 20.0               # how long after the impulse the lag is assumed to last
+    cooldown_s: float = 5.0
+    max_spread_prob: float = 0.06
+    mid_lo: float = 0.05
+    mid_hi: float = 0.95
+    vol_floor_ann: float = 0.35
+    max_markets: int = 90
+    n_updown_windows: int = 3
+    rediscover_s: float = 120.0
+
+
+@dataclass
 class AgencyConfig:
     oracle: OracleConfig = field(default_factory=OracleConfig)
     watchers: WatcherConfig = field(default_factory=WatcherConfig)
@@ -150,6 +178,8 @@ class AgencyConfig:
     cfo: CFOConfig = field(default_factory=CFOConfig)
     ceo: CEOConfig = field(default_factory=CEOConfig)
     exec: ExecConfig = field(default_factory=ExecConfig)
+    arb: ArbConfig = field(default_factory=ArbConfig)
+    poly: PolyConfig = field(default_factory=PolyConfig)
 
     def to_dict(self):
         return asdict(self)

@@ -104,6 +104,7 @@ class CEOAgent:
         self.market_epoch: Dict[str, float] = {}  # per-market evidence restarts when that market is quarantined
         self._bump = False
         self.last_probation: Dict[str, float] = {}
+        self.arb = None                          # CrossVenueArb, attached by the Agency
 
     # ----------------------------------------------------------------------------- KPIs
     def kpis(self, now: float) -> dict:
@@ -174,13 +175,13 @@ class CEOAgent:
             if t["exp_bps"] + t["exp_se"] < c.net_bad_bps:
                 poor = True
                 reasons.append(f"trade expectancy {t['exp_bps']:+.2f}bps over {t['n']} trades < {c.net_bad_bps}")
-            elif t["exp_bps"] > c.net_good_bps:
+            elif t["exp_bps"] - t["exp_se"] > c.net_good_bps:
                 good = True
         elif k["approved"]["n"] >= c.n_min_global:
             if k["approved"]["net"] + k["approved"]["net_se"] < c.net_bad_bps:
                 poor = True
                 reasons.append(f"approved net markout {k['approved']['net']:+.2f}bps over {k['approved']['n']} < {c.net_bad_bps}")
-            elif k["approved"]["net"] > c.net_good_bps:
+            elif k["approved"]["net"] - k["approved"]["net_se"] > c.net_good_bps:
                 good = True
         if k["realization_hi"] is not None and k["approved"]["n"] >= c.n_min_global and k["realization_hi"] < c.realization_bad:
             poor = True
@@ -229,6 +230,27 @@ class CEOAgent:
                                  f"{why}: n={v['n']} gross@1s={v['gross1']:+.2f} gross@5s={v['gross']:+.2f} "
                                  f"net@5s={v['net']:+.2f}bps hit={v['hit_net']:.0%}; blacklisted {dur:.0f}s",
                                  {k2: round(v2, 3) for k2, v2 in v.items()}, {}, {"until": round(float(now + dur), 1)}))
+
+    def _quarantine_arbs(self, now, out):
+        """Arb pairs whose *executed* trades realise a net loss (leg risk / vanishing gaps) are blacklisted like losing markets."""
+        c = self.cfg
+        if self.arb is None:
+            return
+        for name, st in self.arb.pair_stats.items():
+            nb = st["net_bps"]
+            if len(nb) < 4 or self.cfo.is_blacklisted(name, now):
+                continue
+            recent = nb[-8:]
+            if float(np.mean(recent)) < c.market_net_bad_bps / 1.5:
+                k_off = self.offences.get(name, 0)
+                dur = min(c.quarantine_s * (2 ** k_off), c.quarantine_max_s)
+                self.offences[name] = k_off + 1
+                self.cfo.apply_directive({"quarantine": (name, now + dur, "arb_net_negative")}, now)
+                st["net_bps"] = []
+                out.append(self._log(now, "QUARANTINE_ARB", name,
+                                     f"executed arb net {float(np.mean(recent)):+.2f}bps over last {len(recent)} (locked {st['locked']}, "
+                                     f"leg-risk {st['leg_risk']}, missed {st['missed']}); blacklisted {dur:.0f}s",
+                                     {"locked": st["locked"], "leg_risk": st["leg_risk"], "missed": st["missed"]}, {}, {"until": round(float(now + dur), 1)}))
 
     def _tune_hunter(self, now, k, out):
         c, hc = self.cfg, self.hunter.cfg
@@ -369,6 +391,7 @@ class CEOAgent:
         self.reviews.append({"t": now, "state": self.state.value, "verdict": verdict.value, "reasons": reasons,
                              "kpi": self._compact(k)})
         self._quarantine(now, k, out)
+        self._quarantine_arbs(now, out)
         self._audit_cfo(now, k, out)
         self._tune_hunter(now, k, out)
         self._escalate(now, k, verdict, reasons, out)

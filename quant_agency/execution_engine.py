@@ -17,7 +17,7 @@ from typing import Dict, List, Optional
 from .cfo_agent import CFOAgent, Decision
 from .config import ExecConfig
 from .inefficiency_hunter import Signal
-from .market_watchers import AQ, ASK, BID, BQ, MID, MarketBook, MarketMeta
+from .market_watchers import AQ, ASK, BID, BQ, MID, MarketBook, MarketMeta, maker_fee_bps, taker_fee_bps
 
 BPS = 1e4
 
@@ -278,7 +278,8 @@ class ExecutionEngine:
         idx = o.sig.idx
         self.pending_idx.pop(idx, None)
         self.orders.pop(o.p.oid, None)
-        fee_bps = self.cfo.cfg.fee_maker_bps if maker else self.cfo.cfg.fee_taker_bps
+        meta = self.book.metas[idx]
+        fee_bps = maker_fee_bps(meta, self.cfo.cfg.fee_maker_bps) if maker else taker_fee_bps(meta, px, self.cfo.cfg.fee_taker_bps)
         st = self.book.state[idx]
         fm = self.book.mid_asof(idx, t)
         pos = _Pos(p=o.p, sig=o.sig, dec=o.dec, entry_t=t, entry_px=px, qty=qty, entry_fee=qty * px * fee_bps / BPS,
@@ -303,7 +304,7 @@ class ExecutionEngine:
         bid, ask = q
         s = pos.side
         exit_px = bid if s > 0 else ask                         # taker exit crosses the spread
-        fee_exit = pos.qty * exit_px * self.cfo.cfg.fee_taker_bps / BPS
+        fee_exit = pos.qty * exit_px * taker_fee_bps(self.book.metas[idx], exit_px, self.cfo.cfg.fee_taker_bps) / BPS
         gross = s * (exit_px - pos.entry_px) * pos.qty
         fees = pos.entry_fee + fee_exit
         net = gross - fees

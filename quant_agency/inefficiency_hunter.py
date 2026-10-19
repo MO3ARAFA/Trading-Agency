@@ -162,7 +162,7 @@ def _resid_update(rt, rb, ra, n, cap, state, btc_t, btc_lmid, btc_n, btc_cap, t,
 @njit(cache=True)
 def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmin, lag, decay, calibrated, tradable,
           cooldown_until, res_m2, res_n, min_gap_bps, gap_z_thr, rho_min, max_repriced, window_mult,
-          window_base, window_min, window_max, max_spread_bps, min_rate, max_quote_age, age, out_idx):
+          window_base, window_min, window_max, max_spread_bps, spread_gate, min_rate, max_quote_age, age, out_idx):
     M = beta.shape[0]
     cnt = 0
     for i in range(1, M):
@@ -173,7 +173,7 @@ def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmi
         if 1.0 / state[i, MEAN_DT] < min_rate or t - state[i, LAST_T] > max_quote_age:
             continue                        # dead / halted market: the quote can't be hit
         mid = state[i, MID]
-        if (state[i, ASK] - state[i, BID]) / mid * 1e4 > max_spread_bps:
+        if (state[i, ASK] - state[i, BID]) / mid * 1e4 > min(max_spread_bps, spread_gate[i]):
             continue
         win = window_mult * max(lag[i], 0.0) + decay[i] + window_base
         win = min(max(win, window_min), window_max)
@@ -218,7 +218,9 @@ class LeadLagModel:
         self.decay = np.zeros(M)
         self.calibrated = np.zeros(M, dtype=np.bool_)
         self.n_calib = np.zeros(M, dtype=np.int64)
-        self.tradable = np.array([m.tradable for m in book.metas], dtype=np.bool_)
+        self.tradable = np.array([m.tradable and m.hunt for m in book.metas], dtype=np.bool_)
+        self.gate = np.array([np.inf if m.spread_gate_bps is None else m.spread_gate_bps for m in book.metas])
+        self.hunt = np.array([m.hunt for m in book.metas], dtype=np.bool_)
         self.tradable[0] = False
         self.res_m2 = np.full((M, H), 1e-8)
         self.res_n = np.zeros((M, H), dtype=np.int64)
@@ -241,7 +243,7 @@ class LeadLagModel:
             return t0, t, tx, x, items
         bk = self.book
         for i in range(1, bk.M):
-            if bk.n[i] < c.min_calib_ticks:
+            if bk.n[i] < c.min_calib_ticks or not self.hunt[i]:
                 continue
             ty, y = ring_window_lmid(bk.rt[i], bk.rb[i], bk.ra[i], int(bk.n[i]), bk.cap, t0, t)
             if ty.shape[0] >= c.min_calib_ticks:
@@ -416,7 +418,7 @@ class InefficiencyHunter:
         n = _scan(self.book.rt, self.book.rb, self.book.ra, self.book.n, self.book.cap, self.book.state, t, h, hk,
                   float(st.delta[hk]), float(self.dir), m.beta, m.rho, m.tstat, c.beta_tmin, m.lag, m.decay, m.calibrated, m.tradable,
                   self.cooldown_until, m.res_m2, m.res_n, c.min_gap_bps, c.gap_z_thr, c.rho_min, c.max_repriced,
-                  c.window_mult, c.window_base_s, c.window_min_s, c.window_max_s, c.max_spread_bps,
+                  c.window_mult, c.window_base_s, c.window_min_s, c.window_max_s, c.max_spread_bps, m.gate,
                   c.min_tick_rate, c.max_quote_age_s, age, self._out)
         sigs: List[Signal] = []
         bk = self.book

@@ -22,7 +22,7 @@ import numpy as np
 
 from .config import CFOConfig
 from .inefficiency_hunter import Signal
-from .market_watchers import MarketBook
+from .market_watchers import MarketBook, maker_fee_bps, taker_fee_bps
 
 BPS = 1e4
 
@@ -82,7 +82,7 @@ class MarkoutTracker:
     def register(self, sig: Signal, dec: Decision) -> None:
         self.pending.append({"sid": sig.sid, "idx": sig.idx, "market": sig.market, "side": sig.side, "t0": sig.t,
                              "mid0": sig.mid, "gap": abs(sig.gap_bps), "pred": dec.net_edge_taker_bps,
-                             "pred_sel": dec.net_edge_bps, "imp": sig.impulse_id, "cohort": dec.cohort, "approved": dec.approved,
+                             "pred_sel": dec.net_edge_bps, "imp": sig.impulse_id, "spread": sig.spread_bps, "px": sig.mid, "cohort": dec.cohort, "approved": dec.approved,
                              "reason": dec.reason, "todo": list(self.horizons)})
 
     def poll(self, now: float) -> int:
@@ -104,10 +104,13 @@ class MarkoutTracker:
                 gross = s * (mid_x - mid_e) / mid_e * BPS
                 ex_in = qe[1] if s > 0 else qe[0]
                 ex_out = qx[0] if s > 0 else qx[1]
-                net = s * (ex_out - ex_in) / ex_in * BPS - 2.0 * self.fee
+                meta = self.book.metas[p["idx"]]
+                net0 = s * (ex_out - ex_in) / ex_in * BPS                  # spread-crossing, zero fees
+                net = net0 - taker_fee_bps(meta, ex_in, self.fee) - taker_fee_bps(meta, ex_out, self.fee)
                 closure = s * (mid_x - p["mid0"]) / p["mid0"] * BPS / p["gap"] if p["gap"] > 0 else 0.0
                 self.rows.append({"market": p["market"], "cohort": p["cohort"], "side": s, "h": h, "t0": p["t0"],
-                                  "gap": p["gap"], "pred": p["pred"], "gross": gross, "net": net,
+                                  "gap": p["gap"], "pred": p["pred"], "gross": gross, "net": net, "net0": net0,
+                                  "spread": p["spread"], "px": p["px"], "lat": self.lat, "venue": meta.venue, "kind": meta.kind,
                                   "closure": closure, "approved": p["approved"], "sid": p["sid"], "imp": p["imp"]})
                 n += 1
             p["todo"] = todo
@@ -239,16 +242,19 @@ class CFOAgent:
         """(spread_bps, fee_bps, slip_bps) for the given mode."""
         c = self.cfg
         spread = sig.spread_bps
+        meta = self.book.metas[sig.idx]
+        px = sig.ask if sig.side > 0 else sig.bid
+        fee_t = taker_fee_bps(meta, px, c.fee_taker_bps)
         top = sig.aq if sig.side > 0 else sig.bq
         depth_ratio = min(qty / top, 4.0) if top > 0 else 4.0
         sigma_s = sig.sigma_res_bps / math.sqrt(max(sig.horizon_s, 1e-6))
         drift = c.slip_vol_coeff * sigma_s * math.sqrt(c.latency_s)
         if mode == "taker":
             slip = c.slip_depth_coeff * spread * depth_ratio + drift
-            return spread, 2.0 * c.fee_taker_bps, slip
+            return spread, 2.0 * fee_t, slip
         # maker entry (earn half spread, exit taker): spread cost nets ~0, pay adverse-selection penalty
         slip = 0.25 * spread + drift
-        return 0.0, c.fee_maker_bps + c.fee_taker_bps, slip
+        return 0.0, maker_fee_bps(meta, c.fee_maker_bps) + fee_t, slip
 
     # ------------------------------------------------------------------ gating & sizing
     def evaluate(self, sig: Signal, now: float, has_position: bool = False, tradable: bool = True) -> Decision:
@@ -291,8 +297,9 @@ class CFOAgent:
             return reject("halted")
         if self.is_blacklisted(sig.market, now):
             return reject("quarantined")
-        if sig.spread_bps > c.max_spread_bps:
-            return reject("spread_too_wide")
+        gate = self.book.metas[sig.idx].spread_gate_bps
+        if sig.spread_bps > (c.max_spread_bps if gate is None else gate):
+            return reject("spread_too_wide", "rejected_gate")   # hard microstructure gate (scalp mode: 0.5 bps); shadow-tracked
         if sig.side < 0 and not c.allow_short:
             return reject("short_disabled")
         if has_position:

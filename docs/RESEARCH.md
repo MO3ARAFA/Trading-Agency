@@ -43,3 +43,17 @@ Measured here (cloud container, via egress proxy): per-quote book update ≈ 0.8
 | Bybit, OKX WS | ❌ 403 / reset |
 
 **Design consequence:** BTC and every alt share *one* Binance connection, so their relative arrival order equals the venue's publication order (no inter-connection jitter polluting the lead-lag estimate).
+
+
+## 5. Phase 4 reconnaissance (probed 2026-10-19, from this container)
+
+| Endpoint | Result |
+|---|---|
+| Binance Vision `bookTicker`/`exchangeInfo` | ✅ only ~7 markets had spread < 0.5 bps (BTCUSDC, ETHUSDC, BTCFDUSD, ETHFDUSD, BNBUSDC, BNBUSDT, ETHUSDT); ETHBTC 3.4 bps; `FDUSDUSDT` did not quote |
+| Coinbase Exchange WS | ✅ `ticker` (trade-triggered) and `level2_batch` (full book → true BBO, used); Advanced Trade `level2` snapshot exceeds 4 MB frames |
+| Hyperliquid | ✅ WS `bbo` per coin; `/info` is POST-only (GET → 405) |
+| Deribit | ✅ WS `quote.<instrument>` (perp BBO) |
+| Polymarket Gamma + CLOB WS | ✅ reachable. BTC families: daily `above`, daily brackets, hourly Up/Down (**resolves on Binance BTC/USDT 1H candle**), 5m/15m/4h Up/Down (Chainlink BTC/USD 60 s TWAP). Taker fee schedule `0.07·p·(1−p)`, makers free; tick 0.001 (thresholds) / 0.01 (Up/Down) |
+| OKX WS, Bybit | ❌ (reset / 403) · Bitget, KuCoin, MEXC REST ✅ (unused) |
+
+Design notes: Polymarket fair values are driftless-lognormal digitals/TWAPs under the oracle's realised vol; signals use the *change* in fair value vs the *change* in CLOB mid over the BTC-impulse horizon so a persistent implied-vol mismatch cannot look like a gap; a momentum control separates lag-closure from continued BTC drift.

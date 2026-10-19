@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import math
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence
 
 import numpy as np
@@ -23,6 +23,7 @@ BID, ASK, BQ, AQ, LAST_T, FIRST_T, MEAN_DT, SPR_FAST, SPR_SLOW, NTICK, MID, LMID
 K_COLS = NK + 1
 
 REGIME_TIGHT, REGIME_NORMAL, REGIME_WIDE = 0, 1, 2
+BPS_ = 1e4
 
 
 @njit(cache=True)
@@ -70,7 +71,7 @@ def log_mid_asof(rt, rb, ra, n, cap, i, tq):
 @dataclass
 class MarketMeta:
     id: str
-    venue: str            # binance | gate | coinbase
+    venue: str            # binance | gate | kraken | coinbase | hyperliquid | deribit | polymarket
     symbol: str           # venue-native symbol
     base: str
     tick: float = 0.0
@@ -79,6 +80,30 @@ class MarketMeta:
     quote_vol_usd: float = 0.0
     beta_prior: float = 1.0
     tradable: bool = True
+    asset: str = ""                                  # canonical asset (BTC, ETH, ...) for cross-venue grouping
+    kind: str = "spot"                               # spot | perp | prediction
+    quote: str = "USDT"
+    fee_taker_bps: Optional[float] = None            # per-side; None -> CFOConfig default
+    fee_maker_bps: Optional[float] = None
+    fee_schedule: Optional[tuple] = None             # (rate, exponent, taker_only): fee/share = rate*(p(1-p))^exp  (Polymarket)
+    spread_gate_bps: Optional[float] = None          # hard microstructure gate; None -> global
+    hunt: bool = True                                # scanned by the lead-lag hunter (False for prediction markets)
+    extra: dict = field(default_factory=dict)
+
+
+def taker_fee_bps(meta: "MarketMeta", price: float, default: float) -> float:
+    """Per-side taker fee in bps of notional at ``price``."""
+    if meta.fee_schedule is not None:
+        rate, exp, _ = meta.fee_schedule
+        p = min(max(price, 1e-6), 1.0 - 1e-6)
+        return rate * (p * (1.0 - p)) ** exp / p * BPS_
+    return default if meta.fee_taker_bps is None else meta.fee_taker_bps
+
+
+def maker_fee_bps(meta: "MarketMeta", default: float) -> float:
+    if meta.fee_schedule is not None:
+        return 0.0 if meta.fee_schedule[2] else default      # takerOnly schedules: makers pay nothing
+    return default if meta.fee_maker_bps is None else meta.fee_maker_bps
 
 
 class MarketBook:
@@ -210,12 +235,9 @@ async def discover_binance_universe(n_markets: int, exclude_bases: Sequence[str]
 
 
 def cross_venue_metas() -> List[MarketMeta]:
-    """Cross-venue BTC-family markets (Gate + Kraken BBO) for venue lead-lag."""
-    out = []
-    for base in ("BTC", "ETH", "SOL"):
-        out.append(MarketMeta(id=f"gate:{base}_USDT", venue="gate", symbol=f"{base}_USDT", base=base, tick=0.0))
-        out.append(MarketMeta(id=f"kraken:{base}/USD", venue="kraken", symbol=f"{base}/USD", base=base, tick=0.0))
-    return out
+    """Phase-1 cross-venue set (Gate + Kraken BTC/ETH/SOL). Phase 4 uses ``venues.cross_venue_metas``."""
+    from .venues import cross_venue_metas as _cv
+    return _cv(("BTC", "ETH", "SOL"), venues=("gate", "kraken"), deribit_assets=())
 
 
 @njit(cache=True)

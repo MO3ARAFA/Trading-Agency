@@ -44,7 +44,7 @@ quant_agency/
   agency.py             wiring (sync, clock-injected)        feeds.py   asyncio/uvloop/orjson websockets
   telemetry.py          markdown report                      sim.py     synthetic lead-lag market
   run_live.py           CLI: live | --sim | --replay tape    sweep.py   replay one tape under many fee tiers
-tests/                  88 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
+tests/                  113 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
 docs/RESEARCH.md        Phase 1 reconnaissance → code map
 ```
 
@@ -65,3 +65,11 @@ Each run writes `runs/<tag>_<ts>/` with `report.md`, `summary.json`, `signals.js
 ## Results
 See **[docs/LIVE_RESULTS.md](docs/LIVE_RESULTS.md)** (live telemetry, markout tables, fee×latency sweep, CEO→CFO audit trail) and `docs/live_runs/`.
 Short version: lead-lag gaps exist but are ≲1 bp gross vs ~2 bp spread and 15 bp fees — the agency detects them, refuses to trade them, and the CEO governs accordingly.
+
+## Phase 4 — venue & microstructure specialization
+`venues.py`, `cross_venue_arb.py`, `polymarket_watcher.py` + new feeds (Coinbase, Hyperliquid, Deribit, Polymarket CLOB). 151 markets / 7 feeds live.
+See **[docs/PHASE4.md](docs/PHASE4.md)**: the `<0.5 bps` hypothesis replicates at 0 ms latency but not at 150 ms; Hyperliquid is the only latency-robust lead
+(gross +2.5 bps, unprofitable at taker fees); Polymarket's CLOB converges to BTC-implied value but is not tradable as a taker (−2.4 ¢/share net).
+```bash
+python -m quant_agency.run_live --phase4 --duration 1200 --record tapes/p4.npz
+```

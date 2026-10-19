@@ -92,3 +92,18 @@ def test_recorded_tape_replays_identically(tmp_path):
     ag, _, _ = run_replay(argparse.Namespace(replay=path, status_every=1e9), cfg, str(tmp_path / "run"))
     assert ag.hunter.n_signals > 0
     assert abs(ag.hunter.n_signals - orig.hunter.n_signals) <= max(2, int(0.05 * orig.hunter.n_signals))
+
+
+def test_phase4_report_renders_on_a_full_run():
+    from quant_agency.telemetry import build_report_p4
+    ag, _ = run_sim(fee=0.0, duration=200, seed=4)
+    rep = build_report_p4(ag, ag.last_t + 1.0, {"mode": "offline-sim", "feeds": {}})
+    for h in ("Battleground 1", "Cross-venue lead-lag", "Direct cross-venue & triangular arbitrage", "Battleground 2",
+              "Before / after vs Run 1", "FEE ASSUMPTIONS"):
+        assert h in rep
+    assert "not enabled in this run" in rep
+
+
+def test_cross_venue_arb_is_inert_on_the_synthetic_market():
+    ag, _ = run_sim(fee=0.0, duration=120, seed=6)
+    assert ag.arb.summary()["executed"] == 0           # no same-asset multi-venue pairs in the sim universe

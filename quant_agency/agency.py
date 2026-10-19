@@ -13,7 +13,9 @@ import numpy as np
 from .btc_oracle import BtcOracle
 from .ceo_agent import CEOAgent
 from .cfo_agent import CFOAgent
+from .cfo_agent import MarkoutTracker
 from .config import AgencyConfig
+from .cross_venue_arb import CrossVenueArb
 from .execution_engine import ExecutionEngine, TradeResult
 from .inefficiency_hunter import InefficiencyHunter, Signal
 from .market_watchers import MarketBook, MarketMeta
@@ -50,6 +52,11 @@ class Agency:
         self.hunter = InefficiencyHunter(self.book, self.oracle, self.cfg.hunter)
         self.cfo = CFOAgent(self.book, self.cfg.cfo)
         self.engine = ExecutionEngine(self.book, self.cfo, self.cfg.exec)
+        self.arb = CrossVenueArb(self.book, self.cfo, self.cfg.arb)
+        self.pm = None                            # set by attach_polymarket()
+        # latency-sensitivity shadow trackers: same signals, different assumed order latency (does the edge survive speed?)
+        self.alt_trackers = {lat: MarkoutTracker(self.book, self.cfg.cfo.markout_horizons_s, lat, self.cfg.cfo.fee_taker_bps)
+                             for lat in (0.0, 0.5) if lat != self.cfg.cfo.latency_s}
         self.out_dir = out_dir
         self._files = {}
         if out_dir:
@@ -58,6 +65,7 @@ class Agency:
         self.ceo = CEOAgent(self.cfo, self.hunter, self.engine, self.oracle, self.cfg.ceo,
                             audit_path=os.path.join(out_dir, "ceo_audit.jsonl") if out_dir else None,
                             wall0=wall0, t0=t0)
+        self.ceo.arb = self.arb
         self.t0 = t0
         self.scan_lat = LatencyStats()
         self.decide_lat = LatencyStats()          # BTC tick received -> executable payload ready
@@ -71,14 +79,18 @@ class Agency:
         self.last_t = t0
 
     # ------------------------------------------------------------------ ingestion
+    def attach_polymarket(self, watcher) -> None:
+        self.pm = watcher
+
     def start_recording(self) -> None:
         self.tape = tuple(array("d") for _ in range(6))
 
-    def save_tape(self, path: str) -> None:
+    def save_tape(self, path: str, extra: Optional[dict] = None) -> None:
         import dataclasses
         t, i, b, a, bq, aq = (np.frombuffer(x, dtype=np.float64) for x in self.tape)
         metas = json.dumps([dataclasses.asdict(m) for m in self.book.metas])
-        np.savez_compressed(path, t=t, i=i.astype(np.int32), b=b, a=a, bq=bq, aq=aq, metas=np.array(metas))
+        np.savez_compressed(path, t=t, i=i.astype(np.int32), b=b, a=a, bq=bq, aq=aq, metas=np.array(metas),
+                            extra=np.array(json.dumps(extra or {}, default=float)))
 
     def on_quote(self, i: int, t: float, bid: float, ask: float, bq: float, aq: float) -> None:
         tp = self.tape
@@ -117,12 +129,25 @@ class Agency:
         """Markout resolution, paper-exchange state machines, CEO cadence. ~20 Hz is plenty."""
         self.last_t = t
         self.cfo.markouts.poll(t)
+        for tk in self.alt_trackers.values():
+            tk.poll(t)
         for tr in self.engine.poll(t):
             self._write("trades", tr.as_dict())
+        self.arb.scan(t)                                                   # also scanned on the BTC path; 10 ms internal throttle
+        self._poll_arb(t)
         self.ceo.maybe_review(t)
         if self.cfo.flatten_requested:
             self.engine.flatten_all(t, "breaker_flatten")
             self.cfo.flatten_requested = False
+
+    def _poll_arb(self, t: float) -> None:
+        for tr in self.arb.poll(t):
+            self.engine.closed.append(tr)
+            self._write("trades", tr.as_dict())
+        if self.arb.resolved_buffer:
+            for r in self.arb.resolved_buffer:
+                self._write("arb_opps", r)
+            self.arb.resolved_buffer.clear()
 
     def scan(self, t: float, force: bool = False) -> List[Signal]:
         """Latency-critical path: hunter scan -> CFO gate -> payload -> paper order."""
@@ -130,9 +155,13 @@ class Agency:
             return []
         t1 = self.perf()
         sigs = self.hunter.scan(t, self._recv_wall)
+        if self.pm is not None:
+            sigs = sigs + self.pm.scan(t, self.oracle.state(t))
         self.scan_lat.add((self.perf() - t1) * 1e6)
         for s in sigs:
             self._handle_signal(s, t)
+        self.arb.scan(t)
+        self._poll_arb(t)
         return sigs
 
     def step(self, t: float, force_scan: bool = False) -> List[Signal]:
@@ -156,6 +185,8 @@ class Agency:
                 self.engine.submit(payload, s, dec, t)
                 self._write("payloads", payload.as_dict())
         self.cfo.markouts.register(s, dec)
+        for tk in self.alt_trackers.values():
+            tk.register(s, dec)
         self._write("signals", {**s.as_dict(), "decision": dec.as_dict()})
         self.signals.append(s)
         if len(self.signals) > self.max_signal_keep:

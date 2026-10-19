@@ -45,12 +45,12 @@ class FeedManager:
         self.stats: Dict[str, FeedStats] = {}
 
     # ---------------------------------------------------------------- generic reconnecting runner
-    async def _run(self, name: str, url: str, on_open: Callable, handler: Callable, idxs: Optional[List[int]]):
+    async def _run(self, name: str, url: str, on_open: Callable, handler: Callable, idxs: Optional[List[int]], max_size: int = 2 ** 22):
         st = self.stats.setdefault(name, FeedStats(name))
         backoff = 0.5
         while not self.stop.is_set():
             try:
-                async with connect(url, open_timeout=15, max_size=2 ** 22, compression=None,
+                async with connect(url, open_timeout=15, max_size=max_size, compression=None,
                                    ping_interval=20, ping_timeout=20) as ws:
                     st.ws, st.connected = ws, True
                     st.t_connect = self.perf()
@@ -174,9 +174,137 @@ class FeedManager:
 
         await self._run("kraken", "wss://ws.kraken.com/v2", on_open, handler, list(idx.values()))
 
+    # ---------------------------------------------------------------- Coinbase (level2_batch -> true top of book)
+    async def coinbase(self):
+        a, book = self.a, self.a.book
+        idx = {m.symbol: i for i, m in enumerate(book.metas) if m.venue == "coinbase"}
+        if not idx:
+            return
+        perf, loads, on_quote = self.perf, orjson.loads, a.on_quote
+        books: Dict[str, dict] = {}
+
+        class Side:
+            __slots__ = ("lv", "best")
+
+            def __init__(self, is_bid):
+                self.lv, self.best = {}, None
+
+        async def on_open(ws):
+            books.clear()
+            await ws.send(orjson.dumps({"type": "subscribe", "product_ids": list(idx), "channels": ["level2_batch"]}).decode())
+
+        def top(pid):
+            b = books[pid]
+            if not b["bid"] or not b["ask"]:
+                return None
+            bb = max(b["bid"]); aa = min(b["ask"])
+            return bb, aa, b["bid"][bb], b["ask"][aa]
+
+        async def handler(ws, st):
+            async for raw in ws:
+                t = perf()
+                st.msgs += 1
+                st.last_msg = t
+                m = loads(raw)
+                ty = m.get("type")
+                pid = m.get("product_id")
+                if pid not in idx:
+                    continue
+                if ty == "snapshot":
+                    bids = {float(p): float(q) for p, q in m["bids"]}
+                    asks = {float(p): float(q) for p, q in m["asks"]}
+                    if bids and asks:                               # keep only +-2 % around the touch (bounded work per update)
+                        bmax, amin = max(bids), min(asks)
+                        bids = {p: q for p, q in bids.items() if p >= bmax * 0.98}
+                        asks = {p: q for p, q in asks.items() if p <= amin * 1.02}
+                    books[pid] = {"bid": bids, "ask": asks}
+                elif ty == "l2update" and pid in books:
+                    b = books[pid]
+                    for side, p, q in m["changes"]:
+                        d = b["bid" if side == "buy" else "ask"]
+                        p, q = float(p), float(q)
+                        if q == 0.0:
+                            d.pop(p, None)
+                        else:
+                            d[p] = q
+                else:
+                    continue
+                tp = top(pid)
+                if tp is not None:
+                    st.quotes += 1
+                    on_quote(idx[pid], t, tp[0], tp[1], tp[2], tp[3])
+
+        await self._run("coinbase", "wss://ws-feed.exchange.coinbase.com", on_open, handler, list(idx.values()), max_size=2 ** 25)
+
+    # ---------------------------------------------------------------- Hyperliquid perps (bbo)
+    async def hyperliquid(self):
+        a, book = self.a, self.a.book
+        idx = {m.symbol: i for i, m in enumerate(book.metas) if m.venue == "hyperliquid"}
+        if not idx:
+            return
+        perf, loads, on_quote = self.perf, orjson.loads, a.on_quote
+
+        async def on_open(ws):
+            for coin in idx:
+                await ws.send(orjson.dumps({"method": "subscribe", "subscription": {"type": "bbo", "coin": coin}}).decode())
+
+        async def handler(ws, st):
+            async for raw in ws:
+                t = perf()
+                st.msgs += 1
+                st.last_msg = t
+                m = loads(raw)
+                if m.get("channel") != "bbo":
+                    continue
+                d = m["data"]
+                i = idx.get(d["coin"])
+                bb = d.get("bbo")
+                if i is None or not bb or bb[0] is None or bb[1] is None:
+                    continue
+                st.quotes += 1
+                on_quote(i, t, float(bb[0]["px"]), float(bb[1]["px"]), float(bb[0]["sz"]), float(bb[1]["sz"]))
+
+        await self._run("hyperliquid", "wss://api.hyperliquid.xyz/ws", on_open, handler, list(idx.values()))
+
+    # ---------------------------------------------------------------- Deribit perps (quote.*)
+    async def deribit(self):
+        a, book = self.a, self.a.book
+        idx = {m.symbol: i for i, m in enumerate(book.metas) if m.venue == "deribit"}
+        if not idx:
+            return
+        perf, loads, on_quote = self.perf, orjson.loads, a.on_quote
+
+        async def on_open(ws):
+            await ws.send(orjson.dumps({"jsonrpc": "2.0", "id": 1, "method": "public/subscribe",
+                                        "params": {"channels": [f"quote.{s}" for s in idx]}}).decode())
+
+        async def handler(ws, st):
+            async for raw in ws:
+                t = perf()
+                st.msgs += 1
+                st.last_msg = t
+                m = loads(raw)
+                if m.get("method") != "subscription":
+                    continue
+                d = m["params"]["data"]
+                i = idx.get(d.get("instrument_name"))
+                if i is None or not d.get("best_bid_price") or not d.get("best_ask_price"):
+                    continue
+                st.quotes += 1
+                on_quote(i, t, float(d["best_bid_price"]), float(d["best_ask_price"]),
+                         float(d["best_bid_amount"]), float(d["best_ask_amount"]))
+
+        await self._run("deribit", "wss://www.deribit.com/ws/api/v2", on_open, handler, list(idx.values()))
+
     def tasks(self) -> List[asyncio.Task]:
         ts = [asyncio.create_task(self.binance(), name="feed-binance"),
               asyncio.create_task(self.gate(), name="feed-gate"),
               asyncio.create_task(self.kraken(), name="feed-kraken"),
+              asyncio.create_task(self.coinbase(), name="feed-coinbase"),
+              asyncio.create_task(self.hyperliquid(), name="feed-hyperliquid"),
+              asyncio.create_task(self.deribit(), name="feed-deribit"),
               asyncio.create_task(self._watchdog(), name="feed-watchdog")]
+        pm = getattr(self.a, "pm", None)
+        if pm is not None:
+            ts.append(asyncio.create_task(pm.feed(self), name="feed-polymarket"))
         return ts
