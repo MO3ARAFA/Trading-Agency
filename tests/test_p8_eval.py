@@ -56,3 +56,20 @@ def test_stop_counter_counts_only_the_candidate_strict_floor_passed_polymarket_f
     for r in (base, dict(base, model="trades"), dict(base, floor_ok=False), dict(base, venue="hyperliquid"), dict(base, outcome="no_fill"), dict(base, variant="B/fixed0.7"), dict(base)):
         hc._on_result(_At(), dict(r))
     assert hc.n_floor_fills == 2
+
+
+def test_regime_estimator_scales_and_classifies():
+    from quant_agency.regime_check import classify, parkinson_bps_per_sqrt_s
+    flat = [[0, "80000", "80004", "79996", "80000"]] * 20                 # 1 bp high-low per minute
+    wide = [[0, "80000", "80040", "79960", "80000"]] * 20                 # 10 bp high-low per minute
+    a, b = parkinson_bps_per_sqrt_s(flat), parkinson_bps_per_sqrt_s(wide)
+    assert b == pytest.approx(10 * a, rel=1e-6) and classify(a) == "quiet" and classify(b) != "quiet" and classify(float("nan")) == "unknown"
+
+
+def test_inspect_run_renders_without_a_summary(tmp_path):
+    import json
+    from quant_agency.inspect_run import render
+    (tmp_path / "sleeve_events.jsonl").write_text(json.dumps({"sleeve": "polymarket_b", "kind": "SLEEVE_TIGHTEN", "from_state": "NORMAL", "to_state": "TIGHTENED", "reason": "x"}) + "\n{broken")
+    (tmp_path / "trades.jsonl").write_text(json.dumps({"sleeve": "polymarket_b", "market": "pm:x", "side": 1, "entry_px": 0.4, "exit_px": 0.5, "exit_reason": "passive_fill", "net_pnl_usd": 1.0}) + "\n")
+    out = render(str(tmp_path))
+    assert "SLEEVE_TIGHTEN" in out and "polymarket_b" in out and "still going" in out

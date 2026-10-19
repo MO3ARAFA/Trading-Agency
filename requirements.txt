@@ -1,0 +1,7 @@
+numpy
+numba
+aiohttp
+uvloop
+orjson
+websockets
+pytest
