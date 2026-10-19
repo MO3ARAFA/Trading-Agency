@@ -108,6 +108,12 @@ class CEOAgent:
         self.sniper = None                       # MakerSniper, attached by the Agency
         self.snipe_epoch = -1e18
         self.snipe_strikes: Dict[str, int] = {}
+        self.mm = None                           # Phase 6 PrePositionedMM / HighConvictionSniper, attached by the Agency
+        self.hc = None
+        self.mm_epoch = -1e18
+        self.mm_strikes: Dict[str, int] = {}
+        self.b_epoch = -1e18
+        self.b_strikes: Dict[str, int] = {}
 
     # ----------------------------------------------------------------------------- KPIs
     def kpis(self, now: float) -> dict:
@@ -309,6 +315,96 @@ class CEOAgent:
                                      ev, before, {"hold_frac": sn.cfg.hold_frac}))
                 self.snipe_epoch = now
 
+    @staticmethod
+    def _cl_se(rows, key="net_bps", cluster="imp") -> float:
+        """Cluster-robust s.e. of the mean (rows sharing a BTC impulse are one observation)."""
+        x = np.array([r[key] for r in rows], dtype=float)
+        n = len(x)
+        if n < 2:
+            return 0.0
+        mu = x.mean()
+        by: Dict[object, float] = {}
+        for r, v in zip(rows, x):
+            by[r.get(cluster, id(r))] = by.get(r.get(cluster, id(r)), 0.0) + (v - mu)
+        cl = np.array(list(by.values()))
+        return float(np.sqrt((cl ** 2).sum()) / n) if len(cl) > 1 else float(x.std(ddof=1) / np.sqrt(n))
+
+    def _mm_review(self, now, out):
+        """Phase 6 Architecture A: net per inventory round trip, how often the cancel-latency window was hit, shield hold."""
+        mm = self.mm
+        if mm is None or not mm.account_results:
+            return
+        c, cc = self.cfg, self.cfo.cfg
+        for venue in ("hyperliquid", "polymarket"):
+            rows = [r for r in mm.account_results if r["venue"] == venue and r["t_end"] >= self.mm_epoch]
+            if venue in cc.mm_blocked or len(rows) < 8:
+                continue
+            nb = np.array([r["net_bps"] for r in rows])
+            se = self._cl_se(rows)
+            cw = [r for r in rows if r.get("in_shield_cancel")]
+            ev = {"venue": venue, "round_trips": len(rows), "net_bps": round(float(nb.mean()), 3), "se": round(se, 3), "shield_cancel_window_trips": len(cw),
+                  "passive_exit": round(float(np.mean([r["exit_kind"] == "passive" for r in rows])), 3)}
+            hold = mm.cfg.requote_hold_s.get(venue, 3.0)
+            if len(cw) >= 3 and len(cw) / len(rows) >= 0.25 and float(np.mean([r["net_bps"] for r in cw])) < 0 and hold < 12.0:
+                mm.cfg.requote_hold_s[venue] = hold + 1.5
+                out.append(self._log(now, "MM_EXTEND_SHIELD", venue,
+                                     f"{len(cw)}/{len(rows)} round trips were filled inside a *shield* cancel-latency window (net {np.mean([r['net_bps'] for r in cw]):+.1f}bps): "
+                                     f"staying off the vulnerable side {hold:g}→{mm.cfg.requote_hold_s[venue]:g}s after an impulse", ev,
+                                     {"requote_hold_s": hold}, {"requote_hold_s": mm.cfg.requote_hold_s[venue]}))
+                self.mm_epoch = now
+                continue
+            unit = 1.0 if venue == "hyperliquid" else 100.0
+            if float(nb.mean()) + se < -0.5 * unit * (1.0 if venue == "hyperliquid" else 1.5):
+                base = dict(cc.mm_adverse_bps)
+                step = 0.3 if venue == "hyperliquid" else 50.0
+                at_cap = base[venue] >= 400.0 - 1e-9
+                if not at_cap:
+                    self.cfo.set_mm_base(venue, base[venue] + step)
+                self.mm_strikes[venue] = self.mm_strikes.get(venue, 0) + (3 if at_cap else 1)
+                if self.mm_strikes[venue] >= 3:
+                    cc.mm_blocked = tuple(set(cc.mm_blocked) | {venue})
+                    out.append(self._log(now, "MM_DISABLE_VENUE", venue,
+                                         f"quote-maker net {nb.mean():+.1f}±{se:.1f}bps per round trip after {self.mm_strikes[venue]} corrections; pulling all quotes on this venue",
+                                         ev, {"enabled": True}, {"enabled": False}))
+                else:
+                    out.append(self._log(now, "MM_RAISE_ADVERSE_BUFFER", venue,
+                                         f"quote-maker net {nb.mean():+.1f}±{se:.1f}bps per round trip < tolerance: CFO adverse buffer {base[venue]:g}→{cc.mm_adverse_bps[venue]:g}bps "
+                                         f"(quotes only on wider spreads)", ev, {"buffer": base[venue]}, {"buffer": cc.mm_adverse_bps[venue]}))
+                self.mm_epoch = now
+
+    def _b_review(self, now, out):
+        """Phase 6 Architecture B: net per fired snipe; raise the absolute floor when fired trades lose, disable at the cap."""
+        hc = self.hc
+        if hc is None or not hc.account_results:
+            return
+        cc = self.cfo.cfg
+        for venue in ("hyperliquid", "polymarket"):
+            rows = [r for r in hc.account_results if r["venue"] == venue and r["outcome"] == "filled" and r["t_end"] >= self.b_epoch]
+            if venue in cc.b_blocked or len(rows) < 5:
+                continue
+            nb = np.array([r["net_bps"] for r in rows])
+            se = self._cl_se(rows, cluster="imp")
+            unit = 1.0 if venue == "hyperliquid" else 100.0
+            ev = {"venue": venue, "fills": len(rows), "net_bps": round(float(nb.mean()), 3), "se": round(se, 3), "floor_mult": cc.b_floor_mult,
+                  "scratched": sum(1 for r in rows if r.get("scratched")), "passive_exit": round(float(np.mean([r["exit_kind"] == "passive" for r in rows])), 3)}
+            if float(nb.mean()) + se < -0.5 * unit * (1.0 if venue == "hyperliquid" else 1.5):
+                before = {"b_floor_mult": cc.b_floor_mult}
+                at_cap = cc.b_floor_mult >= 4.0 - 1e-9
+                if not at_cap:
+                    cc.b_floor_mult = round(min(cc.b_floor_mult + 0.5, 4.0), 2)
+                    self.cfo.directive_log.append({"directive": {"b_floor_mult": cc.b_floor_mult}})
+                self.b_strikes[venue] = self.b_strikes.get(venue, 0) + (3 if at_cap else 1)
+                if self.b_strikes[venue] >= 3:
+                    cc.b_blocked = tuple(set(cc.b_blocked) | {venue})
+                    out.append(self._log(now, "B_DISABLE_VENUE", venue,
+                                         f"high-conviction sniper net {nb.mean():+.1f}±{se:.1f}bps per fill with the floor at {cc.b_floor_mult:g}x; switching off for this venue",
+                                         ev, {"enabled": True}, {"enabled": False}))
+                else:
+                    out.append(self._log(now, "B_RAISE_FLOOR", venue,
+                                         f"fired snipes net {nb.mean():+.1f}±{se:.1f}bps per fill < tolerance: absolute floor {before['b_floor_mult']:g}x→{cc.b_floor_mult:g}x "
+                                         f"(spread+fees)", ev, before, {"b_floor_mult": cc.b_floor_mult}))
+                self.b_epoch = now
+
     def _tune_hunter(self, now, k, out):
         c, hc = self.cfg, self.hunter.cfg
         before = {"z_thr": hc.z_thr, "window_mult": hc.window_mult}
@@ -450,6 +546,8 @@ class CEOAgent:
         self._quarantine(now, k, out)
         self._quarantine_arbs(now, out)
         self._snipe_review(now, out)
+        self._mm_review(now, out)
+        self._b_review(now, out)
         self._audit_cfo(now, k, out)
         self._tune_hunter(now, k, out)
         self._escalate(now, k, verdict, reasons, out)

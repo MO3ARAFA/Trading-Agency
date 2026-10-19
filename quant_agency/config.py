@@ -115,6 +115,19 @@ class CFOConfig:
     snipe_penny: bool = True
     max_snipe_open: int = 6
     snipe_blocked: tuple = ()            # venues the CEO has switched off
+    # ---- Phase 6 Architecture A (pre-positioned quote maker)
+    mm_enabled: bool = True
+    mm_adverse_bps: dict = field(default_factory=lambda: {"hyperliquid": 0.3, "polymarket": 60.0})
+    mm_min_ev_bps: float = 0.5           # minimum modelled round-trip net (bps of price) to quote a market at all
+    mm_stop_bps: dict = field(default_factory=lambda: {"hyperliquid": 6.0, "polymarket": 300.0})
+    max_mm_open: int = 6                 # concurrent inventory-holding quoters in the account
+    mm_blocked: tuple = ()
+    # ---- Phase 6 Architecture B (high-conviction taker sniper)
+    b_enabled: bool = True
+    b_floor_mult: float = 1.5            # hard absolute floor: |predicted move| >= mult x (spread + taker-in + maker-out fee)  (CEO-tunable)
+    b_min_ev_bps: float = 0.5
+    max_b_open: int = 4
+    b_blocked: tuple = ()
 
 
 @dataclass
@@ -202,6 +215,48 @@ class SnipeConfig:
 
 
 @dataclass
+class MMConfig:
+    enabled: bool = True
+    venues: Tuple[str, ...] = ("hyperliquid", "polymarket")
+    order_latency_s: float = 0.15
+    cancel_latency_s: float = 0.15
+    calm_z: float = 1.0                  # quote only while every fast-horizon |BTC Z| is below this
+    impulse_z: float = 2.0               # cancel the vulnerable side at this Z (any fast horizon)
+    min_abs_bps: float = 0.3             # ... and at least this many bps of actual BTC move
+    fast_horizons_s: Tuple[float, ...] = (0.25, 1.0, 3.0)
+    fast_halflife_s: float = 120.0
+    requote_hold_s: dict = field(default_factory=lambda: {"hyperliquid": 3.0, "polymarket": 6.0})   # stay off the vulnerable side this long (CEO-tunable)
+    min_rest_s: float = 1.0              # min age before a mispriced resting quote is re-pegged (no churn)
+    quote_notional: dict = field(default_factory=lambda: {"hyperliquid": 200.0, "polymarket": 25.0})
+    hold_s: dict = field(default_factory=lambda: {"hyperliquid": 20.0, "polymarket": 30.0})        # inventory time stop (taker flatten)
+    stop_bps: dict = field(default_factory=lambda: {"hyperliquid": 6.0, "polymarket": 300.0})      # adverse stop on inventory
+    stop_ticks: float = 3.0              # prediction markets: adverse stop in price ticks (a % stop is sub-tick at low prices)
+    taker_slack_bps: float = 1.0
+    pm_mid_lo: float = 0.10
+    pm_mid_hi: float = 0.90
+    expiry_pull_s: float = 180.0         # no new quotes inside this window before expiry
+    expiry_flat_s: float = 90.0          # inventory is flattened before this (CFO entry guard is 60 s)
+    shadow_models: Tuple[str, ...] = ("strict", "depletion", "trades")
+    account_model: str = "strict"
+
+
+@dataclass
+class BConfig:
+    enabled: bool = True
+    venues: Tuple[str, ...] = ("hyperliquid", "polymarket")
+    stall_after_s: dict = field(default_factory=lambda: {"hyperliquid": 1.5, "polymarket": 3.0})   # earliest a stall is declared after entry
+    stall_frac: float = 0.3              # venue has done < 30 % of the credited gap ...
+    hold_frac: float = 0.4               # ... AND < 40 % of the BTC impulse is still intact  => scratch
+    scratch_work_s: float = 3.0          # passive scratch at the touch before the taker fallback
+    rev_stop_bps: float = 1.0            # genuine reversal: BTC back through the pre-impulse level by this much (and position adverse)
+    ref_floor_mult: float = 1.5          # fixed floor used to *tag* shadow rows (the CEO moves only the ACCOUNT's live floor)
+    shadow_models: Tuple[str, ...] = ("strict", "depletion", "trades")
+    account_model: str = "strict"
+    hl_notional: float = 200.0
+    pm_notional: float = 50.0
+
+
+@dataclass
 class AgencyConfig:
     oracle: OracleConfig = field(default_factory=OracleConfig)
     watchers: WatcherConfig = field(default_factory=WatcherConfig)
@@ -212,6 +267,8 @@ class AgencyConfig:
     arb: ArbConfig = field(default_factory=ArbConfig)
     poly: PolyConfig = field(default_factory=PolyConfig)
     snipe: SnipeConfig = field(default_factory=SnipeConfig)
+    mm: MMConfig = field(default_factory=MMConfig)
+    hc: BConfig = field(default_factory=BConfig)
 
     def to_dict(self):
         return asdict(self)

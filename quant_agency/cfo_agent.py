@@ -189,6 +189,7 @@ class CFOAgent:
         self.directive_log: List[dict] = []
         self.maker_attempts = 0
         self.maker_fills = 0
+        self.poly_min_ttl = 60.0                       # pre-expiry entry guard (the Agency sets it from PolyConfig)
         self.markouts = MarkoutTracker(book, c.markout_horizons_s, c.latency_s, c.fee_taker_bps)
 
     # ------------------------------------------------------------------ directives (CEO -> CFO)
@@ -256,6 +257,13 @@ class CFOAgent:
         # maker entry (earn half spread, exit taker): spread cost nets ~0, pay adverse-selection penalty
         slip = 0.25 * spread + drift
         return 0.0, maker_fee_bps(meta, c.fee_maker_bps) + fee_t, slip
+
+    def _risk_stop_idx(self, idx: int, side: int, price: float, stop_bps: float) -> float:
+        if self.book.metas[idx].kind != "prediction":
+            return stop_bps
+        p = min(max(price, 1e-3), 1.0 - 1e-3)
+        worst = p if side > 0 else (1.0 - p)
+        return max(stop_bps, 0.5 * worst / p * BPS)
 
     def _risk_stop_bps(self, sig: Signal, price: float, stop_bps: float) -> float:
         """Effective stop distance used for the risk budget.
@@ -453,6 +461,161 @@ class CFOAgent:
         self.reasons["ok"] += 1
         self.cohorts["approved"] += 1
         return dec
+
+    # ------------------------------------------------------------------ Phase 6 — Architecture A (quote maker)
+    def quote_econ(self, idx: int, spread_bps: float) -> Tuple[float, float, float]:
+        """(round-trip net bps, per-side maker fee bps, adverse buffer bps) for a quote at the touch."""
+        c = self.cfg
+        meta = self.book.metas[idx]
+        fee = maker_fee_bps(meta, c.fee_maker_bps)
+        buf = max(c.mm_adverse_bps.get(meta.venue, 0.0), c.snipe_adverse_hs_frac * spread_bps / 2.0)
+        return spread_bps - 2.0 * fee - buf - c.safety_hurdle_bps, fee, buf
+
+    def evaluate_quote(self, idx: int, now: float, mid: float, spread_bps: float, n_open: int = 0, ttl_s: float = 1e18) -> Decision:
+        """Gate + size a *two-sided resting quote* on market ``idx`` (called while flat, before (re)posting).
+
+            round-trip net = spread - 2 x maker fee - adverse buffer - hurdle      [both legs maker-filled, spread captured]
+            adverse buffer = max(venue base (CEO/learned), 0.75 x half-spread)      [a resting quote is hit when it is *wrong*]
+
+        Sizing uses the binary worst-case loss per share (long p, short 1-p) with a 50 % gap inside one latency, so the quote can
+        never be sized by notional alone (the Phase 5 live drawdown). Inventory is capped at one clip per market.
+        """
+        c = self.cfg
+        meta = self.book.metas[idx]
+        net, fee, buf = self.quote_econ(idx, spread_bps)
+        dec = Decision(approved=False, reason="", mode="quote", net_edge_bps=net, net_edge_maker_bps=net, spread_bps=spread_bps, fee_bps=2.0 * fee,
+                       slip_bps=buf, hurdle_bps=c.safety_hurdle_bps)
+
+        def reject(reason: str, cohort: str = "rejected_other") -> Decision:
+            dec.reason, dec.cohort = reason, cohort
+            self.reasons["mm_" + reason] += 1
+            return dec
+
+        if not c.mm_enabled or meta.venue in c.mm_blocked:
+            return reject("venue_disabled")
+        if self.halted:
+            return reject("halted")
+        if self.is_blacklisted(meta.id, now):
+            return reject("quarantined")
+        if meta.kind == "prediction" and ttl_s < self.poly_min_ttl:
+            return reject("near_expiry")
+        if net < c.mm_min_ev_bps:
+            return reject("spread_too_thin_for_fees", "rejected_edge")
+        if n_open >= c.max_mm_open:
+            return reject("in_position")
+        eq = self.equity
+        stop_bps = c.mm_stop_bps.get(meta.venue, 6.0)
+        risk_stop = max(self._risk_stop_idx(idx, 1, mid, stop_bps), self._risk_stop_idx(idx, -1, mid, stop_bps))
+        caps = {"risk": c.risk_per_trade_frac * eq / (risk_stop / BPS), "trade": c.max_notional_frac * eq,
+                "market": c.max_market_frac * eq - abs(self.exposure.get(meta.id, 0.0)),
+                "gross": c.max_gross_frac * eq - sum(abs(v) for v in self.exposure.values())}
+        notional = max(min(caps.values()), 0.0) * c.size_mult
+        if notional <= 0.0:
+            return reject("exposure_cap")
+        if notional < max(c.min_notional, meta.min_notional):
+            return reject("size_below_min")
+        dec.approved, dec.reason, dec.cohort = True, "ok", "approved"
+        dec.notional, dec.qty, dec.stop_bps = notional, notional / max(mid, 1e-12), stop_bps
+        self.reasons["mm_ok"] += 1
+        return dec
+
+    def on_mm_result(self, r: dict) -> None:
+        """Learn the adverse buffer from account round-trips (realised shortfall vs the spread the model expected)."""
+        if r["outcome"] != "filled":
+            return
+        ew = getattr(self, "_mm_ew", {})
+        short = max(r.get("pred_net_bps", 0.0) - r["net_bps"], 0.0)
+        ew[r["venue"]] = 0.8 * ew.get(r["venue"], 0.0) + 0.2 * short
+        self._mm_ew = ew
+        base = getattr(self, "_mm_base", None)
+        if base is None:
+            base = self._mm_base = dict(self.cfg.mm_adverse_bps)
+        self.cfg.mm_adverse_bps[r["venue"]] = min(max(base.get(r["venue"], 0.0), ew[r["venue"]]), 400.0)
+
+    def set_mm_base(self, venue: str, val: float) -> None:
+        base = getattr(self, "_mm_base", None)
+        if base is None:
+            base = self._mm_base = dict(self.cfg.mm_adverse_bps)
+        base[venue] = max(val, 0.0)
+        ew = getattr(self, "_mm_ew", {}).get(venue, 0.0)
+        self.cfg.mm_adverse_bps[venue] = min(max(base[venue], ew), 400.0)
+        self.directive_log.append({"directive": {"mm_adverse_base": (venue, val)}})
+
+    # ------------------------------------------------------------------ Phase 6 — Architecture B (high-conviction taker sniper)
+    def b_floor(self, sig: Signal, mult: Optional[float] = None) -> Tuple[float, float, float]:
+        """(predicted move bps, floor bps, ratio). Hard rule: never fire a taker unless the predicted absolute move clears
+        ``b_floor_mult`` x (spread + taker entry fee + maker exit fee) — all in bps of the entry price."""
+        c = self.cfg
+        meta = self.book.metas[sig.idx]
+        px = sig.ask if sig.side > 0 else sig.bid
+        cost = sig.spread_bps + taker_fee_bps(meta, px, c.fee_taker_bps) + maker_fee_bps(meta, c.fee_maker_bps)
+        pred = c.edge_credit * abs(sig.gap_bps)
+        floor = (c.b_floor_mult if mult is None else mult) * cost
+        return pred, floor, (pred / floor if floor > 0 else 0.0)
+
+    def evaluate_sniper_b(self, sig: Signal, now: float, has_position: bool = False, n_open: int = 0) -> Decision:
+        """Taker-in / maker-out. Absolute floor first (the rule), then the usual net-edge / risk sizing on top."""
+        c = self.cfg
+        meta = self.book.metas[sig.idx]
+        self.n_eval += 1
+        pred, floor, ratio = self.b_floor(sig)
+        px = sig.ask if sig.side > 0 else sig.bid
+        fee_in = taker_fee_bps(meta, px, c.fee_taker_bps)
+        fee_mk = maker_fee_bps(meta, c.fee_maker_bps)
+        p_xm = c.snipe_p_exit_maker
+        hs = sig.spread_bps / 2.0
+        tp_bps = c.tp_capture * pred
+        # entry at the touch (pay the half-spread vs mid); passive exit at the converged touch pays none, a taker fallback pays the half-spread
+        net = tp_bps - hs - fee_in - p_xm * fee_mk - (1.0 - p_xm) * (hs + taker_fee_bps(meta, px, c.fee_taker_bps)) - c.safety_hurdle_bps
+        dec = Decision(approved=False, reason="", mode="b_snipe", net_edge_bps=net, net_edge_taker_bps=net, gap_credit_bps=pred, spread_bps=sig.spread_bps,
+                       fee_bps=fee_in + fee_mk, slip_bps=floor, hurdle_bps=c.safety_hurdle_bps, entry_mode="taker")
+
+        def reject(reason: str, cohort: str = "rejected_other") -> Decision:
+            dec.reason, dec.cohort = reason, cohort
+            self.reasons["b_" + reason] += 1
+            return dec
+
+        if meta.venue in c.b_blocked or not c.b_enabled:
+            return reject("venue_disabled")
+        if self.halted:
+            return reject("halted")
+        if self.is_blacklisted(sig.market, now):
+            return reject("quarantined")
+        if sig.side < 0 and not c.allow_short:
+            return reject("short_disabled")
+        if pred < floor:
+            return reject("below_absolute_floor", "rejected_edge")
+        if has_position or n_open >= c.max_b_open:
+            return reject("in_position")
+        if net <= 0.0 or net < c.b_min_ev_bps:
+            return reject("net_edge_below_hurdle", "rejected_edge")
+        eq = self.equity
+        stop_bps = max(c.stop_mult * sig.sigma_res_bps, c.min_stop_bps)
+        risk_stop = self._risk_stop_bps(sig, px, stop_bps)
+        hold = min(max(3.0 * max(sig.window_s, 3.0), c.time_stop_min_s), c.time_stop_max_s)
+        sigma_trade = max(sig.sigma_res_bps * 0.5, 1.0)
+        kelly = c.kelly_fraction * (net / BPS) / (sigma_trade / BPS) ** 2 * eq
+        caps = {"kelly": kelly, "risk": c.risk_per_trade_frac * eq / (risk_stop / BPS), "trade": c.max_notional_frac * eq,
+                "market": c.max_market_frac * eq - abs(self.exposure.get(sig.market, 0.0)),
+                "gross": c.max_gross_frac * eq - sum(abs(v) for v in self.exposure.values())}
+        notional = max(min(caps.values()), 0.0) * c.size_mult
+        if notional <= 0.0:
+            return reject("exposure_cap")
+        if notional < max(c.min_notional, meta.min_notional):
+            return reject("size_below_min")
+        dec.approved, dec.reason, dec.cohort = True, "ok", "approved"
+        dec.notional, dec.qty = notional, notional / max(px, 1e-12)
+        dec.tp_bps, dec.stop_bps, dec.time_stop_s = tp_bps, stop_bps, hold
+        self.n_approved += 1
+        self.reasons["b_ok"] += 1
+        return dec
+
+    def on_b_result(self, r: dict) -> None:
+        if r["outcome"] != "filled":
+            return
+        a = 0.15
+        c = self.cfg
+        c.snipe_p_exit_maker = min(max((1 - a) * c.snipe_p_exit_maker + a * float(r.get("exit_kind") == "passive"), 0.05), 0.95)
 
     def set_snipe_base(self, venue: str, val: float) -> None:
         """CEO directive: raise/lower the venue's base adverse-selection buffer (survives the CFO's online learning)."""

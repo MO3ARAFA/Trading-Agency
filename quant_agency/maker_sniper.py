@@ -112,6 +112,7 @@ class Attempt:
         self.entry: Optional[Order] = None
         self.exit: Optional[Order] = None
         self.taker_exit: Optional[Order] = None
+        self.exit_prev: List[Order] = []              # cancelled-but-still-live earlier exit orders (Phase 6 scratch/re-peg)
         self.exit_reason = ""
         self.entry_fill_t: Optional[float] = None
         self.fill_mid: float = 0.0
@@ -144,6 +145,18 @@ class Attempt:
     def _fee(self, maker: bool, px: float) -> float:
         c = self.sn.cfo.cfg
         return maker_fee_bps(self.meta, c.fee_maker_bps) if maker else taker_fee_bps(self.meta, px, c.fee_taker_bps)
+
+    def _exits(self) -> List[Order]:
+        return self.exit_prev + ([self.exit] if self.exit is not None else [])
+
+    def _exit_filled(self) -> float:
+        return sum(o.filled for o in self._exits())
+
+    def _expire_prev(self, t: float) -> None:
+        for p in self.exit_prev:
+            if p.state == "cancel_pending" and p.cancel_eff is not None and p.cancel_eff <= t:
+                p.state = "cancelled" if p.remaining > 1e-12 else "filled"
+                p.cancel_eff = None
 
     # ------------------------------------------------------------------ entry
     def _place_entry(self) -> None:
@@ -403,7 +416,14 @@ class Attempt:
             self._book_fill_rules(o, t, q)
             self._after_fill(o, before, t)
         if self.state == "exit":
-            self._check_stop_tp(t, q)
+            self._expire_prev(t)
+            for p in self.exit_prev:
+                if p.state in ("resting", "cancel_pending") and p.tif == "ALO":
+                    before = p.filled
+                    self._book_fill_rules(p, t, q)
+                    self._after_fill(p, before, t)
+            if self.state != "done":
+                self._check_stop_tp(t, q)
 
     def on_trade(self, t: float, px: float, sz: float, aggressor: int) -> None:
         if self.state == "done":
@@ -416,6 +436,13 @@ class Attempt:
             before = o.filled
             self._trade_fill_rules(o, t, px, sz, aggressor)
             self._after_fill(o, before, t)
+        if self.state == "exit":
+            self._expire_prev(t)
+            for p in self.exit_prev:
+                if p.state in ("resting", "cancel_pending") and p.tif == "ALO":
+                    before = p.filled
+                    self._trade_fill_rules(p, t, px, sz, aggressor)
+                    self._after_fill(p, before, t)
 
     def _after_fill(self, o: Order, before: float, t: float) -> None:
         if o.filled <= before:
@@ -469,12 +496,13 @@ class Attempt:
             return
         self.exit_reason = self.exit_reason or reason
         x = self.exit
-        if x is not None and x.state == "resting":
-            x.state = "cancel_pending"
-            x.cancel_t = t
-            x.cancel_eff = t + self.cfg.cancel_latency_s
-            x.cancel_reason = reason
-        rem = self.qty_pos - (x.filled if x is not None else 0.0)
+        for xo in self._exits():
+            if xo.state == "resting":
+                xo.state = "cancel_pending"
+                xo.cancel_t = t
+                xo.cancel_eff = t + self.cfg.cancel_latency_s
+                xo.cancel_reason = reason
+        rem = self.qty_pos - self._exit_filled()
         if rem <= 1e-12:
             return
         self.taker_exit = Order("exit", -self.side, 0.0, rem, "IOC", t, t if immediate else t + self.cfg.order_latency_s)
@@ -488,8 +516,7 @@ class Attempt:
         if q is None:
             return
         _, bid, ask, bq, aq = q
-        x = self.exit
-        rem = self.qty_pos - (x.filled if x is not None else 0.0)         # passive fills before arrival reduce the taker size
+        rem = self.qty_pos - self._exit_filled()                          # passive fills before arrival reduce the taker size
         if rem <= 1e-12:
             tx.state = "done"
             self._maybe_close(t)
@@ -517,10 +544,13 @@ class Attempt:
                 self._send_taker_exit(t, "take_profit")
 
     def _maybe_close(self, t: float) -> None:
-        x, tx = self.exit, self.taker_exit
-        done_qty = (x.filled if x is not None else 0.0) + (tx.filled if tx is not None else 0.0)
+        tx = self.taker_exit
+        done_qty = self._exit_filled() + (tx.filled if tx is not None else 0.0)
         if done_qty >= self.qty_pos - 1e-9:
             self._finish(t, "filled")
+
+    def extra_row(self) -> dict:
+        return {}
 
     # ------------------------------------------------------------------ result
     def _finish(self, t: float, outcome: str, why: str = "") -> None:
@@ -533,31 +563,34 @@ class Attempt:
              "mid0": self.mid0, "shield_cancel": self.shield_cancelled, "fill_during_cancel": self.fill_during_cancel,
              "notional": self.notional, "pred_net_bps": self.pred_net}
         if outcome == "filled" and self.qty_pos > 0:
-            e, x, tx = self.entry, self.exit, self.taker_exit
+            e, tx = self.entry, self.taker_exit
+            xs = self._exits()
             qty = self.qty_pos
             ent = e.fill_value / e.filled
-            ex_val = (x.fill_value if x is not None else 0.0) + (tx.fill_value if tx is not None else 0.0)
-            ex_qty = (x.filled if x is not None else 0.0) + (tx.filled if tx is not None else 0.0)
+            x_val, x_qty = sum(o.fill_value for o in xs), sum(o.filled for o in xs)
+            ex_val = x_val + (tx.fill_value if tx is not None else 0.0)
+            ex_qty = x_qty + (tx.filled if tx is not None else 0.0)
             exp = ex_val / ex_qty if ex_qty > 0 else ent
             entry_maker = e.tif == "ALO"
             f_in = self._fee(entry_maker, ent) * ent * qty / BPS
             f_out = 0.0
-            if x is not None and x.filled > 0:
-                f_out += self._fee(True, x.fill_value / x.filled) * x.fill_value / BPS
+            if x_qty > 0:
+                f_out += self._fee(True, x_val / x_qty) * x_val / BPS
             if tx is not None and tx.filled > 0:
                 f_out += self._fee(False, tx.fill_value / tx.filled) * tx.fill_value / BPS
             gross = self.side * (exp - ent) * qty
             net = gross - f_in - f_out
             fill_t = self.entry_fill_t or t
             mk5 = self.sn.mid_at(self.i, fill_t + 5.0)
-            exit_kind = ("passive" if (x is not None and x.filled > 0 and (tx is None or tx.filled == 0)) else
-                         ("mixed" if (x is not None and x.filled > 0) else "taker"))
+            exit_kind = ("passive" if (x_qty > 0 and (tx is None or tx.filled == 0)) else
+                         ("mixed" if x_qty > 0 else "taker"))
             r.update({"entry_px": ent, "exit_px": exp, "qty": qty, "fill_t": fill_t, "wait_s": fill_t - self.t0, "fees_usd": f_in + f_out,
                       "gross_usd": gross, "net_usd": net, "gross_bps": gross / (ent * qty) * BPS, "net_bps": net / (ent * qty) * BPS,
                       "exit_kind": exit_kind, "exit_reason": self.exit_reason or ("passive_fill" if exit_kind == "passive" else "exit"),
                       "hold_s": t - fill_t, "entry_maker": entry_maker,
                       "markout5_bps": (self.side * (mk5 - ent) / ent * BPS) if np.isfinite(mk5) else float("nan"),
                       "net_cents": net / qty * 100.0, "gross_cents": gross / qty * 100.0})
+        r.update(self.extra_row())
         self.result = r
         self.sn._on_result(self, r)
 

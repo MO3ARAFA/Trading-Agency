@@ -51,10 +51,13 @@ class Agency:
         self.oracle = BtcOracle(self.cfg.oracle)
         self.hunter = InefficiencyHunter(self.book, self.oracle, self.cfg.hunter)
         self.cfo = CFOAgent(self.book, self.cfg.cfo)
+        self.cfo.poly_min_ttl = self.cfg.poly.min_ttl_s
         self.engine = ExecutionEngine(self.book, self.cfo, self.cfg.exec)
         self.arb = CrossVenueArb(self.book, self.cfo, self.cfg.arb)
         self.pm = None                            # set by attach_polymarket()
         self.sniper = None                        # set by attach_sniper()
+        self.mm = None                            # Phase 6 Architecture A, set by attach_mm()
+        self.hc = None                            # Phase 6 Architecture B, set by attach_hc()
         self.n_mkt_trades = 0
         # latency-sensitivity shadow trackers: same signals, different assumed order latency (does the edge survive speed?)
         self.alt_trackers = {lat: MarkoutTracker(self.book, self.cfg.cfo.markout_horizons_s, lat, self.cfg.cfo.fee_taker_bps)
@@ -88,6 +91,14 @@ class Agency:
         self.sniper = sniper
         self.ceo.sniper = sniper
 
+    def attach_mm(self, mm) -> None:
+        self.mm = mm
+        self.ceo.mm = mm
+
+    def attach_hc(self, hc) -> None:
+        self.hc = hc
+        self.ceo.hc = hc
+
     def start_recording(self) -> None:
         self.tape = tuple(array("d") for _ in range(6))
 
@@ -114,6 +125,10 @@ class Agency:
             self.engine.on_quote(i, t)
             if self.sniper is not None:
                 self.sniper.on_quote(i, t, bid, ask, bq, aq)
+            if self.mm is not None:
+                self.mm.on_quote(i, t, bid, ask, bq, aq)
+            if self.hc is not None:
+                self.hc.on_quote(i, t, bid, ask, bq, aq)
         self.last_t = t
 
     def on_market_trade(self, i: int, t: float, price: float, size: float, aggressor: int) -> None:
@@ -124,6 +139,10 @@ class Agency:
         self.n_mkt_trades += 1
         if self.sniper is not None:
             self.sniper.on_trade(i, t, price, size, aggressor)
+        if self.mm is not None:
+            self.mm.on_trade(i, t, price, size, aggressor)
+        if self.hc is not None:
+            self.hc.on_trade(i, t, price, size, aggressor)
 
     def on_trade(self, t: float, price: float, qty: float, buyer_is_maker: bool) -> None:
         tp = self.tape
@@ -152,12 +171,20 @@ class Agency:
             self._write("trades", tr.as_dict())
         self.arb.scan(t)                                                   # also scanned on the BTC path; 10 ms internal throttle
         self._poll_arb(t)
-        if self.sniper is not None:
-            self.sniper.poll(t, float(self.oracle.micro))
+        self._poll_engines(t)
         self.ceo.maybe_review(t)
         if self.cfo.flatten_requested:
             self.engine.flatten_all(t, "breaker_flatten")
             self.cfo.flatten_requested = False
+
+    def _poll_engines(self, t: float) -> None:
+        S = float(self.oracle.micro)
+        if self.sniper is not None:
+            self.sniper.poll(t, S)
+        if self.mm is not None:
+            self.mm.poll(t, S)
+        if self.hc is not None:
+            self.hc.poll(t, S)
 
     def _poll_arb(self, t: float) -> None:
         for tr in self.arb.poll(t):
@@ -181,8 +208,7 @@ class Agency:
             self._handle_signal(s, t)
         self.arb.scan(t)
         self._poll_arb(t)
-        if self.sniper is not None:
-            self.sniper.poll(t, float(self.oracle.micro))
+        self._poll_engines(t)
         return sigs
 
     def step(self, t: float, force_scan: bool = False) -> List[Signal]:
@@ -193,6 +219,20 @@ class Agency:
     def _handle_signal(self, s: Signal, t: float) -> None:
         meta = self.book.metas[s.idx]
         sn = self.sniper
+        hc = self.hc
+        if hc is not None and hc.enabled and hc.eligible(s.idx) and self.cfo.cfg.b_enabled:
+            S = float(self.oracle.micro)
+            dec = self.cfo.evaluate_sniper_b(s, t, has_position=hc.has_position(s.idx), n_open=len(hc.account_open))
+            s.decision = dec
+            hc.on_signal(s, S, dec)
+            if self.mm is not None:
+                self.mm.on_signal(s, S, dec)
+            self.cfo.markouts.register(s, dec)
+            for tk in self.alt_trackers.values():
+                tk.register(s, dec)
+            self._write("signals", {**s.as_dict(), "decision": dec.as_dict()})
+            self.signals.append(s)
+            return
         if sn is not None and sn.enabled and sn.eligible(s.idx) and self.cfo.cfg.snipe_enabled and self.cfo.cfg.mode_policy != "taker_only":
             dec = self.cfo.evaluate_snipe(s, t, has_position=sn.has_position(s.idx), n_open=len(sn.account_open))
             s.decision = dec
