@@ -58,6 +58,7 @@ class Agency:
         self.sniper = None                        # set by attach_sniper()
         self.mm = None                            # Phase 6 Architecture A, set by attach_mm()
         self.hc = None                            # Phase 6 Architecture B, set by attach_hc()
+        self.sleeves = None                       # Phase 7 isolated per-venue risk sleeves, set by attach_sleeves()
         self.n_mkt_trades = 0
         # latency-sensitivity shadow trackers: same signals, different assumed order latency (does the edge survive speed?)
         self.alt_trackers = {lat: MarkoutTracker(self.book, self.cfg.cfo.markout_horizons_s, lat, self.cfg.cfo.fee_taker_bps)
@@ -95,9 +96,12 @@ class Agency:
         self.mm = mm
         self.ceo.mm = mm
 
-    def attach_hc(self, hc) -> None:
+    def attach_hc(self, hc, govern: bool = True) -> None:
         self.hc = hc
-        self.ceo.hc = hc
+        self.ceo.hc = hc if govern else None            # Phase 7: the sleeves govern B themselves; the global CEO must not touch it
+
+    def attach_sleeves(self, sleeves) -> None:
+        self.sleeves = sleeves
 
     def start_recording(self) -> None:
         self.tape = tuple(array("d") for _ in range(6))
@@ -172,6 +176,9 @@ class Agency:
         self.arb.scan(t)                                                   # also scanned on the BTC path; 10 ms internal throttle
         self._poll_arb(t)
         self._poll_engines(t)
+        if self.sleeves is not None:
+            for ev in self.sleeves.review(t):
+                self._write("sleeve_events", ev.as_dict())
         self.ceo.maybe_review(t)
         if self.cfo.flatten_requested:
             self.engine.flatten_all(t, "breaker_flatten")
@@ -222,7 +229,10 @@ class Agency:
         hc = self.hc
         if hc is not None and hc.enabled and hc.eligible(s.idx) and self.cfo.cfg.b_enabled:
             S = float(self.oracle.micro)
-            dec = self.cfo.evaluate_sniper_b(s, t, has_position=hc.has_position(s.idx), n_open=len(hc.account_open))
+            cfo_b = hc.cfo_for(s.idx)                                  # the venue's isolated sleeve (Phase 7) or the shared book (Phase 6)
+            venue_b = meta.venue
+            n_open_b = sum(1 for k in hc.account_open if self.book.metas[k].venue == venue_b) if hc.sleeves is not None else len(hc.account_open)
+            dec = cfo_b.evaluate_sniper_b(s, t, has_position=hc.has_position(s.idx), n_open=n_open_b)
             s.decision = dec
             hc.on_signal(s, S, dec)
             if self.mm is not None:

@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 from .agency import Agency
 from .config import AgencyConfig
 from .market_watchers import MarketMeta, cross_venue_metas, discover_binance_universe
-from .telemetry import build_report, build_report_p4, build_report_p5, build_report_p6, summary_json
+from .telemetry import build_report, build_report_p4, build_report_p5, build_report_p6, build_report_p7, summary_json
 
 
 def parse():
@@ -45,6 +45,9 @@ def parse():
     p.add_argument("--pm-work-s", type=float, default=None)
     p.add_argument("--snipe-model", default=None, help="fill model of the CFO-accounted attempt: strict|depletion|trades")
     p.add_argument("--phase6", action="store_true", help="Architecture A (pre-positioned quote maker + oracle cancel-shield) and B (high-conviction taker sniper) side by side")
+    p.add_argument("--phase7", action="store_true", help="Pure Architecture B on isolated per-venue risk sleeves (Architecture A shelved)")
+    p.add_argument("--b-exit", default=None, help="exit policy of the ACCOUNT: fixed0.7|fixed1.0|wide1.5|wide2.0|adaptive|trail")
+    p.add_argument("--sleeve-capital", type=float, default=None)
     p.add_argument("--calm-z", type=float, default=None, help="A: quote only while every fast-horizon |BTC Z| is below this")
     p.add_argument("--impulse-z", type=float, default=None, help="A: cancel the vulnerable side at this Z")
     p.add_argument("--b-floor", type=float, default=None, help="B: absolute floor multiple of (spread + taker-in + maker-out fee)")
@@ -68,6 +71,19 @@ def make_cfg(a) -> AgencyConfig:
     cfg.ceo.window_s = a.ceo_window
     cfg.watchers.n_markets = a.markets
     cfg.watchers.cross_venue = not a.no_cross_venue
+    if getattr(a, "phase7", False):
+        from .high_conviction_sniper import parse_exit
+        a.phase5 = True                                   # same universe; Architecture A is not instantiated at all
+        cfg.mm.enabled = False
+        cfg.cfo.mm_enabled = False
+        cfg.hc.enabled = True
+        if a.b_exit:
+            cfg.hc.account_exit = a.b_exit
+        if a.b_floor is not None:
+            cfg.cfo.b_floor_mult = a.b_floor
+        if a.sleeve_capital:
+            cfg.hc.sleeve_capital = a.sleeve_capital
+        cfg.cfo.b_tp_mult = parse_exit(cfg.hc.account_exit)[1]
     if getattr(a, "phase6", False):
         a.phase5 = True                                   # same universe (BTC oracle + Hyperliquid + Polymarket), different engines
         cfg.mm.enabled = not a.no_mm
@@ -113,10 +129,22 @@ def attach_phase6(ag: Agency, cfg: AgencyConfig, a, has_prints: bool) -> None:
     acct = getattr(a, "snipe_model", None) or ("trades" if has_prints else "strict")
     cfg.mm.shadow_models, cfg.mm.account_model = models, acct
     cfg.hc.shadow_models, cfg.hc.account_model = models, acct
+    cfg.hc.exit_variants = ("fixed0.7",)                        # Phase 6 = the reference exit only
     if cfg.mm.enabled:
         ag.attach_mm(PrePositionedMM(ag, cfg.mm))
     if cfg.hc.enabled:
         ag.attach_hc(HighConvictionSniper(ag, cfg.hc))
+
+
+def attach_phase7(ag: Agency, cfg: AgencyConfig, a, has_prints: bool) -> None:
+    from .high_conviction_sniper import HighConvictionSniper
+    from .sleeves import SleeveSet
+    models = ("strict", "depletion", "trades") if has_prints else ("strict", "depletion")
+    cfg.hc.shadow_models = models
+    cfg.hc.account_model = getattr(a, "snipe_model", None) or ("trades" if has_prints else "strict")
+    sleeves = SleeveSet(ag.book, cfg.cfo, capital=cfg.hc.sleeve_capital, poly_min_ttl=cfg.poly.min_ttl_s)
+    ag.attach_sleeves(sleeves)
+    ag.attach_hc(HighConvictionSniper(ag, cfg.hc, sleeves), govern=False)
 
 
 def finish(ag: Agency, t_end: float, info: dict, run_dir: str) -> str:
@@ -131,7 +159,7 @@ def finish(ag: Agency, t_end: float, info: dict, run_dir: str) -> str:
     ag.housekeeping(t_rep)
     ag.ceo.review(t_rep)
     ag.close()
-    rep = (build_report_p6 if info.get("phase6") else build_report_p5 if info.get("phase5") else (build_report_p4 if info.get("phase4") else build_report))(ag, t_rep, info)
+    rep = (build_report_p7 if info.get("phase7") else build_report_p6 if info.get("phase6") else build_report_p5 if info.get("phase5") else (build_report_p4 if info.get("phase4") else build_report))(ag, t_rep, info)
     with open(os.path.join(run_dir, "report.md"), "w") as f:
         f.write(rep)
     with open(os.path.join(run_dir, "summary.json"), "w") as f:
@@ -196,7 +224,9 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
         w = pmw.PolymarketWatcher(ag, pm_metas, pm_specs, pm_tokens, cfg.poly, wall0=tape_extra["wall0"], t0=ag.t0)
         ag.attach_polymarket(w)
     ag.hunter.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="calib")
-    if a.phase5 and getattr(a, "phase6", False):
+    if a.phase5 and getattr(a, "phase7", False):
+        attach_phase7(ag, cfg, a, has_prints=True)
+    elif a.phase5 and getattr(a, "phase6", False):
         attach_phase6(ag, cfg, a, has_prints=True)
     elif a.phase5:
         from .maker_sniper import MakerSniper
@@ -252,7 +282,14 @@ def run_replay(a, cfg: AgencyConfig, run_dir: str):
         pm_metas = [m for m in metas if m.id in specs]
         w = PolymarketWatcher(ag, pm_metas, specs, extra["tokens"], cfg.poly, wall0=extra["wall0"] + (float(t[0]) - extra["t0"]), t0=float(t[0]))
         ag.attach_polymarket(w)
-    if getattr(a, "phase6", False):
+    if getattr(a, "phase7", False):
+        has_prints = bool((idx < -1).any())
+        for m in metas:
+            if m.venue == "hyperliquid" and getattr(a, "hl_maker_bps", None) is not None:
+                m.fee_maker_bps, m.fee_taker_bps = a.hl_maker_bps, a.hl_taker_bps
+        attach_phase7(ag, cfg, a, has_prints)
+        ag.snipe_has_prints = has_prints
+    elif getattr(a, "phase6", False):
         has_prints = bool((idx < -1).any())
         for m in metas:
             if m.venue == "hyperliquid" and getattr(a, "hl_maker_bps", None) is not None:
@@ -322,7 +359,7 @@ def main():
         uvloop.install()
         ag, fm, t_end = asyncio.run(live(a, cfg, run_dir))
         feeds, mode = fm.stats, "live"
-    rep = finish(ag, t_end, {"mode": mode, "feeds": feeds, "phase4": a.phase4 or ag.pm is not None, "phase5": bool(getattr(a, "phase5", False)), "phase6": bool(getattr(a, "phase6", False)), "fee_assumption": True}, run_dir)
+    rep = finish(ag, t_end, {"mode": mode, "feeds": feeds, "phase4": a.phase4 or ag.pm is not None, "phase5": bool(getattr(a, "phase5", False)), "phase6": bool(getattr(a, "phase6", False)), "phase7": bool(getattr(a, "phase7", False)), "fee_assumption": True}, run_dir)
     print(rep)
     print(f"\nartifacts: {run_dir}", flush=True)
 

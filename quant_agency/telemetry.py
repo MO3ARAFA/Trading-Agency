@@ -190,7 +190,8 @@ def summary_json(ag: Agency, t_now: float) -> dict:
             "cfo": cr, "engine": ag.engine.stats(), "interventions": [iv.as_dict() for iv in ag.ceo.interventions],
             "ceo_state": ag.ceo.state.value, "scan_latency_us": ag.scan_lat.summary(), "decide_latency_us": ag.decide_lat.summary(),
             "markout_all": {str(h): v for h, v in ag.cfo.markouts.table(now=ag.last_t).items()},
-            "markout_approved": {str(h): v for h, v in ag.cfo.markouts.table(cohort="approved", now=ag.last_t).items()}}
+            "markout_approved": {str(h): v for h, v in ag.cfo.markouts.table(cohort="approved", now=ag.last_t).items()},
+            "sleeves": [sl.summary() for sl in ag.sleeves.sleeves.values()] if getattr(ag, "sleeves", None) is not None else []}
 
 
 # =====================================================================================================================
@@ -807,4 +808,24 @@ def build_report_p6(ag, t_end: float, info: dict) -> str:
       "* The cancel-vs-informed-taker race is the decisive unknown: A is only protected when (BTC detection + cancel latency) < the delay of the informed flow hitting the stale quote. "
       "This report measures the outcome on the data it saw; it cannot measure other participants' latency. The synthetic stress test sweeps that delay explicitly.\n"
       "* Fee assumptions above are inputs, not measurements. Small samples: read the cluster s.e.\n")
+    return "\n".join(L)
+
+
+def build_report_p7(ag, t_end: float, info: dict) -> str:
+    """Pure Architecture B on isolated risk sleeves: exit-policy comparison, floor, sleeves, governors."""
+    from . import p7_pool as pp
+    hc = ag.hc
+    cfg = ag.cfg
+    res = [{"tape": "live" if info.get("mode") == "live" else info.get("mode", "run"), "dur": t_end - ag.t0, "rows": [dict(r, imp=str(r["imp"])) for r in hc.results],
+            "sleeves": [s.summary() for s in ag.sleeves.sleeves.values()], "events": [e.as_dict() for e in ag.sleeves.events()]}]
+    st = ag.oracle.state(t_end)
+    L = [pp.pooled_markdown(res, f"Quant Agency — Phase 7 report: Pure Architecture B ({info.get('mode', 'live')}, {t_end - ag.t0:.0f} s)")]
+    L.append(f"\n* ACCOUNT exit policy: **{cfg.hc.account_exit}**; sleeve capital ${cfg.hc.sleeve_capital:,.0f} each; trade prints {ag.n_mkt_trades}; BTC vol (fast) {st.vol_fast_bps:.2f} bps/√s; "
+             f"Architecture A instantiated: {'yes' if ag.mm is not None else 'no (shelved)'}; legacy taker CFO closed trades: {len(ag.engine.closed)}.")
+    acc = [r for r in hc.account_results if r["outcome"] == "filled"]
+    if acc:
+        body = [[r["market"][-34:], "L" if r["side"] > 0 else "S", f"{r['entry_px']:.3f}" if r["kind"] == "prediction" else f"{r['entry_px']:.2f}", f"{r['exit_px']:.3f}" if r["kind"] == "prediction" else f"{r['exit_px']:.2f}",
+                 r["exit_reason"], f"{r['hold_s']:.1f}", f"{r['net_bps']:+.0f}", f"{r['net_usd']:+.3f}"] for r in acc[-25:]]
+        L.append("\n**Last ACCOUNT fills:**\n\n" + md_table(["market", "side", "entry", "exit", "exit reason", "hold s", "net bps", "net $"], body))
+    L.append("\n## Caveats\n\n* Paper only. Floor-passed samples are small; read t, not the point estimate. Fee assumptions (HL 1.5 / 4.5 bps) are inputs. The queue model has no hidden size or other makers' behaviour.\n")
     return "\n".join(L)

@@ -564,7 +564,7 @@ class CFOAgent:
         fee_mk = maker_fee_bps(meta, c.fee_maker_bps)
         p_xm = c.snipe_p_exit_maker
         hs = sig.spread_bps / 2.0
-        tp_bps = c.tp_capture * pred
+        tp_bps = c.b_tp_mult * pred
         # entry at the touch (pay the half-spread vs mid); passive exit at the converged touch pays none, a taker fallback pays the half-spread
         net = tp_bps - hs - fee_in - p_xm * fee_mk - (1.0 - p_xm) * (hs + taker_fee_bps(meta, px, c.fee_taker_bps)) - c.safety_hurdle_bps
         dec = Decision(approved=False, reason="", mode="b_snipe", net_edge_bps=net, net_edge_taker_bps=net, gap_credit_bps=pred, spread_bps=sig.spread_bps,

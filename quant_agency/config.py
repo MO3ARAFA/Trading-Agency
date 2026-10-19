@@ -126,6 +126,7 @@ class CFOConfig:
     b_enabled: bool = True
     b_floor_mult: float = 1.5            # hard absolute floor: |predicted move| >= mult x (spread + taker-in + maker-out fee)  (CEO-tunable)
     b_min_ev_bps: float = 0.5
+    b_tp_mult: float = 0.7               # take-profit multiple the net-edge gate assumes (the sleeve sets it to its account exit's)
     max_b_open: int = 4
     b_blocked: tuple = ()
 
@@ -250,6 +251,16 @@ class BConfig:
     scratch_work_s: float = 3.0          # passive scratch at the touch before the taker fallback
     rev_stop_bps: float = 1.0            # genuine reversal: BTC back through the pre-impulse level by this much (and position adverse)
     ref_floor_mult: float = 1.5          # fixed floor used to *tag* shadow rows (the CEO moves only the ACCOUNT's live floor)
+    # ---- Phase 7 exit policies (all run as shadows on identical signals; the ACCOUNT uses `account_exit`)
+    exit_variants: Tuple[str, ...] = ("fixed0.7", "fixed1.0", "wide1.5", "wide2.0", "adaptive", "trail")
+    account_exit: str = "fixed0.7"
+    horizon_s: dict = field(default_factory=lambda: {"hyperliquid": 20.0, "polymarket": 25.0})    # work window of the wide / adaptive exits (Phase 6: 8 / 10 s)
+    widen_ext: float = 0.2               # adaptive: BTC must extend this fraction of the impulse beyond the signal level per widening step
+    widen_gap_s: float = 1.0
+    trail_target: float = 1.0            # trail: venue has done this fraction of the credited gap ...
+    trail_stall_vel_bps: float = 0.2     # ... and Binance 1 s velocity in our direction has faded below this  => exit
+    trail_retrace: float = 0.4           # or the venue gave back this fraction of its peak progress (peak >= 0.5)
+    sleeve_capital: float = 10_000.0     # each isolated risk sleeve is its own paper bankroll
     shadow_models: Tuple[str, ...] = ("strict", "depletion", "trades")
     account_model: str = "strict"
     hl_notional: float = 200.0
