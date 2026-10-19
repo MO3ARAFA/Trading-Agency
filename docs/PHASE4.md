@@ -29,7 +29,7 @@ cents-per-share tables) is `docs/live_runs/phase4_replay/report.md`. The replay 
 | metric | Run 1 | Phase 4 (replay of live tape) |
 |---|---|---|
 | directional signals detected | 197 | 410 (+117 Polymarket) |
-| **CFO approval rate** | **0 / 197 (0 %)** | **24 / 527 (4.6 %)** — 9 directional/Polymarket + arb; rejects: spread gate 257, net-edge 135, quarantined 88 |
+| **CFO approval rate** (directional + Polymarket signals) | **0 / 197 (0 %)** | **24 / 527 (4.6 %)**; 13 filled (9 maker orders expired unfilled, 3 dropped); rejects: spread gate 257, net-edge 135, quarantined 88, below-min size 21. Arbitrage is gated separately: 27 executions |
 | gross markout @1s / @5s / @30s (directional) | +0.25 / −0.09 / +0.45 bps | +0.51 / **+0.74** / +0.25 bps |
 | hit rate (gross > 0) @5s | 34 % | **52 %** |
 | zero-fee net0 @5s, crosses spread | −2.31 bps | −0.43 bps |
@@ -52,7 +52,7 @@ The universe change did what the brief predicted *qualitatively* — higher gros
 
 * The same-venue Binance tight-spread edge **exists only at ~0 ms and decays with order latency** (all tight: +1.19 → +0.63 → +0.51 bps). It is not capturable from a cloud gateway with a 150 ms path.
 * **Hyperliquid is the only latency-robust lead**: HY lag ≈ 0.7–0.9 s behind Binance, gross +2.45 bps at t+5s, 84–90 % hit, identical at 0 ms and 150 ms. But taker fees are 4.5 bps/side → **net −7.35 bps**. Even maker-both-sides (1.5 bps × 2) leaves ~0, before adverse selection. It needs a fee tier ≲ 1 bp/side — an *account* property this project cannot establish.
-* **Cross-venue arbitrage: nothing real.** 26,328 basis-adjusted gross gap episodes (p50 0.55 bps, p90 1.09, max 9.45; median lifetime 0.52 s) — the best real gaps (Hyperliquid AVAX/LTC vs Binance, 7–9 bps) cost 12 bps in fees. **All 27 executed arb trades were Binance FDUSD↔USDC stable-basis trades under the assumed 0 bps fee, earning $0.25 in total** ($0.009 per trade), and that profit assumes the stable-coin basis reverts. 6 of 33 filled with leg risk.
+* **Cross-venue arbitrage: nothing real.** 26,328 basis-adjusted gross gap episodes (p50 0.55 bps, p90 1.09, max 9.45; median lifetime 0.52 s) — the best real gaps (Hyperliquid AVAX/LTC vs Binance, 7–9 bps) cost 12 bps in fees. **All 27 executed arb trades were Binance FDUSD↔USDC stable-basis trades under the assumed 0 bps fee, earning $0.25 in total** ($0.009 per trade), and that profit assumes the stable-coin basis reverts. 5 of the 27 executions (replay; 6 of 30 live) were leg-risk unwinds.
 * **Triangles:** 18 scanned; none net-positive. `FDUSDUSDT` never quoted, so the FDUSD triangles could not run.
 
 ## 4. Battleground 2 — Polymarket (84 markets, 117 signals, 39 BTC impulses)
@@ -64,8 +64,8 @@ The universe change did what the brief predicted *qualitatively* — higher gros
 
 ## 5. CEO ↔ CFO in the new universe (34 interventions, `ceo_audit.jsonl`)
 
-* 27 `QUARANTINE_MARKET` (12 of them in one review at 19:45:50: Hyperliquid LINK/LTC/AVAX/DOGE/SOL/ETH, Kraken/Gate/Coinbase books — all **gross positive but net −7…−124 bps because of fees**, i.e. the CEO is judging on net economics, as designed), 7 `RETUNE_IMPULSE` (lag-window regime changes, evidence-gated).
-* Verdict was GOOD throughout because eight Polymarket trades carried the P&L; **this exposed that GOOD had no significance guard** (POOR did). Fixed after the run (`exp − s.e. > threshold`, with a test); the replay used the fixed code and shows the same market-level interventions.
+* Live: **23 `QUARANTINE_MARKET` + 11 `RETUNE_IMPULSE`** (replay with the final code: 22 + 9). 11 quarantines came in one review at 19:45:50 (Hyperliquid LINK/LTC/AVAX/DOGE/SOL/ETH, Kraken LINK/SOL, Gate LTC, Coinbase DOGE, Binance LINKUSDT/LINKUSDC) — mostly **gross positive but net −7…−124 bps because of fees**, i.e. the CEO judges net economics, as designed. The `RETUNE_IMPULSE` entries are lag-window regime changes (evidence-gated, quarter-step quantised).
+* The verdict was GOOD in the later reviews because eight Polymarket trades carried the P&L; **this exposed that GOOD had no significance guard** (POOR did). Fixed after the run (`exp − s.e. > threshold`, with a test); the replay used the fixed code and shows the same market-level interventions.
 
 ## 6. What the +$23 paper PnL really is
 
