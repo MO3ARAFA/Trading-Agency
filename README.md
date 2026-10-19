@@ -94,3 +94,13 @@ python -m quant_agency.run_live --phase6 --duration 1500 --record tapes/p6.npz
 python -m quant_agency.p6_pool tapes/p4_tape_1.npz tapes/p5_tape_1.npz tapes/p6_tape_1.npz --sweeps
 python -m quant_agency.p6_stress --seeds 3 --duration 600
 ```
+
+## Phase 7 — Pure Architecture B on isolated risk sleeves
+`sleeves.py` (one independent CFO book + governor per venue — a drawdown in `polymarket_b` cannot halt `hyperliquid_b`; Architecture A shelved) and six B exit policies
+(`fixed0.7/1.0`, `wide1.5/2.0`, `adaptive`, Binance-guided `trail`) run on identical entries. **Result:** uncapped exits look better in-sample on Polymarket
+(48 floor-passed fills: `trail` +680 ± 306 bps, t = 2.2; Phase 6 reference `fixed0.7` t = 1.1) but nothing survives a correction for six exits and the fresh 3,000 s live session
+(12 fills) was uninformative; Hyperliquid never clears the floor (0/317). t > 2 on a pre-registered exit was **not** reached. See **[docs/PHASE7.md](docs/PHASE7.md)** (187 tests).
+```bash
+python -m quant_agency.run_live --phase7 --b-exit wide2.0 --duration 3000 --record tapes/p7.npz
+python -m quant_agency.p7_pool tapes/p4_tape_1.npz tapes/p5_tape_1.npz tapes/p6_tape_1.npz tapes/p7_tape_1.npz
+```

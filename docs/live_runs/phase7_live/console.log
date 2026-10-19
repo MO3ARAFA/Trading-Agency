@@ -1,0 +1,189 @@
+discovering phase-5 universe (BTC oracle, Hyperliquid perps, Polymarket) …
+oracle: 1 | hyperliquid: 9 | polymarket: 90
+watching 100 markets: 1 Binance (incl. BTCUSDT oracle) + 9 cross-venue + 90 Polymarket
+[   120s] BTC 82,166.10 z1=-0.0 z3=-0.0 vol=0.20bps/√s | signals=5 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=0 | binance:up/5979 hyperliquid:up/3777 polymarket:up/121379
+[   240s] BTC 82,128.00 z1=+0.0 z3=+2.5 vol=0.21bps/√s | signals=5 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=1 | binance:up/12638 hyperliquid:up/7276 polymarket:up/274326
+[   360s] BTC 82,103.55 z1=-0.0 z3=-0.0 vol=0.20bps/√s | signals=5 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=1 | binance:up/20823 hyperliquid:up/10868 polymarket:up/414111
+[   480s] BTC 82,103.54 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=5 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=1 | binance:up/24185 hyperliquid:up/13546 polymarket:up/499067
+[   600s] BTC 82,113.96 z1=+0.0 z3=+3.3 vol=0.22bps/√s | signals=14 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=2 | binance:up/30642 hyperliquid:up/17103 polymarket:up/607868
+[   720s] BTC 82,100.01 z1=-0.0 z3=-0.0 vol=0.22bps/√s | signals=20 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=4 | binance:up/39593 hyperliquid:up/21818 polymarket:up/773120
+[   840s] BTC 82,091.77 z1=-0.0 z3=+0.0 vol=0.24bps/√s | signals=31 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=5 | binance:up/48392 hyperliquid:up/25485 polymarket:up/932544
+[   960s] BTC 82,080.00 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=31 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=7 | binance:up/52439 hyperliquid:up/28389 polymarket:up/1037391
+[  1080s] BTC 82,074.34 z1=-0.0 z3=-0.0 vol=0.20bps/√s | signals=31 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=7 | binance:up/59011 hyperliquid:up/31777 polymarket:up/1113661
+[  1200s] BTC 82,074.34 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=34 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=9 | binance:up/65890 hyperliquid:up/34912 polymarket:up/1228224
+[  1320s] BTC 82,080.00 z1=+0.0 z3=-0.0 vol=0.20bps/√s | signals=36 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=9 | binance:up/73691 hyperliquid:up/38467 polymarket:DOWN/1385166
+[  1440s] BTC 82,086.00 z1=+0.0 z3=+0.0 vol=0.24bps/√s | signals=51 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=11 | binance:up/83254 hyperliquid:up/42513 polymarket:up/1579234
+[  1560s] BTC 82,088.01 z1=-0.0 z3=+0.0 vol=0.26bps/√s | signals=60 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=13 | binance:up/89066 hyperliquid:up/45508 polymarket:up/1712630
+[  1680s] BTC 82,082.00 z1=+0.0 z3=+0.0 vol=0.23bps/√s | signals=68 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=16 | binance:up/96792 hyperliquid:up/48736 polymarket:up/1875191
+[  1800s] BTC 82,069.14 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=68 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=17 | binance:up/104336 hyperliquid:up/51240 polymarket:up/2049616
+[  1920s] BTC 82,068.02 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=68 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=17 | binance:up/114095 hyperliquid:up/54188 polymarket:up/2228284
+[  2040s] BTC 82,058.00 z1=-0.0 z3=-0.0 vol=0.20bps/√s | signals=68 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=18 | binance:up/118898 hyperliquid:up/56707 polymarket:up/2347088
+[  2160s] BTC 82,057.99 z1=-0.0 z3=-0.0 vol=0.20bps/√s | signals=68 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=18 | binance:up/123447 hyperliquid:up/59770 polymarket:up/2464984
+[  2280s] BTC 82,103.19 z1=+0.0 z3=+0.9 vol=0.22bps/√s | signals=74 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=18 | binance:up/137643 hyperliquid:up/64088 polymarket:up/2613629
+[  2400s] BTC 82,062.00 z1=+0.0 z3=-0.0 vol=0.22bps/√s | signals=82 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=20 | binance:up/147119 hyperliquid:up/67320 polymarket:up/2728651
+[  2520s] BTC 82,000.01 z1=+0.0 z3=+0.0 vol=0.24bps/√s | signals=100 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=22 | binance:up/154547 hyperliquid:up/71189 polymarket:up/2851809
+[  2640s] BTC 82,022.71 z1=-0.0 z3=-0.0 vol=0.20bps/√s | signals=100 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=25 | binance:up/162573 hyperliquid:up/74871 polymarket:up/2956311
+[  2760s] BTC 82,027.73 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=109 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=28 | binance:up/168506 hyperliquid:up/77853 polymarket:up/3099648
+[  2880s] BTC 82,027.73 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=109 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=29 | binance:up/173548 hyperliquid:up/80219 polymarket:up/3220747
+[  3000s] BTC 81,996.46 z1=+0.0 z3=+0.0 vol=0.20bps/√s | signals=109 approved=0 trades=0 eq=$10,000.00 | CEO=NORMAL iv=29 | binance:up/179656 hyperliquid:up/83200 polymarket:up/3325407
+tape saved: tapes/p7_tape_1.npz (957545 events)
+# Quant Agency — Phase 7 report: Pure Architecture B (live, 3000 s)
+
+Tapes: live — total **3000 s**. Pure Architecture B (Architecture A is not instantiated), floor 1.5× (spread + taker-in + maker-out fee) tagged on every shadow row with a *fixed* reference; HL fees 1.5 / 4.5 bps assumed. Every exit policy below ran on **identical entries** (same signals, same IOC taker fill), so differences are the exit alone. t = mean / cluster-robust s.e. (clusters = BTC impulses).
+
+Exit policies: `fixed0.7` = Phase 6 reference (maker TP at 0.7× the credited gap, 8–10 s window) · `fixed1.0` = maker TP at 1.0× · `wide1.5`/`wide2.0` = maker TP at 1.5×/2.0× with a 20–25 s horizon · `adaptive` = start 1.0×, widen to 1.5× then 2.0× each time Binance extends the impulse by another 20 % beyond the signal level (cancel latency charged, re-post only after the cancel lands) · `trail` = no resting TP, stay while Binance velocity is supportive, exit passively at the touch when the venue has done the credited gap and Binance 1 s velocity has faded (or on a 40 % give-back of peak progress / a stall); reversal, adverse and time stops apply to all.
+
+## polymarket
+
+118 signals; **41 (35%) clear the 1.5× floor**.
+
+**fill model `strict`**
+
+| subset | exit | fills | net / fill | cluster s.e. (bps) | t | hit | net $ | gross bps | passive exit | hold s | top exits |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| floor-passed | fixed0.7 | 12 | -0.83¢ (+59 bps) | ±479 | +0.12 | 58% | +3.75 | +541 | 58% | 6.0 | passive_fill=6, work_expired=4, adverse_stop=2 |
+| floor-passed | fixed1.0 | 12 | -0.27¢ (+195 bps) | ±528 | +0.37 | 58% | +9.89 | +732 | 42% | 6.2 | passive_fill=5, work_expired=5, adverse_stop=2 |
+| floor-passed | wide1.5 | 12 | -1.75¢ (-296 bps) | ±790 | -0.38 | 42% | -22.97 | +280 | 42% | 9.9 | adverse_stop=7, passive_fill=5 |
+| floor-passed | wide2.0 | 12 | -1.46¢ (-125 bps) | ±931 | -0.13 | 42% | -16.12 | +470 | 33% | 11.7 | adverse_stop=7, passive_fill=4, work_expired=1 |
+| floor-passed | adaptive | 12 | -0.86¢ (-23 bps) | ±792 | -0.03 | 50% | -6.72 | +516 | 50% | 9.4 | passive_fill=6, adverse_stop=6 |
+| floor-passed | trail | 12 | -0.08¢ (+202 bps) | ±927 | +0.22 | 58% | +2.00 | +772 | 42% | 8.7 | trail_capture=5, trail_retrace=5, adverse_stop=2 |
+| floor-passed | taker/taker | 12 | -1.09¢ (+242 bps) | ±373 | +0.65 | 75% | +10.52 | +937 | 0% | 6.2 | take_profit=10, adverse_stop=2 |
+| all signals | fixed0.7 | 56 | -3.17¢ (-1082 bps) | ±227 | -4.77 | 21% | -296.20 | -421 | 23% | 7.9 | work_expired=35, passive_fill=12, adverse_stop=7 |
+| all signals | fixed1.0 | 56 | -3.03¢ (-1046 bps) | ±237 | -4.41 | 21% | -288.29 | -371 | 18% | 8.0 | work_expired=37, passive_fill=10, adverse_stop=7 |
+| all signals | wide1.5 | 56 | -3.22¢ (-1123 bps) | ±297 | -3.78 | 20% | -313.23 | -441 | 20% | 17.6 | work_expired=29, adverse_stop=15, passive_fill=11 |
+| all signals | wide2.0 | 56 | -3.16¢ (-1086 bps) | ±321 | -3.38 | 18% | -306.47 | -392 | 14% | 18.7 | work_expired=32, adverse_stop=15, passive_fill=8 |
+| all signals | adaptive | 56 | -3.00¢ (-1058 bps) | ±292 | -3.62 | 21% | -295.19 | -384 | 21% | 16.9 | work_expired=28, adverse_stop=14, passive_fill=12 |
+| all signals | trail | 56 | -2.81¢ (-1004 bps) | ±308 | -3.26 | 20% | -284.89 | -321 | 16% | 10.2 | trail_retrace=23, trail_capture=21, adverse_stop=8 |
+| all signals | taker/taker | 56 | -3.35¢ (-1029 bps) | ±213 | -4.83 | 16% | -285.63 | -299 | 0% | 6.4 | take_profit=43, adverse_stop=9, time_stop=4 |
+
+**fill model `depletion`**
+
+| subset | exit | fills | net / fill | cluster s.e. (bps) | t | hit | net $ | gross bps | passive exit | hold s | top exits |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| floor-passed | fixed0.7 | 12 | -0.83¢ (+59 bps) | ±479 | +0.12 | 58% | +3.75 | +541 | 58% | 5.9 | passive_fill=6, work_expired=4, adverse_stop=2 |
+| floor-passed | fixed1.0 | 12 | -0.06¢ (+225 bps) | ±529 | +0.43 | 58% | +11.72 | +744 | 50% | 6.1 | passive_fill=6, work_expired=4, adverse_stop=2 |
+| floor-passed | wide1.5 | 12 | -1.09¢ (-121 bps) | ±773 | -0.16 | 50% | -12.43 | +432 | 42% | 9.6 | adverse_stop=7, passive_fill=5 |
+| floor-passed | wide2.0 | 12 | -0.34¢ (+34 bps) | ±941 | +0.04 | 42% | -6.59 | +610 | 42% | 10.5 | adverse_stop=7, passive_fill=5 |
+| floor-passed | adaptive | 12 | -0.86¢ (-23 bps) | ±792 | -0.03 | 50% | -6.72 | +516 | 50% | 9.2 | passive_fill=6, adverse_stop=6 |
+| floor-passed | trail | 12 | -0.08¢ (+202 bps) | ±927 | +0.22 | 58% | +2.00 | +772 | 42% | 8.6 | trail_capture=5, trail_retrace=5, adverse_stop=2 |
+| floor-passed | taker/taker | 12 | -1.09¢ (+242 bps) | ±373 | +0.65 | 75% | +10.52 | +937 | 0% | 6.2 | take_profit=10, adverse_stop=2 |
+| all signals | fixed0.7 | 56 | -2.73¢ (-889 bps) | ±200 | -4.45 | 25% | -243.81 | -269 | 30% | 7.4 | work_expired=31, passive_fill=16, adverse_stop=7 |
+| all signals | fixed1.0 | 56 | -2.93¢ (-1033 bps) | ±240 | -4.30 | 23% | -284.60 | -364 | 21% | 7.9 | work_expired=35, passive_fill=12, adverse_stop=7 |
+| all signals | wide1.5 | 56 | -2.88¢ (-1036 bps) | ±286 | -3.62 | 25% | -288.83 | -370 | 21% | 17.2 | work_expired=28, adverse_stop=15, passive_fill=12 |
+| all signals | wide2.0 | 56 | -2.84¢ (-1037 bps) | ±332 | -3.13 | 20% | -292.81 | -355 | 18% | 18.2 | work_expired=30, adverse_stop=15, passive_fill=10 |
+| all signals | adaptive | 56 | -2.97¢ (-1049 bps) | ±290 | -3.62 | 21% | -292.75 | -377 | 21% | 16.8 | work_expired=28, adverse_stop=14, passive_fill=12 |
+| all signals | trail | 56 | -2.36¢ (-890 bps) | ±299 | -2.97 | 20% | -252.92 | -252 | 27% | 10.0 | trail_retrace=23, trail_capture=21, adverse_stop=8 |
+| all signals | taker/taker | 56 | -3.35¢ (-1029 bps) | ±213 | -4.83 | 16% | -285.63 | -299 | 0% | 6.4 | take_profit=43, adverse_stop=9, time_stop=4 |
+
+**fill model `trades`**
+
+| subset | exit | fills | net / fill | cluster s.e. (bps) | t | hit | net $ | gross bps | passive exit | hold s | top exits |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| floor-passed | fixed0.7 | 12 | -0.83¢ (+59 bps) | ±479 | +0.12 | 58% | +3.75 | +541 | 58% | 6.0 | passive_fill=6, work_expired=4, adverse_stop=2 |
+| floor-passed | fixed1.0 | 12 | -0.27¢ (+195 bps) | ±528 | +0.37 | 58% | +9.89 | +732 | 42% | 6.2 | passive_fill=5, work_expired=5, adverse_stop=2 |
+| floor-passed | wide1.5 | 12 | -1.75¢ (-296 bps) | ±790 | -0.38 | 42% | -22.97 | +280 | 42% | 9.5 | adverse_stop=7, passive_fill=5 |
+| floor-passed | wide2.0 | 12 | -1.46¢ (-125 bps) | ±931 | -0.13 | 42% | -16.12 | +470 | 33% | 11.7 | adverse_stop=7, passive_fill=4, work_expired=1 |
+| floor-passed | adaptive | 12 | -0.86¢ (-23 bps) | ±792 | -0.03 | 50% | -6.72 | +516 | 50% | 9.3 | passive_fill=6, adverse_stop=6 |
+| floor-passed | trail | 12 | -0.08¢ (+202 bps) | ±927 | +0.22 | 58% | +2.00 | +772 | 42% | 8.7 | trail_capture=5, trail_retrace=5, adverse_stop=2 |
+| floor-passed | taker/taker | 12 | -1.09¢ (+242 bps) | ±373 | +0.65 | 75% | +10.52 | +937 | 0% | 6.2 | take_profit=10, adverse_stop=2 |
+| all signals | fixed0.7 | 56 | -3.17¢ (-1082 bps) | ±227 | -4.77 | 21% | -296.20 | -421 | 23% | 7.9 | work_expired=35, passive_fill=12, adverse_stop=7 |
+| all signals | fixed1.0 | 56 | -3.03¢ (-1046 bps) | ±237 | -4.41 | 21% | -288.29 | -371 | 18% | 8.0 | work_expired=37, passive_fill=10, adverse_stop=7 |
+| all signals | wide1.5 | 56 | -3.22¢ (-1123 bps) | ±297 | -3.78 | 20% | -313.23 | -441 | 20% | 17.5 | work_expired=29, adverse_stop=15, passive_fill=11 |
+| all signals | wide2.0 | 56 | -3.15¢ (-1085 bps) | ±322 | -3.38 | 18% | -306.20 | -392 | 14% | 18.7 | work_expired=32, adverse_stop=15, passive_fill=8 |
+| all signals | adaptive | 56 | -3.00¢ (-1058 bps) | ±292 | -3.62 | 21% | -295.19 | -384 | 21% | 16.9 | work_expired=28, adverse_stop=14, passive_fill=12 |
+| all signals | trail | 56 | -2.81¢ (-1004 bps) | ±308 | -3.26 | 20% | -284.89 | -321 | 16% | 10.2 | trail_retrace=23, trail_capture=21, adverse_stop=8 |
+| all signals | taker/taker | 56 | -3.35¢ (-1029 bps) | ±213 | -4.83 | 16% | -285.63 | -299 | 0% | 6.4 | take_profit=43, adverse_stop=9, time_stop=4 |
+
+## hyperliquid
+
+109 signals; **0 (0%) clear the 1.5× floor**.
+
+No signal clears the floor: B abstains here. The 'all signals' rows show what the refused signals would have done.
+
+**fill model `strict`**
+
+| subset | exit | fills | net / fill | cluster s.e. (bps) | t | hit | net $ | gross bps | passive exit | hold s | top exits |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| all signals | fixed0.7 | 96 | -5.96 bps | ±0.46 | -13.09 | 0% | -11.24 | +1.2 | 61% | 4.3 | passive_fill=59, work_expired=37 |
+| all signals | fixed1.0 | 96 | -6.13 bps | ±0.50 | -12.22 | 0% | -11.56 | +1.5 | 47% | 5.3 | work_expired=52, passive_fill=44 |
+| all signals | wide1.5 | 96 | -6.73 bps | ±0.88 | -7.62 | 2% | -12.76 | +1.3 | 33% | 14.1 | work_expired=45, passive_fill=32, reversal_stop=19 |
+| all signals | wide2.0 | 96 | -7.15 bps | ±0.86 | -8.28 | 2% | -13.52 | +1.3 | 18% | 16.7 | work_expired=60, reversal_stop=19, passive_fill=17 |
+| all signals | adaptive | 96 | -6.53 bps | ±0.73 | -9.00 | 0% | -12.35 | +1.4 | 36% | 12.8 | work_expired=44, passive_fill=35, reversal_stop=17 |
+| all signals | trail | 96 | -6.67 bps | ±0.57 | -11.80 | 0% | -12.64 | +1.5 | 28% | 8.3 | trail_capture=65, trail_retrace=21, time_stop=6 |
+| all signals | taker/taker | 96 | -8.25 bps | ±0.39 | -21.22 | 0% | -15.58 | +0.8 | 0% | 6.1 | take_profit=80, time_stop=13, adverse_stop=3 |
+
+**fill model `depletion`**
+
+| subset | exit | fills | net / fill | cluster s.e. (bps) | t | hit | net $ | gross bps | passive exit | hold s | top exits |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| all signals | fixed0.7 | 96 | -5.68 bps | ±0.42 | -13.62 | 0% | -10.72 | +1.3 | 68% | 3.9 | passive_fill=65, work_expired=31 |
+| all signals | fixed1.0 | 96 | -5.97 bps | ±0.50 | -11.92 | 1% | -11.28 | +1.5 | 50% | 5.1 | work_expired=49, passive_fill=47 |
+| all signals | wide1.5 | 96 | -6.45 bps | ±0.83 | -7.80 | 2% | -12.25 | +1.4 | 39% | 13.5 | work_expired=41, passive_fill=37, reversal_stop=18 |
+| all signals | wide2.0 | 96 | -7.00 bps | ±0.82 | -8.57 | 2% | -13.23 | +1.4 | 21% | 16.5 | work_expired=58, passive_fill=20, reversal_stop=18 |
+| all signals | adaptive | 96 | -6.32 bps | ±0.71 | -8.92 | 0% | -11.98 | +1.5 | 41% | 12.3 | work_expired=41, passive_fill=39, reversal_stop=16 |
+| all signals | trail | 96 | -5.92 bps | ±0.65 | -9.17 | 2% | -11.21 | +1.6 | 49% | 7.8 | trail_capture=65, trail_retrace=21, time_stop=6 |
+| all signals | taker/taker | 96 | -8.25 bps | ±0.39 | -21.22 | 0% | -15.58 | +0.8 | 0% | 6.1 | take_profit=80, time_stop=13, adverse_stop=3 |
+
+**fill model `trades`**
+
+| subset | exit | fills | net / fill | cluster s.e. (bps) | t | hit | net $ | gross bps | passive exit | hold s | top exits |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| all signals | fixed0.7 | 96 | -5.84 bps | ±0.48 | -12.07 | 0% | -11.02 | +1.2 | 65% | 4.1 | passive_fill=62, work_expired=34 |
+| all signals | fixed1.0 | 96 | -5.92 bps | ±0.54 | -10.96 | 1% | -11.18 | +1.5 | 52% | 5.1 | passive_fill=49, work_expired=47 |
+| all signals | wide1.5 | 96 | -6.51 bps | ±0.88 | -7.41 | 2% | -12.34 | +1.3 | 39% | 13.5 | work_expired=40, passive_fill=37, reversal_stop=19 |
+| all signals | wide2.0 | 96 | -6.91 bps | ±0.91 | -7.58 | 2% | -13.06 | +1.4 | 22% | 16.1 | work_expired=56, passive_fill=21, reversal_stop=19 |
+| all signals | adaptive | 96 | -6.45 bps | ±0.73 | -8.88 | 0% | -12.21 | +1.4 | 39% | 12.4 | work_expired=42, passive_fill=37, reversal_stop=17 |
+| all signals | trail | 96 | -6.50 bps | ±0.58 | -11.25 | 1% | -12.31 | +1.5 | 32% | 8.2 | trail_capture=65, trail_retrace=21, time_stop=6 |
+| all signals | taker/taker | 96 | -8.25 bps | ±0.39 | -21.22 | 0% | -15.58 | +0.8 | 0% | 6.1 | take_profit=80, time_stop=13, adverse_stop=3 |
+
+## Pre-registered exit selection (made *before* the Phase 7 live session)
+
+Rule: among the six exits, take the one with the highest pooled **Polymarket floor-passed net bps per fill under `strict`** (the one fill model all tapes support) with n ≥ 30. Ties/near-ties are not adjudicated: a difference smaller than its standard error is noise.
+
+| exit | floor-passed fills | net bps / fill | cluster s.e. | t |
+|---|---|---|---|---|
+| fixed0.7 | 12 | +59 | 479 | +0.12 |
+| fixed1.0 | 12 | +195 | 528 | +0.37 |
+| wide1.5 | 12 | -296 | 790 | -0.38 |
+| wide2.0 | 12 | -125 | 931 | -0.13 |
+| adaptive | 12 | -23 | 792 | -0.03 |
+| trail | 12 | +202 | 927 | +0.22 |
+
+**Selected for the ACCOUNT: `None`**
+
+## Isolated risk sleeves
+
+| tape | sleeve | final state | equity | account round trips | closed P&L $ | halts | governor events |
+|---|---|---|---|---|---|---|---|
+| live | hyperliquid_b | NORMAL | $10,000.00 | 0 | 0.0 | 0 | 0 |
+| live | polymarket_b | TIGHTENED | $10,003.71 | 10 | 3.71 | 0 | 1 |
+
+```
+polymarket_b     SLEEVE_TIGHTEN           NORMAL→TIGHTENED  net -1024.5±596.0 bps over 6 fresh round trips < −150
+```
+
+
+* ACCOUNT exit policy: **wide2.0**; sleeve capital $10,000 each; trade prints 18534; BTC vol (fast) 0.20 bps/√s; Architecture A instantiated: no (shelved); legacy taker CFO closed trades: 0.
+
+**Last ACCOUNT fills:**
+
+| market | side | entry | exit | exit reason | hold s | net bps | net $ |
+|---|---|---|---|---|---|---|---|
+| btc-updown-5m-1792448700:updown_5m | S | 0.710 | 0.680 | work_expired | 25.1 | +5 | +0.049 |
+| btc-updown-5m-1792449300:updown_5m | S | 0.710 | 0.600 | passive_fill | 13.6 | +1346 | +12.746 |
+| btc-updown-5m-1792449900:updown_5m | S | 0.380 | 0.420 | adverse_stop | 8.1 | -1935 | -4.751 |
+| c-updown-15m-1792449900:updown_15m | L | 0.530 | 0.500 | adverse_stop | 20.4 | -1225 | -4.904 |
+| c-updown-15m-1792449900:updown_15m | L | 0.610 | 0.560 | adverse_stop | 11.7 | -1375 | -5.502 |
+| btc-updown-5m-1792449900:updown_5m | L | 0.860 | 0.630 | adverse_stop | 7.4 | -2962 | -11.851 |
+| btc-updown-5m-1792450200:updown_5m | L | 0.290 | 0.470 | passive_fill | 1.0 | +5710 | +11.402 |
+| c-updown-15m-1792449900:updown_15m | L | 0.420 | 0.550 | passive_fill | 1.2 | +2689 | +5.370 |
+| btc-updown-5m-1792450200:updown_5m | L | 0.700 | 0.660 | adverse_stop | 5.1 | -1006 | -2.012 |
+| c-updown-15m-1792450800:updown_15m | S | 0.340 | 0.220 | passive_fill | 7.6 | +3067 | +3.160 |
+
+
+## Caveats
+
+* Paper only. Floor-passed samples are small; read t, not the point estimate. Fee assumptions (HL 1.5 / 4.5 bps) are inputs. The queue model has no hidden size or other makers' behaviour.
+
+
+artifacts: runs/phase7_live_20261019_222611

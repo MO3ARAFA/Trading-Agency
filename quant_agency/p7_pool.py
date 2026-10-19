@@ -50,11 +50,14 @@ def stat(rows: List[dict]) -> dict:
         return {"n": 0}
     nb = np.array([r["net_bps"] for r in f])
     se = cluster_se(f)
+    se_c = cluster_se(f, key="net_cents")
+    mc = float(np.mean([r["net_cents"] for r in f]))
     ex: Dict[str, int] = {}
     for r in f:
         k = r.get("trail_reason") or r["exit_reason"]
         ex[k] = ex.get(k, 0) + 1
     return {"n": len(f), "net_bps": float(nb.mean()), "se": se, "t": float(nb.mean() / se) if se > 0 else 0.0, "net_cents": float(np.mean([r["net_cents"] for r in f])),
+            "t_cents": float(mc / se_c) if se_c > 0 else 0.0, "median_bps": float(np.median(nb)),
             "net_usd": float(sum(r["net_usd"] for r in f)), "hit": float((nb > 0).mean()), "gross_bps": float(np.mean([r["gross_bps"] for r in f])),
             "passive": float(np.mean([r["exit_kind"] == "passive" for r in f])), "hold": float(np.mean([r["hold_s"] for r in f])), "exits": ex,
             "need_n": int(np.ceil(len(f) * (2.0 * se / abs(nb.mean())) ** 2)) if (se > 0 and nb.mean() > 0) else None}
@@ -98,9 +101,9 @@ def table_for(res: List[dict], venue: str, pm: bool, model: str, subsets=(("floo
             if not s["n"]:
                 continue
             top = ", ".join(f"{k}={v}" for k, v in sorted(s["exits"].items(), key=lambda kv: -kv[1])[:3])
-            body.append([sub, x, s["n"], fmt(s, pm), f"±{s['se']:.0f}" if pm else f"±{s['se']:.2f}", f"{s['t']:+.2f}", f"{s['hit']*100:.0f}%", f"{s['net_usd']:+.2f}",
+            body.append([sub, x, s["n"], fmt(s, pm), f"±{s['se']:.0f}" if pm else f"±{s['se']:.2f}", f"{s['t']:+.2f}", f"{s['t_cents']:+.2f}", f"{s['hit']*100:.0f}%", f"{s['net_usd']:+.2f}",
                          f"{s['gross_bps']:+.0f}" if pm else f"{s['gross_bps']:+.1f}", f"{s['passive']*100:.0f}%", f"{s['hold']:.1f}", top])
-    return md_table(["subset", "exit", "fills", "net / fill", "cluster s.e. (bps)", "t", "hit", "net $", "gross bps", "passive exit", "hold s", "top exits"], body)
+    return md_table(["subset", "exit", "fills", "net / fill", "cluster s.e. (bps)", "t (bps of notional)", "t (¢/share)", "hit", "net $", "gross bps", "passive exit", "hold s", "top exits"], body)
 
 
 def preregister(res: List[dict]) -> Tuple[Optional[str], List[list]]:
@@ -141,6 +144,8 @@ def pooled_markdown(res: List[dict], title: str, synthetic: bool = False) -> str
       "20–25 s horizon · `adaptive` = start 1.0×, widen to 1.5× then 2.0× each time Binance extends the impulse by another 20 % beyond the signal level (cancel latency charged, "
       "re-post only after the cancel lands) · `trail` = no resting TP, stay while Binance velocity is supportive, exit passively at the touch when the venue has done the credited gap "
       "and Binance 1 s velocity has faded (or on a 40 % give-back of peak progress / a stall); reversal, adverse and time stops apply to all.\n")
+    P("*Metric note:* `net / fill` shows the mean in ¢ per share and in bps of notional. Shadow rows use a fixed notional, so bps of notional (and the $ column) is the sizing-consistent measure; ¢/share weights high-priced contracts more and bps weights cheap contracts more, "
+      "so on small samples the two can disagree in sign — both t-statistics are shown and neither is a substitute for more fills.\n")
     for venue, pm in (("polymarket", True), ("hyperliquid", False)):
         ns, nok = n_signals(res, venue), n_signals(res, venue, True)
         P(f"## {venue}\n")
@@ -151,11 +156,12 @@ def pooled_markdown(res: List[dict], title: str, synthetic: bool = False) -> str
             P(f"**fill model `{m}`**\n")
             P(table_for(res, venue, pm, m))
     best, ranks = preregister(res)
-    P("## Pre-registered exit selection (made *before* the Phase 7 live session)\n")
+    P("## Exit ranking by the pre-registered rule\n")
+    P("(The binding pick was made on the first three tapes, before the Phase 7 live session; any later tape only re-ranks and does not change the pick.)\n")
     P("Rule: among the six exits, take the one with the highest pooled **Polymarket floor-passed net bps per fill under `strict`** (the one fill model all tapes support) with n ≥ 30. "
       "Ties/near-ties are not adjudicated: a difference smaller than its standard error is noise.\n")
     P(md_table(["exit", "floor-passed fills", "net bps / fill", "cluster s.e.", "t"], [[r[0], r[1], f"{r[2]:+.0f}", f"{r[3]:.0f}", f"{r[4]:+.2f}"] for r in ranks]))
-    P(f"**Selected for the ACCOUNT: `{best}`**\n")
+    P(f"**Pick under this data: `{best}`**\n")
     if best:
         s = stat(sel(res, "polymarket", best, "strict", True))
         P(f"Sample-size check for `{best}` (Polymarket, floor-passed, strict): n = {s['n']}, mean {s['net_bps']:+.0f} bps, s.e. {s['se']:.0f}, t = {s['t']:+.2f}. "
