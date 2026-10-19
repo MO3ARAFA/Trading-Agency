@@ -82,3 +82,15 @@ passive exits, six variants scored on identical signals. **Result: not supported
 python -m quant_agency.run_live --phase5 --duration 1500 --record tapes/p5.npz
 python -m quant_agency.p5_pool tapes/p4_tape_1.npz tapes/p5_tape_1.npz
 ```
+
+## Phase 6 — pre-positioned quote maker (A) vs high-conviction taker sniper (B)
+`pre_positioned_mm.py` (two-sided post-only quotes while BTC is calm, oracle cancel-on-impulse, inventory exits at the converged price), `high_conviction_sniper.py`
+(hard floor `|Δ̂| ≥ 1.5×(spread + taker-in + maker-out)`, IOC in, maker take-profit, stall-scratch), shared `queue_model.py`, and a controlled `sim_lag_world.py`
+(regime × informed-taker delay). **Result: no tradable edge.** A loses on Polymarket in every non-optimistic fill model (the shield cuts the loss but never flips it, even at 0 ms
+cancel) and is gated out on Hyperliquid (1.5 bp maker fee > spread); B abstains on HL (0/208 signals pass) and its floor-passed Polymarket subset is positive but not significant
+(n = 36, t ≈ 1.3). See **[docs/PHASE6.md](docs/PHASE6.md)** (174 tests).
+```bash
+python -m quant_agency.run_live --phase6 --duration 1500 --record tapes/p6.npz
+python -m quant_agency.p6_pool tapes/p4_tape_1.npz tapes/p5_tape_1.npz tapes/p6_tape_1.npz --sweeps
+python -m quant_agency.p6_stress --seeds 3 --duration 600
+```
