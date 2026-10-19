@@ -179,6 +179,7 @@ class PolyConfig:
     max_markets: int = 90
     n_updown_windows: int = 3
     rediscover_s: float = 120.0
+    min_ttl_s: float = 60.0              # no entries in the last minute before expiry (resolution gap risk)
 
 
 @dataclass

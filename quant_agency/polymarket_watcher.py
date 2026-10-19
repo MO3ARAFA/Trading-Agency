@@ -495,6 +495,9 @@ class PolymarketWatcher:
                 continue
             mid_id = self.book.ids[i]
             spec = self.specs[mid_id]
+            if spec.t_end - wall < c.min_ttl_s:                                  # resolution gap risk: no entries near expiry
+                self.coverage_rejects["near_expiry"] = self.coverage_rejects.get("near_expiry", 0) + 1
+                continue
             A_now = (spec.acc_sum / spec.acc_t) if spec.acc_t > 0 else None
             p_now = fair_prob(spec, S, wall, sig_s, 0.0, A_now)
             p_then = fair_prob(spec, S_then, wall, sig_s, h, A_now)

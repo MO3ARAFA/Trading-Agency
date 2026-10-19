@@ -1,0 +1,477 @@
+{
+ "duration_s": 1500.1599999999999,
+ "markets": 93,
+ "signals": 35,
+ "impulses": 11,
+ "cfo": {
+  "equity": 9603.41489881,
+  "peak": 9603.41489881,
+  "drawdown_frac": 0.0,
+  "closed_pnl": -396.58510118999993,
+  "fees_paid": 20.557601190000003,
+  "evaluated": 116,
+  "approved": 13,
+  "reasons": {
+   "net_edge_below_hurdle": 45,
+   "ok": 13,
+   "breaker_market": 2,
+   "in_position": 1,
+   "quarantined": 14,
+   "halted": 43
+  },
+  "halted": true,
+  "halt_reason": "daily_loss",
+  "gross_exposure": 0,
+  "blacklist": {
+   "pm:btc-updown-5m-1792441800:updown_5m": "market_loss_breaker",
+   "pm:bitcoin-up-or-down-october-19-2026-4pm-et:updown_1h": "negative_markouts",
+   "pm:btc-updown-4h-1792440000:updown_4h": "negative_markouts"
+  },
+  "hurdle_bps": 1.0,
+  "edge_credit": 1.0,
+  "mode_policy": "maker_only",
+  "size_mult": 0.25,
+  "p_fill_maker": 0.2
+ },
+ "engine": {
+  "submitted": 0,
+  "filled": 0,
+  "partial": 0,
+  "closed": 3,
+  "open": 0,
+  "pending": 0,
+  "dropped": {}
+ },
+ "interventions": [
+  {
+   "iid": 1,
+   "t": 8733.534274493,
+   "wall": "20:30:02",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 58% over 26 fresh signals, regime normal-vol (vol ratio 1.00)",
+   "evidence": {
+    "n_signals": 26,
+    "gross5": 6.649,
+    "net5": -940.856,
+    "false_gap": 0.577,
+    "trades": 1,
+    "exp_bps": -799.227,
+    "realization": -6.848,
+    "drawdown": 0.004,
+    "vol_ratio": 1.0
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 2,
+   "t": 8883.625782224,
+   "wall": "20:32:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-up-or-down-october-19-2026-4pm-et:updown_1h",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+19.27 gross@5s=+39.68 net@5s=-289.88bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 39.679,
+    "net": -289.879,
+    "hit_net": 0.0,
+    "gross1": 19.268
+   },
+   "before": {},
+   "after": {
+    "until": 9483.6
+   }
+  },
+  {
+   "iid": 3,
+   "t": 8973.678184461,
+   "wall": "20:34:02",
+   "kind": "BREAKER_ACK",
+   "target": "cfo",
+   "state_before": "NORMAL",
+   "state_after": "HALTED",
+   "reason": "CFO circuit breaker 'portfolio_drawdown' tripped; standing down",
+   "evidence": {
+    "n_signals": 10,
+    "gross5": 683.479,
+    "net5": -325.469,
+    "false_gap": 0.2,
+    "trades": 1,
+    "exp_bps": -11362.818,
+    "realization": 2.882,
+    "drawdown": 0.04078,
+    "vol_ratio": 1.0
+   },
+   "before": {},
+   "after": {
+    "halted": true
+   }
+  },
+  {
+   "iid": 4,
+   "t": 9003.725536438,
+   "wall": "20:34:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:btc-updown-4h-1792440000:updown_4h",
+   "state_before": "HALTED",
+   "state_after": "HALTED",
+   "reason": "negative_markouts: n=7 gross@1s=+81.75 gross@5s=+183.95 net@5s=-448.87bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 7,
+    "gross": 183.954,
+    "net": -448.865,
+    "hit_net": 0.0,
+    "gross1": 81.752
+   },
+   "before": {},
+   "after": {
+    "until": 9603.7
+   }
+  },
+  {
+   "iid": 5,
+   "t": 9003.725536438,
+   "wall": "20:34:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-price-on-october-21-2026:range-82000-84000",
+   "state_before": "HALTED",
+   "state_after": "HALTED",
+   "reason": "negative_markouts: n=6 gross@1s=+38.10 gross@5s=+45.05 net@5s=-1515.18bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 45.045,
+    "net": -1515.182,
+    "hit_net": 0.0,
+    "gross1": 38.095
+   },
+   "before": {},
+   "after": {
+    "until": 9603.7
+   }
+  },
+  {
+   "iid": 6,
+   "t": 9033.743977073,
+   "wall": "20:35:02",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-price-on-october-21-2026:range-80000-82000",
+   "state_before": "HALTED",
+   "state_after": "HALTED",
+   "reason": "negative_markouts: n=6 gross@1s=+138.81 gross@5s=+227.83 net@5s=-1443.44bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 227.835,
+    "net": -1443.441,
+    "hit_net": 0.0,
+    "gross1": 138.813
+   },
+   "before": {},
+   "after": {
+    "until": 9633.7
+   }
+  },
+  {
+   "iid": 7,
+   "t": 9033.743977073,
+   "wall": "20:35:02",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "HALTED",
+   "state_after": "HALTED",
+   "reason": "false-gap 28% over 39 fresh signals, regime normal-vol (vol ratio 1.09)",
+   "evidence": {
+    "n_signals": 39,
+    "gross5": -83.449,
+    "net5": -712.901,
+    "false_gap": 0.282,
+    "trades": 1,
+    "exp_bps": -11362.818,
+    "realization": -2.584,
+    "drawdown": 0.04078,
+    "vol_ratio": 1.087
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   }
+  },
+  {
+   "iid": 8,
+   "t": 9063.772104462,
+   "wall": "20:35:32",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "HALTED",
+   "state_after": "HALTED",
+   "reason": "only 1 fresh signals (quality unchanged), regime normal-vol (vol ratio 1.01)",
+   "evidence": {
+    "n_signals": 1,
+    "gross5": 792.079,
+    "net5": -121.0,
+    "false_gap": 0.0,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.04078,
+    "vol_ratio": 1.005
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 9,
+   "t": 9273.979327542,
+   "wall": "20:39:02",
+   "kind": "RESUME_PROBATION",
+   "target": "cfo",
+   "state_before": "HALTED",
+   "state_after": "DEFENSIVE",
+   "reason": "pause elapsed; resuming at reduced size, maker-only, with a fresh evidence window",
+   "evidence": {
+    "n_signals": 5,
+    "gross5": 182.351,
+    "net5": -68.465,
+    "false_gap": 0.0,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": null,
+    "drawdown": 0.04078,
+    "vol_ratio": 1.0
+   },
+   "before": {
+    "hurdle": 1.0,
+    "size_mult": 1.0,
+    "mode": "auto"
+   },
+   "after": {
+    "hurdle": 1.0,
+    "size_mult": 0.25,
+    "mode": "maker_only"
+   }
+  },
+  {
+   "iid": 10,
+   "t": 9484.105447773,
+   "wall": "20:42:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-up-or-down-october-19-2026-4pm-et:updown_1h",
+   "state_before": "DEFENSIVE",
+   "state_after": "DEFENSIVE",
+   "reason": "negative_markouts: n=12 gross@1s=+56.80 gross@5s=+52.02 net@5s=-230.22bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 12,
+    "gross": 52.018,
+    "net": -230.215,
+    "hit_net": 0.0,
+    "gross1": 56.803
+   },
+   "before": {},
+   "after": {
+    "until": 10684.1
+   }
+  },
+  {
+   "iid": 11,
+   "t": 9664.262483319,
+   "wall": "20:45:32",
+   "kind": "BREAKER_ACK",
+   "target": "cfo",
+   "state_before": "DEFENSIVE",
+   "state_after": "HALTED",
+   "reason": "CFO circuit breaker 'daily_loss' tripped; standing down",
+   "evidence": {
+    "n_signals": 25,
+    "gross5": 673.316,
+    "net5": 151.748,
+    "false_gap": 0.24,
+    "trades": 1,
+    "exp_bps": 933.333,
+    "realization": 3.791,
+    "drawdown": 0.0,
+    "vol_ratio": 1.0
+   },
+   "before": {},
+   "after": {
+    "halted": true
+   }
+  },
+  {
+   "iid": 12,
+   "t": 9784.354352287,
+   "wall": "20:47:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:btc-updown-4h-1792440000:updown_4h",
+   "state_before": "HALTED",
+   "state_after": "HALTED",
+   "reason": "negative_markouts: n=7 gross@1s=+51.05 gross@5s=+60.77 net@5s=-520.48bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 7,
+    "gross": 60.766,
+    "net": -520.477,
+    "hit_net": 0.0,
+    "gross1": 51.048
+   },
+   "before": {},
+   "after": {
+    "until": 10984.4
+   }
+  }
+ ],
+ "ceo_state": "HALTED",
+ "scan_latency_us": {
+  "n": 106467,
+  "p50": 41.53600093559362,
+  "p90": 287.52079961122956,
+  "p99": 630.4059398098613,
+  "max": 29251.392001242493,
+  "mean": 114.32131449980292
+ },
+ "decide_latency_us": {
+  "n": 0
+ },
+ "markout_all": {
+  "1.0": {
+   "n": 116,
+   "gross": 211.5368151880488,
+   "net": -441.63988202751085,
+   "hit_gross": 0.5603448275862069,
+   "hit_net": 0.07758620689655173,
+   "net_se": 143.92113654968202,
+   "gross_se": 115.33894278677715,
+   "n_imp": 31,
+   "closure": 0.5312729853165786,
+   "pred": -15.979538476212584
+  },
+  "3.0": {
+   "n": 116,
+   "gross": 204.82444621186826,
+   "net": -429.1301438610906,
+   "hit_gross": 0.6896551724137931,
+   "hit_net": 0.1206896551724138,
+   "net_se": 167.02823674656767,
+   "gross_se": 146.51972892906878,
+   "n_imp": 31,
+   "closure": 0.6635224871459887,
+   "pred": -15.979538476212584
+  },
+  "5.0": {
+   "n": 116,
+   "gross": 177.04707917165223,
+   "net": -456.59853298640866,
+   "hit_gross": 0.6982758620689655,
+   "hit_net": 0.11206896551724138,
+   "net_se": 158.77415920807266,
+   "gross_se": 137.18893706775071,
+   "n_imp": 31,
+   "closure": 0.6629523282841013,
+   "pred": -15.979538476212584
+  },
+  "10.0": {
+   "n": 116,
+   "gross": 129.68785131526073,
+   "net": -506.98310795990653,
+   "hit_gross": 0.7155172413793104,
+   "hit_net": 0.11206896551724138,
+   "net_se": 164.09024787851416,
+   "gross_se": 142.1119921784251,
+   "n_imp": 31,
+   "closure": 0.6514852959497305,
+   "pred": -15.979538476212584
+  },
+  "30.0": {
+   "n": 116,
+   "gross": 58.5166757498469,
+   "net": -560.5435429148896,
+   "hit_gross": 0.6120689655172413,
+   "hit_net": 0.16379310344827586,
+   "net_se": 188.2141906454679,
+   "gross_se": 167.62885595429267,
+   "n_imp": 31,
+   "closure": 0.604406861947708,
+   "pred": -15.979538476212584
+  }
+ },
+ "markout_approved": {
+  "1.0": {
+   "n": 13,
+   "gross": 638.2204146998453,
+   "net": -302.9578211498932,
+   "hit_gross": 0.5384615384615384,
+   "hit_net": 0.3076923076923077,
+   "net_se": 742.5030431667221,
+   "gross_se": 722.4721221572486,
+   "n_imp": 8,
+   "closure": 0.6129405921123677,
+   "pred": 620.8347643141201
+  },
+  "3.0": {
+   "n": 13,
+   "gross": 374.1785785355661,
+   "net": -530.507264784836,
+   "hit_gross": 0.6923076923076923,
+   "hit_net": 0.6153846153846154,
+   "net_se": 1272.3227533153774,
+   "gross_se": 1272.284483904406,
+   "n_imp": 8,
+   "closure": 0.7230995538929913,
+   "pred": 620.8347643141201
+  },
+  "5.0": {
+   "n": 13,
+   "gross": 268.75919191339085,
+   "net": -643.0146704362342,
+   "hit_gross": 0.6923076923076923,
+   "hit_net": 0.6153846153846154,
+   "net_se": 1197.1576099410893,
+   "gross_se": 1204.1905533214624,
+   "n_imp": 8,
+   "closure": 0.47590632996364246,
+   "pred": 620.8347643141201
+  },
+  "10.0": {
+   "n": 13,
+   "gross": 20.627101664176386,
+   "net": -890.3512711678462,
+   "hit_gross": 0.6923076923076923,
+   "hit_net": 0.6153846153846154,
+   "net_se": 1335.928436507951,
+   "gross_se": 1341.2868437040138,
+   "n_imp": 8,
+   "closure": 0.3761296460467933,
+   "pred": 620.8347643141201
+  },
+  "30.0": {
+   "n": 13,
+   "gross": 335.1333161227891,
+   "net": -560.7736826144355,
+   "hit_gross": 0.6923076923076923,
+   "hit_net": 0.6923076923076923,
+   "net_se": 1635.0613616594972,
+   "gross_se": 1661.7446855015537,
+   "n_imp": 8,
+   "closure": 0.6778376424594692,
+   "pred": 620.8347643141201
+  }
+ }
+}

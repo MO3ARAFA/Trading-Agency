@@ -257,6 +257,18 @@ class CFOAgent:
         slip = 0.25 * spread + drift
         return 0.0, maker_fee_bps(meta, c.fee_maker_bps) + fee_t, slip
 
+    def _risk_stop_bps(self, sig: Signal, price: float, stop_bps: float) -> float:
+        """Effective stop distance used for the risk budget.
+
+        Spot/perp: the configured stop. Binary contracts can gap ~50 % of the *worst-case* loss inside one order latency, and the
+        worst case per share is p for a long but (1-p) for a short (a short at 0.33 can lose 0.67/share = 2x its notional).
+        """
+        if self.book.metas[sig.idx].kind != "prediction":
+            return stop_bps
+        p = min(max(price, 1e-3), 1.0 - 1e-3)
+        worst = p if sig.side > 0 else (1.0 - p)
+        return max(stop_bps, 0.5 * worst / p * BPS)
+
     # ------------------------------------------------------------------ gating & sizing
     def evaluate(self, sig: Signal, now: float, has_position: bool = False, tradable: bool = True) -> Decision:
         c = self.cfg
@@ -311,11 +323,12 @@ class CFOAgent:
         # ---- sizing: fractional Kelly ∧ stop-risk budget ∧ per-trade/market/gross/beta/liquidity caps
         eq = self.equity
         stop_bps = max(c.stop_mult * sig.sigma_res_bps, c.min_stop_bps)
+        risk_stop_bps = self._risk_stop_bps(sig, price, stop_bps)
         hold = min(max(3.0 * sig.window_s, c.time_stop_min_s), c.time_stop_max_s)
         sigma_trade = max(sig.sigma_res_bps * math.sqrt(max(hold, sig.horizon_s) / max(sig.horizon_s, 1e-6)) * 0.5, 1.0)
         mu = net[mode] / BPS
         kelly = c.kelly_fraction * mu / (sigma_trade / BPS) ** 2 * eq
-        risk_cap = c.risk_per_trade_frac * eq / (stop_bps / BPS)
+        risk_cap = c.risk_per_trade_frac * eq / (risk_stop_bps / BPS)
         caps = {"kelly": kelly, "risk": risk_cap, "trade": c.max_notional_frac * eq,
                 "liq": qty_cap * price,
                 "market": c.max_market_frac * eq - abs(self.exposure.get(sig.market, 0.0)),
@@ -421,10 +434,11 @@ class CFOAgent:
             return reject("low_ev", "rejected_edge")
         eq = self.equity
         stop_bps = max(c.stop_mult * sig.sigma_res_bps, c.min_stop_bps)
+        risk_stop_bps = self._risk_stop_bps(sig, px, stop_bps)
         hold = min(max(3.0 * max(sig.window_s, 3.0), c.time_stop_min_s), c.time_stop_max_s)
         sigma_trade = max(sig.sigma_res_bps * 0.5, 1.0)
         kelly = c.kelly_fraction * (pf * nf / BPS) / (sigma_trade / BPS) ** 2 * eq
-        caps = {"kelly": kelly, "risk": c.risk_per_trade_frac * eq / (stop_bps / BPS), "trade": c.max_notional_frac * eq,
+        caps = {"kelly": kelly, "risk": c.risk_per_trade_frac * eq / (risk_stop_bps / BPS), "trade": c.max_notional_frac * eq,
                 "market": c.max_market_frac * eq - abs(self.exposure.get(sig.market, 0.0)),
                 "gross": c.max_gross_frac * eq - sum(abs(v) for v in self.exposure.values())}
         notional = max(min(caps.values()), 0.0) * c.size_mult

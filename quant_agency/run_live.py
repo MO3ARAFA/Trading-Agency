@@ -40,6 +40,9 @@ def parse():
     p.add_argument("--phase5", action="store_true", help="Queue-aware maker sniper on Hyperliquid + Polymarket (Binance BTC oracle only)")
     p.add_argument("--hl-maker-bps", type=float, default=1.5, help="Hyperliquid maker fee per side (bps); public base tier 1.5")
     p.add_argument("--hl-taker-bps", type=float, default=4.5)
+    p.add_argument("--hold-frac", type=float, default=None, help="shield: cancel when < this fraction of the impulse is intact")
+    p.add_argument("--hl-work-s", type=float, default=None)
+    p.add_argument("--pm-work-s", type=float, default=None)
     p.add_argument("--snipe-model", default=None, help="fill model of the CFO-accounted attempt: strict|depletion|trades")
     p.add_argument("--sim", action="store_true")
     p.add_argument("--record", default=None, help="save the live tape (npz) for deterministic replay")
@@ -61,6 +64,12 @@ def make_cfg(a) -> AgencyConfig:
     cfg.watchers.cross_venue = not a.no_cross_venue
     if a.phase5:
         a.phase4 = True
+        if a.hold_frac is not None:
+            cfg.snipe.hold_frac = a.hold_frac
+        if a.hl_work_s is not None:
+            cfg.snipe.work_s["hyperliquid"] = a.hl_work_s
+        if a.pm_work_s is not None:
+            cfg.snipe.work_s["polymarket"] = a.pm_work_s
         cfg.snipe.enabled = True
         cfg.poly.enabled = not a.no_polymarket
         cfg.cfo.max_spread_bps = a.scalp_gate

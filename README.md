@@ -44,7 +44,7 @@ quant_agency/
   agency.py             wiring (sync, clock-injected)        feeds.py   asyncio/uvloop/orjson websockets
   telemetry.py          markdown report                      sim.py     synthetic lead-lag market
   run_live.py           CLI: live | --sim | --replay tape    sweep.py   replay one tape under many fee tiers
-tests/                  113 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
+tests/                  140 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
 docs/RESEARCH.md        Phase 1 reconnaissance → code map
 ```
 
@@ -72,4 +72,13 @@ See **[docs/PHASE4.md](docs/PHASE4.md)**: the `<0.5 bps` hypothesis replicates a
 (gross +2.5 bps, unprofitable at taker fees); Polymarket's CLOB converges to BTC-implied value but is not tradable as a taker (−2.4 ¢/share net).
 ```bash
 python -m quant_agency.run_live --phase4 --duration 1200 --record tapes/p4.npz
+```
+
+## Phase 5 — queue-aware passive maker sniper (Hyperliquid + Polymarket)
+`maker_sniper.py`: post-only join / penny-jump entries with a queue model (strict / depletion / real trade prints), cancel latency, oracle cancel shield,
+passive exits, six variants scored on identical signals. **Result: not supported** — makers either don't fill (HL 3–15 %) or fill adversely (PM conditional markout
+−400…−1,600 bps). See **[docs/PHASE5.md](docs/PHASE5.md)**; also documents a binary-contract risk-sizing flaw found live and fixed.
+```bash
+python -m quant_agency.run_live --phase5 --duration 1500 --record tapes/p5.npz
+python -m quant_agency.p5_pool tapes/p4_tape_1.npz tapes/p5_tape_1.npz
 ```

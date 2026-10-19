@@ -190,3 +190,33 @@ def test_downward_impulse_sells_the_up_token():
         if t > 55:
             sigs += w.scan(t, ag.oracle.state(t))
     assert sigs and sigs[0].side == -1 and sigs[0].gap_bps < 0
+
+
+def test_binary_contracts_are_sized_for_gap_risk_not_for_their_stop():
+    """A resolution can gap a contract ~50 % inside one order latency, so a bps stop cannot bound the loss."""
+    metas = [MarketMeta("BTCUSDT", "binance", "BTCUSDT", "BTC"),
+             MarketMeta("pm:x", "polymarket", "tok", "BTC", kind="prediction", tick=0.01, fee_schedule=(0.07, 1.0, True), spread_gate_bps=5000.0, hunt=False, asset="BTC-PM")]
+    cfo = CFOAgent(MarketBook(metas), CFOConfig(fee_taker_bps=0.0))
+    s = mk_signal(idx=1, market="pm:x", gap_bps=3000.0, spread_bps=200.0, bid=0.49, ask=0.51, mid=0.5, aq=1e6, bq=1e6, sigma_res_bps=200.0)
+    d = cfo.evaluate_snipe(s, 1.0)
+    assert d.approved
+    max_loss = d.notional * 0.5                                           # assume it can lose half
+    assert max_loss <= cfo.cfg.risk_per_trade_frac * cfo.equity * 1.0001  # <= $20 of risk at 0.2 % of $10k
+    # a SHORT of a cheap contract (sell Up at 0.33) can lose 0.67/share = 2x its notional: size on the worst-case loss per share
+    s_short = mk_signal(idx=1, market="pm:x", side=-1, gap_bps=-3000.0, spread_bps=300.0, bid=0.32, ask=0.35, mid=0.335, aq=1e6, bq=1e6, sigma_res_bps=300.0, sid=2)
+    ds = cfo.evaluate_snipe(s_short, 2.0)
+    worst_loss = ds.notional / 0.35 * (1 - 0.35) * 0.5                     # shares (priced at the 0.35 ask) x (1-p) x 50 % gap
+    assert ds.approved and worst_loss <= cfo.cfg.risk_per_trade_frac * cfo.equity * 1.0001
+    # a normal spot/perp trade keeps the stop-based sizing
+    metas2 = [MarketMeta("BTCUSDT", "binance", "BTCUSDT", "BTC"), MarketMeta("HL:X", "hyperliquid", "X", "X", kind="perp", fee_taker_bps=4.5, fee_maker_bps=1.5, tick=1.0)]
+    cfo2 = CFOAgent(MarketBook(metas2), CFOConfig())
+    s2 = mk_signal(idx=1, market="HL:X", gap_bps=20.0, spread_bps=1.0, bid=9999.5, ask=10000.5, mid=10000.0, aq=1e6, bq=1e6, sigma_res_bps=2.0)
+    d2 = cfo2.evaluate_snipe(s2, 1.0)
+    assert d2.approved and d2.notional > 10 * d.notional
+
+
+def test_no_prediction_entries_in_the_last_minute_before_expiry():
+    ag, w = _agency()
+    w.specs["pm:t:above-80000"].t_end = NOW + 40.0                       # 40 s left < 60 s guard
+    sigs = _drive(ag, w, pm_follows=False)
+    assert sigs == [] and w.coverage_rejects.get("near_expiry", 0) > 0

@@ -286,8 +286,10 @@ class CEOAgent:
                 if float(nb.mean()) + se < -0.5 * unit * (1.0 if venue == "hyperliquid" else 1.5):
                     base = dict(cc.snipe_adverse_bps)
                     step = 0.3 if venue == "hyperliquid" else 50.0
-                    self.cfo.set_snipe_base(venue, base[venue] + step)
-                    self.snipe_strikes[venue] = self.snipe_strikes.get(venue, 0) + 1
+                    at_cap = base[venue] >= 400.0 - 1e-9                      # buffer can't rise further: escalate instead of a no-op
+                    if not at_cap:
+                        self.cfo.set_snipe_base(venue, base[venue] + step)
+                    self.snipe_strikes[venue] = self.snipe_strikes.get(venue, 0) + (3 if at_cap else 1)
                     if self.snipe_strikes[venue] >= 3:
                         cc.snipe_blocked = tuple(set(cc.snipe_blocked) | {venue})
                         out.append(self._log(now, "SNIPE_DISABLE_VENUE", venue,

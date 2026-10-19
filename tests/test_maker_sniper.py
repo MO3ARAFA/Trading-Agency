@@ -321,3 +321,90 @@ def test_cfo_snipe_cost_model_polymarket_penny_and_learning():
     for _ in range(6):
         cfo.on_snipe_result({"outcome": "filled", "venue": "polymarket", "exit_kind": "taker", "pred_net_bps": 300.0, "net_bps": -200.0})
     assert cfo.cfg.snipe_adverse_bps["polymarket"] > b0
+
+
+# ---------------------------------------------------------------- CEO monitoring of the maker sniper
+def _ceo_agency():
+    ag = _agency()
+    sn = _sn(ag, [])
+    return ag, sn
+
+
+def _acc_row(venue="hyperliquid", filled=True, net_bps=-3.0, fdc=False, shield=False, t_end=1000.0, reason=""):
+    r = {"variant": "ACCOUNT", "model": "strict", "account": True, "entry_mode": "join", "market": "X", "venue": venue, "kind": "perp", "side": 1, "sid": 1,
+         "imp": 1, "t0": t_end - 5, "t_end": t_end, "outcome": "filled" if filled else "no_fill", "reason": reason, "gap_bps": 5.0, "spread_bps": 1.0, "mid0": 100.0,
+         "shield_cancel": shield, "fill_during_cancel": fdc, "notional": 100.0, "pred_net_bps": 1.0}
+    if filled:
+        r.update({"net_bps": net_bps, "net_usd": net_bps / 1e4 * 100, "fill_t": t_end - 4, "wait_s": 1.0, "exit_kind": "taker", "exit_reason": "work_expired"})
+    return r
+
+
+def test_ceo_raises_adverse_buffer_then_disables_a_venue_that_keeps_losing():
+    ag, sn = _ceo_agency()
+    cfo = ag.cfo
+    b0 = cfo.cfg.snipe_adverse_bps["hyperliquid"]
+    now = 1000.0
+    for rnd in range(3):
+        sn.account_results += [_acc_row(net_bps=-4.0 + 0.01 * k, t_end=now + 1) for k in range(8)] + [_acc_row(filled=False, t_end=now + 1) for _ in range(2)]
+        ivs = ag.ceo.review(now + 2)
+        now += 100.0
+        kinds_ = [i.kind for i in ivs]
+        if rnd < 2:
+            assert "SNIPE_RAISE_ADVERSE_BUFFER" in kinds_
+        else:
+            assert "SNIPE_DISABLE_VENUE" in kinds_
+    assert cfo.cfg.snipe_adverse_bps["hyperliquid"] > b0 and "hyperliquid" in cfo.cfg.snipe_blocked
+    s = sig(bid=10_000, ask=10_001, gap=500.0)
+    assert cfo.evaluate_snipe(s, 5000.0).reason == "venue_disabled"
+
+
+def test_ceo_buffer_raise_survives_the_cfo_online_learning():
+    ag, sn = _ceo_agency()
+    ag.cfo.set_snipe_base("hyperliquid", 1.0)
+    for _ in range(5):
+        ag.cfo.on_snipe_result({"outcome": "filled", "venue": "hyperliquid", "exit_kind": "taker", "pred_net_bps": 0.5, "net_bps": 0.4})
+    assert ag.cfo.cfg.snipe_adverse_bps["hyperliquid"] >= 1.0
+
+
+def test_ceo_tightens_shield_when_fills_inside_the_cancel_window_lose():
+    ag, sn = _ceo_agency()
+    h0 = sn.cfg.hold_frac
+    rows = [_acc_row(net_bps=-1.0, fdc=True) for _ in range(4)] + [_acc_row(net_bps=0.5) for _ in range(4)] + [_acc_row(filled=False) for _ in range(2)]
+    sn.account_results += rows
+    ivs = ag.ceo.review(1002.0)
+    assert [i.kind for i in ivs].count("SNIPE_SHIELD_TIGHTEN") == 1 and sn.cfg.hold_frac == pytest.approx(h0 + 0.1)
+
+
+def test_ceo_relaxes_a_shield_that_pulls_almost_everything():
+    ag, sn = _ceo_agency()
+    h0 = sn.cfg.hold_frac
+    sn.account_results += [_acc_row(filled=False, shield=True, reason="shield") for _ in range(18)]
+    ivs = ag.ceo.review(1002.0)
+    assert [i.kind for i in ivs].count("SNIPE_RELAX_SHIELD") == 1 and sn.cfg.hold_frac == pytest.approx(h0 - 0.1)
+
+
+def test_ceo_ignores_thin_or_profitable_maker_evidence():
+    ag, sn = _ceo_agency()
+    sn.account_results += [_acc_row(net_bps=-5.0) for _ in range(3)]                  # too few attempts
+    assert [i for i in ag.ceo.review(1002.0) if i.kind.startswith("SNIPE")] == []
+    ag2, sn2 = _ceo_agency()
+    sn2.account_results += [_acc_row(net_bps=+2.0) for _ in range(9)]
+    assert [i for i in ag2.ceo.review(1002.0) if i.kind.startswith("SNIPE")] == []
+
+
+def test_finalize_flushes_open_attempts_without_inventing_fills():
+    ag = _agency()
+    sn = _sn(ag, JOIN("strict"))
+    Q(ag, 0.9, 100, 101)
+    sn.on_signal(sig(), 80_000.0)
+    Q(ag, 1.2, 100, 101)
+    sn.finalize(2.0)
+    assert not any(sn.active.values()) and sn.results[-1]["outcome"] == "no_fill" and sn.results[-1]["reason"] == "end_of_run"
+
+
+def test_ceo_disables_a_venue_whose_adverse_buffer_is_already_capped():
+    ag, sn = _ceo_agency()
+    ag.cfo.set_snipe_base("hyperliquid", 400.0)
+    sn.account_results += [_acc_row(net_bps=-8.0, t_end=1000.0) for _ in range(8)] + [_acc_row(filled=False, t_end=1000.0) for _ in range(2)]
+    ivs = ag.ceo.review(1002.0)
+    assert [i.kind for i in ivs].count("SNIPE_DISABLE_VENUE") == 1 and "hyperliquid" in ag.cfo.cfg.snipe_blocked
