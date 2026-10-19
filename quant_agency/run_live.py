@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 from .agency import Agency
 from .config import AgencyConfig
 from .market_watchers import MarketMeta, cross_venue_metas, discover_binance_universe
-from .telemetry import build_report, build_report_p4, summary_json
+from .telemetry import build_report, build_report_p4, build_report_p5, summary_json
 
 
 def parse():
@@ -37,6 +37,10 @@ def parse():
     p.add_argument("--scalp-gate", type=float, default=0.5, help="hard max live spread (bps) for directional trades (phase4)")
     p.add_argument("--no-polymarket", action="store_true")
     p.add_argument("--no-cross-venue-p4", action="store_true")
+    p.add_argument("--phase5", action="store_true", help="Queue-aware maker sniper on Hyperliquid + Polymarket (Binance BTC oracle only)")
+    p.add_argument("--hl-maker-bps", type=float, default=1.5, help="Hyperliquid maker fee per side (bps); public base tier 1.5")
+    p.add_argument("--hl-taker-bps", type=float, default=4.5)
+    p.add_argument("--snipe-model", default=None, help="fill model of the CFO-accounted attempt: strict|depletion|trades")
     p.add_argument("--sim", action="store_true")
     p.add_argument("--record", default=None, help="save the live tape (npz) for deterministic replay")
     p.add_argument("--replay", default=None, help="replay a recorded tape through the full agency")
@@ -55,6 +59,11 @@ def make_cfg(a) -> AgencyConfig:
     cfg.ceo.window_s = a.ceo_window
     cfg.watchers.n_markets = a.markets
     cfg.watchers.cross_venue = not a.no_cross_venue
+    if a.phase5:
+        a.phase4 = True
+        cfg.snipe.enabled = True
+        cfg.poly.enabled = not a.no_polymarket
+        cfg.cfo.max_spread_bps = a.scalp_gate
     if a.phase4:
         cfg.cfo.max_spread_bps = a.scalp_gate            # hard microstructure gate (CFO); wider signals are shadow-tracked only
         cfg.poly.enabled = not a.no_polymarket
@@ -72,11 +81,13 @@ def status_line(ag: Agency, t: float, feeds) -> str:
 
 def finish(ag: Agency, t_end: float, info: dict, run_dir: str) -> str:
     ag.engine.flatten_all(t_end, "end_of_run")
+    if ag.sniper is not None:
+        ag.sniper.finalize(t_end)
     t_rep = t_end + ag.cfg.cfo.latency_s + 0.01
     ag.housekeeping(t_rep)
     ag.ceo.review(t_rep)
     ag.close()
-    rep = (build_report_p4 if info.get("phase4") else build_report)(ag, t_rep, info)
+    rep = (build_report_p5 if info.get("phase5") else (build_report_p4 if info.get("phase4") else build_report))(ag, t_rep, info)
     with open(os.path.join(run_dir, "report.md"), "w") as f:
         f.write(rep)
     with open(os.path.join(run_dir, "summary.json"), "w") as f:
@@ -89,7 +100,26 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     from .feeds import FeedManager
 
     pm_specs, pm_tokens, pm_metas = {}, {}, []
-    if a.phase4:
+    if a.phase5:
+        import aiohttp
+        from . import polymarket_watcher as pmw
+        from .venues import cross_venue_metas as p4_cross
+        print("discovering phase-5 universe (BTC oracle, Hyperliquid perps, Polymarket) …", flush=True)
+        sess = aiohttp.ClientSession(trust_env=True, timeout=aiohttp.ClientTimeout(total=40), headers={"User-Agent": "Mozilla/5.0"})
+        try:
+            if cfg.poly.enabled:
+                pm_metas, pm_specs, pm_tokens = await pmw.discover(time.time(), a.duration + 600.0, cfg.poly, sess)
+                await pmw.binance_ref_prices(sess, pm_specs, time.time())
+        finally:
+            await sess.close()
+        hl = [m for m in p4_cross(venues=("hyperliquid",), deribit_assets=())]
+        for m in hl:
+            m.fee_maker_bps, m.fee_taker_bps = a.hl_maker_bps, a.hl_taker_bps
+        bm = [MarketMeta("BTCUSDT", "binance", "BTCUSDT", "BTC", tick=0.01, step=1e-5, min_notional=5.0, asset="BTC")]
+        metas = bm + hl + pm_metas
+        xm = hl
+        print(f"oracle: 1 | hyperliquid: {len(hl)} | polymarket: {len(pm_metas)}", flush=True)
+    elif a.phase4:
         import aiohttp
         from .venues import cross_venue_metas as p4_cross, discover_scalp_universe
         from . import polymarket_watcher as pmw
@@ -115,18 +145,23 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     perf = time.perf_counter
     ag = Agency(metas, cfg, out_dir=run_dir, t0=perf(), wall0=time.time())
     tape_extra = {}
-    if a.phase4 and pm_metas:
+    if (a.phase4 or a.phase5) and pm_metas:
         import dataclasses
         tape_extra = {"wall0": time.time(), "t0": ag.t0, "specs": {k: dataclasses.asdict(v) for k, v in pm_specs.items()}, "tokens": pm_tokens,
                       "pm_ids": [m.id for m in pm_metas]}
         w = pmw.PolymarketWatcher(ag, pm_metas, pm_specs, pm_tokens, cfg.poly, wall0=tape_extra["wall0"], t0=ag.t0)
         ag.attach_polymarket(w)
     ag.hunter.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="calib")
+    if a.phase5:
+        from .maker_sniper import MakerSniper
+        cfg.snipe.shadow_models = ("strict", "depletion", "trades")
+        cfg.snipe.account_model = a.snipe_model or "trades"
+        ag.attach_sniper(MakerSniper(ag, cfg.snipe))
     if a.record:
         ag.start_recording()
     nb = sum(1 for m in metas if m.venue == "binance")
     print(f"watching {len(metas)} markets: {nb} Binance (incl. BTCUSDT oracle) + {len(metas)-nb-len(pm_metas)} cross-venue + {len(pm_metas)} Polymarket", flush=True)
-    fm = FeedManager(ag)
+    fm = FeedManager(ag, trade_prints=bool(a.phase5))
     tasks = fm.tasks()
     t_end = ag.t0 + a.duration
     try:
@@ -171,11 +206,24 @@ def run_replay(a, cfg: AgencyConfig, run_dir: str):
         pm_metas = [m for m in metas if m.id in specs]
         w = PolymarketWatcher(ag, pm_metas, specs, extra["tokens"], cfg.poly, wall0=extra["wall0"] + (float(t[0]) - extra["t0"]), t0=float(t[0]))
         ag.attach_polymarket(w)
+    if getattr(a, "phase5", False):
+        from .maker_sniper import MakerSniper
+        has_prints = bool((idx < -1).any())
+        cfg.snipe.shadow_models = ("strict", "depletion", "trades") if has_prints else ("strict", "depletion")
+        cfg.snipe.account_model = getattr(a, "snipe_model", None) or ("trades" if has_prints else "strict")
+        for m in metas:                                               # fee sensitivity override for the replayed tape
+            if m.venue == "hyperliquid" and getattr(a, "hl_maker_bps", None) is not None:
+                m.fee_maker_bps, m.fee_taker_bps = a.hl_maker_bps, a.hl_taker_bps
+        ag.attach_sniper(MakerSniper(ag, cfg.snipe))
+        ag.snipe_has_prints = has_prints
     last_hk = last_st = float(t[0])
     for k in range(t.shape[0]):
         tk, i = float(t[k]), int(idx[k])
-        if i < 0:
+        if i == -1:
             ag.on_trade(tk, float(b[k]), float(aa[k]), bool(bq[k]))
+            continue
+        if i < -1:                                           # market trade print: idx = -(market+2)
+            ag.on_market_trade(-i - 2, tk, float(b[k]), float(aa[k]), int(bq[k]))
             continue
         ag.on_quote(i, tk, float(b[k]), float(aa[k]), float(bq[k]), float(aq[k]))
         if i == 0:
@@ -221,7 +269,7 @@ def main():
         uvloop.install()
         ag, fm, t_end = asyncio.run(live(a, cfg, run_dir))
         feeds, mode = fm.stats, "live"
-    rep = finish(ag, t_end, {"mode": mode, "feeds": feeds, "phase4": a.phase4 or ag.pm is not None, "fee_assumption": True}, run_dir)
+    rep = finish(ag, t_end, {"mode": mode, "feeds": feeds, "phase4": a.phase4 or ag.pm is not None, "phase5": bool(getattr(a, "phase5", False)), "fee_assumption": True}, run_dir)
     print(rep)
     print(f"\nartifacts: {run_dir}", flush=True)
 

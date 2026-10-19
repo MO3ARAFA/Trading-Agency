@@ -313,7 +313,7 @@ class PmBooks:
         return bb, aa, (b.get(bb, 0.0) if b else 0.0), (a.get(aa, 0.0) if a else 0.0)
 
 
-def handle_clob_message(m, books: PmBooks, on_top) -> None:
+def handle_clob_message(m, books: PmBooks, on_top, on_trade=None) -> None:
     items = m if isinstance(m, list) else [m]
     for it in items:
         et = it.get("event_type")
@@ -331,6 +331,8 @@ def handle_clob_message(m, books: PmBooks, on_top) -> None:
                 seen.add(aid)
             for aid in seen:
                 on_top(aid)
+        elif et == "last_trade_price" and on_trade is not None:
+            on_trade(it["asset_id"], float(it["price"]), float(it["size"]), it.get("side", ""))
 
 
 # --------------------------------------------------------------------------------- the watcher / hunter
@@ -387,6 +389,15 @@ class PolymarketWatcher:
                 self.n_quotes += 1
                 self.a.on_quote(i, perf(), tp[0], tp[1], tp[2], tp[3])
 
+        def on_trade(aid, price, size, side_str):
+            i = self.idx_of_token.get(aid)
+            if i is None:
+                return
+            row = self.book.state[i]
+            mid = float(row[MID]) if row[NTICK] > 0 else 0.0
+            agg = (1 if price >= mid else -1) if mid > 0 else (1 if side_str.upper() == "BUY" else -1)   # aggressor inferred from price vs mid
+            self.a.on_market_trade(i, perf(), price, size, agg)
+
         async def on_open(ws):
             self.books = PmBooks()
             last.clear()
@@ -402,7 +413,7 @@ class PolymarketWatcher:
                     m = loads(raw)
                 except Exception:
                     continue
-                handle_clob_message(m, self.books, on_top)
+                handle_clob_message(m, self.books, on_top, on_trade if fm.trade_prints else None)
                 st.quotes = self.n_quotes
 
         async def pinger(ws):

@@ -104,6 +104,17 @@ class CFOConfig:
     daily_loss_frac: float = 0.03
     breaker_cooldown_s: float = 600.0
     markout_horizons_s: Tuple[float, ...] = (1.0, 3.0, 5.0, 10.0, 30.0)
+    # ---- Phase 5 maker sniper (CFO's queue-aware cost model)
+    snipe_enabled: bool = True
+    snipe_gate_bps: float = 8.0          # spread gate for maker entries (a maker *captures* spread; PM spreads are in the 100s of bps)
+    snipe_p_fill: float = 0.3            # prior P(fill) for a joined order (learned online from account attempts)
+    snipe_p_exit_maker: float = 0.5      # prior P(passive exit fills before the work window ends)
+    snipe_adverse_bps: dict = field(default_factory=lambda: {"hyperliquid": 0.3, "polymarket": 60.0})
+    snipe_min_ev_bps: float = 0.2
+    snipe_adverse_hs_frac: float = 0.75  # prior: a passive fill gives back ~75 % of the half-spread to adverse selection
+    snipe_penny: bool = True
+    max_snipe_open: int = 6
+    snipe_blocked: tuple = ()            # venues the CEO has switched off
 
 
 @dataclass
@@ -171,6 +182,25 @@ class PolyConfig:
 
 
 @dataclass
+class SnipeConfig:
+    enabled: bool = True
+    venues: Tuple[str, ...] = ("hyperliquid", "polymarket")
+    order_latency_s: float = 0.15
+    cancel_latency_s: float = 0.15
+    taker_slack_bps: float = 1.0
+    ttl_s: dict = field(default_factory=lambda: {"hyperliquid": 6.0, "polymarket": 12.0})
+    work_s: dict = field(default_factory=lambda: {"hyperliquid": 8.0, "polymarket": 10.0})
+    max_hold_s: float = 30.0
+    hold_frac: float = 0.4               # shield: cancel when < 40 % of the impulse is still intact (CEO-tunable)
+    rev_bps: float = 0.3                 # shield: cancel on BTC reversal beyond this since the signal
+    converge_frac: float = 0.8           # shield: cancel when the venue already did >= 80 % of the gap
+    hl_notional: float = 200.0           # shadow-variant paper size (identical across variants)
+    pm_notional: float = 50.0
+    shadow_models: Tuple[str, ...] = ("strict", "depletion")
+    account_model: str = "strict"        # fill model for the CFO-accounted attempt ('trades' when a trade tape exists)
+
+
+@dataclass
 class AgencyConfig:
     oracle: OracleConfig = field(default_factory=OracleConfig)
     watchers: WatcherConfig = field(default_factory=WatcherConfig)
@@ -180,6 +210,7 @@ class AgencyConfig:
     exec: ExecConfig = field(default_factory=ExecConfig)
     arb: ArbConfig = field(default_factory=ArbConfig)
     poly: PolyConfig = field(default_factory=PolyConfig)
+    snipe: SnipeConfig = field(default_factory=SnipeConfig)
 
     def to_dict(self):
         return asdict(self)

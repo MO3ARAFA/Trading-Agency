@@ -425,3 +425,205 @@ def build_report_p4(ag: Agency, t_now: float, info: Optional[dict] = None) -> st
     gen = gen.split("## 1. Feed health & internal latency", 1)[-1]
     P("## (generic) Feed health" + gen)
     return "\n".join(L)
+
+
+# =====================================================================================================================
+# Phase 5 report: queue-aware passive maker sniper
+# =====================================================================================================================
+P4_REF = {   # Phase 4 (taker) reference numbers, same venues, 150 ms: docs/PHASE4.md
+    "hl": {"n": 92, "gross": 2.45, "net0": 1.65, "net": -7.35, "hit": 0.84},
+    "pm": {"gross_c": 2.33, "spread_c": 2.17, "net0_c": 0.48, "fee_c": 2.87, "net_c": -2.39, "n": 105},
+}
+VORDER = ["taker/taker", "taker/passive", "join/taker-exit+shield", "join/passive noshield", "join/passive+shield", "penny/passive+shield"]
+
+
+def _sn_rows(sn, venue, model, variant):
+    return sn.rows(variant=variant, model=model, venue=venue, account=False)
+
+
+def _sn_table(sn, venue, model, pm: bool):
+    from .cfo_agent import _cluster_se
+    body = []
+    for v in VORDER:
+        rs = _sn_rows(sn, venue, model, v)
+        if not rs:
+            continue
+        s = sn.summarize(rs)
+        f = [r for r in rs if r["outcome"] == "filled"]
+        se = _cluster_se(f, "net_bps") if len(f) > 1 else 0.0
+        att = [{"imp": r["imp"], "net": (r["net_bps"] if r["outcome"] == "filled" else 0.0)} for r in rs]
+        se_a = _cluster_se(att, "net") if len(att) > 1 else 0.0
+        row = [v, s["n"], s["filled"], f"{s['fill_rate']*100:.0f}%", f"{s['net_bps_per_fill']:+.2f}±{se:.2f}", f"{s['hit']*100:.0f}%",
+               f"{s['net_bps_per_attempt']:+.2f}±{se_a:.2f}", f"{s['markout5_per_fill']:+.2f}", s["fill_during_cancel"], s["shield"]]
+        if pm:
+            row.insert(5, f"{s['net_cents_per_fill']:+.2f}")
+        body.append(row)
+    head = ["variant", "attempts", "filled", "fill rate", "net bps / fill ±s.e.", "hit", "net bps / attempt ±s.e.", "5s markout after fill (bps)", "fills in cancel window", "shield cancels"]
+    if pm:
+        head.insert(5, "net ¢/share / fill")
+    return md_table(head, body)
+
+
+def build_report_p5(ag: Agency, t_now: float, info: Optional[dict] = None) -> str:
+    from .cfo_agent import _cluster_se
+    info = info or {}
+    cfg = ag.cfg
+    sn = ag.sniper
+    L = []
+    P = L.append
+    dur = t_now - ag.t0
+    metas = ag.book.metas
+    nhl = sum(1 for m in metas if m.venue == "hyperliquid")
+    npm = sum(1 for m in metas if m.venue == "polymarket")
+    prints = bool(getattr(ag, "snipe_has_prints", ag.n_mkt_trades > 0))
+    P("# Quant Agency — Phase 5 report: queue-aware passive maker sniper\n")
+    P(f"* mode **{info.get('mode','live')}**, duration **{dur:.0f}s**; markets: Binance BTC oracle, **{nhl} Hyperliquid perps**, **{npm} Polymarket BTC markets**; "
+      f"trade prints recorded: **{ag.n_mkt_trades}** ({'real fills are modelled from prints' if prints else 'NO trade tape → fills are bounded, not observed'}).")
+    P(f"* order latency **{cfg.snipe.order_latency_s*1000:.0f} ms**, cancel latency **{cfg.snipe.cancel_latency_s*1000:.0f} ms**; shield: cancel when < {cfg.snipe.hold_frac:.0%} of the impulse is intact, on a "
+      f"{cfg.snipe.rev_bps} bps reversal, or when the venue already did {cfg.snipe.converge_frac:.0%} of the gap; TTL {cfg.snipe.ttl_s}; passive-exit work window {cfg.snipe.work_s} then taker fallback.")
+    hl = [m for m in metas if m.venue == "hyperliquid"]
+    P(f"* **fees (assumptions):** Hyperliquid maker {hl[0].fee_maker_bps if hl else '-'} bps / taker {hl[0].fee_taker_bps if hl else '-'} bps per side (public base tier; the brief says ~1 bp maker — "
+      f"every table is linear in that: Δnet = −2·Δfee); Polymarket maker 0, taker `0.07·p·(1−p)` per share.")
+    P("""
+**Fill models** (an order sits behind the visible size at its price, or at the front if it penny-jumps inside the spread):
+`strict` — fill only when the opposite touch crosses our price (certain, lower bound) ·
+`depletion` — displayed-size depletion at our level counts as trades (optimistic upper bound; the only other option when no trade tape exists) ·
+`trades` — real trade prints consume the queue ahead of us and sweep through on prints beyond our price (live only).
+Cancels take effect after the cancel latency; fills inside that window are real and counted.
+""")
+    models = [m for m in ("strict", "depletion", "trades") if any(r["model"] == m for r in sn.results)]
+    for venue, label, pm in (("hyperliquid", "Hyperliquid perps (ALO maker, 1 tick spread)", False), ("polymarket", "Polymarket CLOB (post-only, 0 maker fee)", True)):
+        P(f"## {label}\n")
+        sigs = len({r["sid"] for r in sn.results if r["venue"] == venue})
+        P(f"{sigs} signals; every variant below runs on **exactly these signals** with identical paper size "
+          f"({'$%.0f' % cfg.snipe.hl_notional if not pm else '$%.0f' % cfg.snipe.pm_notional}).\n")
+        for m in models:
+            P(f"**fill model: `{m}`**\n")
+            P(_sn_table(sn, venue, m, pm))
+    # ---- mechanics
+    P("## Mechanics: why orders do or don't fill, and where the edge goes\n")
+    body = []
+    for venue in ("hyperliquid", "polymarket"):
+        sigs_ = [r for r in sn.results if r["venue"] == venue and r["variant"] == "taker/taker" and r["model"] == models[0]]
+        if sigs_:
+            ratios = []
+            for r in sigs_:
+                meta = ag.book.metas[ag.book.index[r["market"]]]
+                tick = meta.tick if meta.tick > 0 else sn.tick_est.get(ag.book.index[r["market"]], 0.0)
+                tick_bps = tick / r["mid0"] * 1e4 if r["mid0"] else 0.0
+                if tick_bps > 0:
+                    ratios.append(abs(r["gap_bps"]) / tick_bps)
+            body.append([venue, len(sigs_), f"{np.median([abs(r['gap_bps']) for r in sigs_]):.1f}", f"{np.median([r['spread_bps'] for r in sigs_]):.2f}",
+                         f"{np.median(ratios):.2f}" if ratios else "-", f"{np.mean([x < 1.0 for x in ratios])*100:.0f}%" if ratios else "-"])
+    P("**Signalled gap vs the price grid** — if the whole gap is smaller than one tick, a resting order cannot capture it: it only fills after the book has already moved a tick.\n")
+    P(md_table(["venue", "signals", "median |gap| bps", "median spread bps", "median gap / tick", "signals with gap < 1 tick"], body))
+    body = []
+    for venue in ("hyperliquid", "polymarket"):
+        for m in models:
+            rs = _sn_rows(sn, venue, m, "join/passive+shield")
+            if not rs:
+                continue
+            f = [r for r in rs if r["outcome"] == "filled"]
+            why = {}
+            for r in rs:
+                if r["outcome"] != "filled":
+                    why[r["reason"] or "?"] = why.get(r["reason"] or "?", 0) + 1
+            ex = {}
+            for r in f:
+                ex[r["exit_kind"]] = ex.get(r["exit_kind"], 0) + 1
+            body.append([venue, m, len(rs), ", ".join(f"{k}={v}" for k, v in sorted(why.items(), key=lambda kv: -kv[1])) or "-",
+                         ", ".join(f"{k}={v}" for k, v in ex.items()) or "-",
+                         f"{np.mean([r['gross_bps'] for r in f]):+.2f}" if f else "-", f"{np.mean([r['fees_usd']/r['notional']*1e4 for r in f]):.2f}" if f else "-"])
+    P("**`join/passive+shield`: no-fill reasons, exit mix, gross and fees per fill (bps of notional):**\n")
+    P(md_table(["venue", "model", "attempts", "not filled because", "exit mix of fills", "gross bps / fill", "fees bps / fill"], body))
+    # ---- shield value
+    P("## Does the oracle cancel shield earn its keep?\n")
+    body = []
+    for venue in ("hyperliquid", "polymarket"):
+        for m in models:
+            a = _sn_rows(sn, venue, m, "join/passive+shield")
+            b = _sn_rows(sn, venue, m, "join/passive noshield")
+            if not a or not b:
+                continue
+            sa, sb = sn.summarize(a), sn.summarize(b)
+            body.append([venue, m, f"{sa['fill_rate']*100:.0f}% vs {sb['fill_rate']*100:.0f}%", f"{sa['net_bps_per_fill']:+.2f} vs {sb['net_bps_per_fill']:+.2f}",
+                         f"{sa['net_bps_per_attempt']:+.2f} vs {sb['net_bps_per_attempt']:+.2f}", f"{sa['markout5_per_fill']:+.2f} vs {sb['markout5_per_fill']:+.2f}", sa["shield"]])
+    P(md_table(["venue", "fill model", "fill rate (shield vs none)", "net bps/fill", "net bps/attempt", "5s markout after fill", "orders pulled"], body))
+    # ---- adverse selection
+    P("## Adverse selection: filled orders vs the same signals' unconditional markout\n")
+    P("`unconditional` = mid-to-mid gross markout at t+5s of *all* signals on that venue (what a taker captures before costs); `conditional` = markout after a passive fill. "
+      "A negative gap is the adverse-selection tax on maker fills.\n")
+    body = []
+    for venue in ("hyperliquid", "polymarket"):
+        un = [r["gross"] for r in ag.cfo.markouts.rows if r["venue"] == venue and r["h"] == 5.0]
+        for m in models:
+            rs = [r for r in _sn_rows(sn, venue, m, "join/passive+shield") if r["outcome"] == "filled" and np.isfinite(r["markout5_bps"])]
+            if not rs or not un:
+                continue
+            c = float(np.mean([r["markout5_bps"] for r in rs]))
+            body.append([venue, m, len(un), f"{np.mean(un):+.2f}", len(rs), f"{c:+.2f}", f"{c-np.mean(un):+.2f}"])
+    P(md_table(["venue", "fill model", "n signals", "unconditional gross bps", "n fills", "conditional markout bps", "adverse-selection gap"], body))
+    # ---- cancel latency
+    P("## Cancel-latency adverse fills\n")
+    body = []
+    for venue in ("hyperliquid", "polymarket"):
+        for m in models:
+            rs = [r for r in sn.rows(model=m, venue=venue, account=False) if r["outcome"] == "filled" and r["variant"] in ("join/passive+shield", "penny/passive+shield", "join/taker-exit+shield")]
+            f_in = [r for r in rs if r["fill_during_cancel"]]
+            f_out = [r for r in rs if not r["fill_during_cancel"]]
+            if not rs:
+                continue
+            body.append([venue, m, len(rs), len(f_in), f"{np.mean([r['net_bps'] for r in f_in]):+.2f}" if f_in else "-", f"{np.mean([r['net_bps'] for r in f_out]):+.2f}" if f_out else "-"])
+    P(md_table(["venue", "fill model", "shield-variant fills", "of which inside the cancel window", "mean net bps (inside)", "mean net bps (other fills)"], body))
+    # ---- before / after
+    P("## Before / after: Phase 4 taker vs Phase 5 maker (same venues, same assumptions)\n")
+    ref = P4_REF
+    for venue in ("hyperliquid",):
+        m0 = "strict" if "strict" in models else models[0]
+        t = sn.summarize(_sn_rows(sn, venue, m0, "taker/taker"))
+        mj = sn.summarize(_sn_rows(sn, venue, m0, "join/passive+shield"))
+        mjd = sn.summarize(_sn_rows(sn, "hyperliquid", "depletion", "join/passive+shield")) if "depletion" in models else None
+        mjt = sn.summarize(_sn_rows(sn, "hyperliquid", "trades", "join/passive+shield")) if "trades" in models else None
+        body = [["Phase 4 report (taker, 150 ms, all HL signals)", ref["hl"]["n"], "100%", f"{ref['hl']['net']:+.2f}", "-"],
+                ["Phase 5 `taker/taker` (same engine, same signals as below)", t.get("n", 0), "100%" if t.get("n") else "-", f"{t.get('net_bps_per_fill', 0):+.2f}", f"{t.get('net_bps_per_attempt', 0):+.2f}"]]
+        for lab, s_ in (("join/passive+shield, strict (lower bound)", mj), ("join/passive+shield, depletion (upper bound)", mjd), ("join/passive+shield, trades (observed prints)", mjt)):
+            if s_ and s_.get("n"):
+                body.append([f"Phase 5 {lab}", s_["n"], f"{s_['fill_rate']*100:.0f}%", f"{s_['net_bps_per_fill']:+.2f}", f"{s_['net_bps_per_attempt']:+.2f}"])
+        P("**Hyperliquid, net bps (after fees):**\n")
+        P(md_table(["configuration", "signals/attempts", "fill rate", "net bps / fill", "net bps / attempt (unfilled = 0)"], body))
+    body = []
+    t = sn.summarize(_sn_rows(sn, "polymarket", models[0], "taker/taker"))
+    body.append(["Phase 4 report (taker, live-priced contracts)", ref["pm"]["n"], "100%", f"{ref['pm']['net_c']:+.2f}", "-"])
+    body.append(["Phase 5 `taker/taker` baseline", t.get("n", 0), "100%" if t.get("n") else "-", f"{t.get('net_cents_per_fill', 0):+.2f}", "-"])
+    for m in models:
+        for v in ("join/passive+shield", "penny/passive+shield"):
+            s_ = sn.summarize(_sn_rows(sn, "polymarket", m, v))
+            if s_.get("n"):
+                rs = _sn_rows(sn, "polymarket", m, v)
+                per_att = sum(r["net_cents"] for r in rs if r["outcome"] == "filled") / len(rs)
+                body.append([f"Phase 5 {v}, {m}", s_["n"], f"{s_['fill_rate']*100:.0f}%", f"{s_['net_cents_per_fill']:+.2f}", f"{per_att:+.2f}"])
+    P("**Polymarket, net ¢ per share (after fees):**\n")
+    P(md_table(["configuration", "signals/attempts", "fill rate", "net ¢ / fill", "net ¢ / attempt (unfilled = 0)"], body))
+    # ---- account
+    P("## CFO-accounted maker attempts and CEO monitoring\n")
+    ar = sn.account_results
+    fl = [r for r in ar if r["outcome"] == "filled"]
+    cr = ag.cfo.report()
+    P(f"account attempts {len(ar)}, filled {len(fl)} ({len(fl)/max(len(ar),1)*100:.0f}%), net PnL ${sum(r['net_usd'] for r in fl):+.2f}, equity ${cr['equity']:,.2f}; "
+      f"learned P(fill) {ag.cfo.cfg.snipe_p_fill:.2f}, P(passive exit) {ag.cfo.cfg.snipe_p_exit_maker:.2f}, adverse buffers {ag.cfo.cfg.snipe_adverse_bps}, CFO reasons: "
+      + ", ".join(f"{k}={v}" for k, v in sorted(cr['reasons'].items(), key=lambda kv: -kv[1])) + "\n")
+    if fl:
+        P(md_table(["market", "side", "entry", "mode", "wait s", "entry px", "exit px", "exit", "net bps", "net $", "in cancel window"],
+                   [[r["market"][:40], "L" if r["side"] > 0 else "S", r["entry_mode"], r["model"], f"{r['wait_s']:.1f}", f"{r['entry_px']:.5g}", f"{r['exit_px']:.5g}", r["exit_kind"],
+                     f"{r['net_bps']:+.1f}", f"{r['net_usd']:+.3f}", r["fill_during_cancel"]] for r in fl[-12:]]))
+    ivs = [iv for iv in ag.ceo.interventions if iv.kind.startswith("SNIPE")]
+    P("**CEO sniper interventions:**\n")
+    P("```\n" + ("\n".join(iv.line() for iv in ivs) or "(none triggered)") + "\n```\n")
+    P(f"CEO state {ag.ceo.state.value}; all interventions {len(ag.ceo.interventions)}.\n")
+    P("## Caveats\n")
+    P("* " + ("Real trade prints were recorded for Hyperliquid and Polymarket in this session; Polymarket aggressor side is inferred from price vs mid. " if prints else
+              "**This tape has no trade prints**, so queue consumption is unobservable: `strict`/`depletion` bracket the truth. ") +
+      "A real queue also has cancellations ahead of us, hidden/iceberg size and other makers' adverse-selection management, none of which can be observed here.\n"
+      "* Shadow variants use a fixed small paper size and do not move the book; the account attempt is CFO-sized. Hyperliquid is 1 tick wide so penny-jumping applies to Polymarket only.\n"
+      "* One quiet-regime session; cluster-robust s.e. over BTC impulses are shown and power is low.\n")
+    return "\n".join(L)

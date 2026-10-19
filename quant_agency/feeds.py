@@ -38,7 +38,8 @@ class FeedStats:
 class FeedManager:
     BINANCE_WS = "wss://data-stream.binance.vision/stream?streams="
 
-    def __init__(self, agency: Agency, perf=time.perf_counter):
+    def __init__(self, agency: Agency, perf=time.perf_counter, trade_prints: bool = False):
+        self.trade_prints = trade_prints
         self.a = agency
         self.perf = perf
         self.stop = asyncio.Event()
@@ -247,6 +248,8 @@ class FeedManager:
         async def on_open(ws):
             for coin in idx:
                 await ws.send(orjson.dumps({"method": "subscribe", "subscription": {"type": "bbo", "coin": coin}}).decode())
+                if self.trade_prints:
+                    await ws.send(orjson.dumps({"method": "subscribe", "subscription": {"type": "trades", "coin": coin}}).decode())
 
         async def handler(ws, st):
             async for raw in ws:
@@ -254,7 +257,14 @@ class FeedManager:
                 st.msgs += 1
                 st.last_msg = t
                 m = loads(raw)
-                if m.get("channel") != "bbo":
+                ch = m.get("channel")
+                if ch == "trades":                                  # aggressor side: 'B' = buyer-initiated
+                    for tr in m["data"]:
+                        j = idx.get(tr["coin"])
+                        if j is not None:
+                            a.on_market_trade(j, t, float(tr["px"]), float(tr["sz"]), 1 if tr["side"] == "B" else -1)
+                    continue
+                if ch != "bbo":
                     continue
                 d = m["data"]
                 i = idx.get(d["coin"])

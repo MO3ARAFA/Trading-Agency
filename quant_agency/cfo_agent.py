@@ -45,7 +45,8 @@ class Decision:
     tp_bps: float = 0.0
     stop_bps: float = 0.0
     time_stop_s: float = 0.0
-    cohort: str = "rejected_other"       # approved | rejected_edge | rejected_other
+    cohort: str = "rejected_other"       # approved | rejected_edge | rejected_gate | rejected_other
+    entry_mode: str = ""                # snipe: join | penny
 
     def as_dict(self):
         return asdict(self)
@@ -355,6 +356,117 @@ class CFOAgent:
             self.cohorts["approved"] -= 1
             self.reasons[reason] += 1
             self.cohorts["rejected_other"] += 1
+
+    # ------------------------------------------------------------------ Phase 5: queue-aware maker sniper
+    def evaluate_snipe(self, sig: Signal, now: float, has_position: bool = False, n_open: int = 0) -> Decision:
+        """Net edge for a *passive* entry (join / penny-jump) with a passive-then-taker exit.
+
+            NetFilled = tp + entry_advantage - exit_spread - fees - adverse_buffer - hurdle
+              entry_advantage = half-spread (join) or half-spread - 1 tick (penny)       [we buy at the bid instead of the mid]
+              fees            = maker_in + p_xm*maker_out + (1-p_xm)*taker_out            [Polymarket maker = 0; HL maker ~1-1.5 bps]
+              exit_spread     = (1-p_xm) * half-spread                                    [only the taker-fallback exits cross]
+              adverse_buffer  = max(venue base learned from realised-vs-predicted shortfall, 0.75 x half-spread):
+                                a passive fill is *conditionally* adverse, and on a 10 %-wide book that dwarfs everything else
+            EV = P(fill) * NetFilled (an unfilled order costs nothing but the missed move).
+        """
+        c = self.cfg
+        meta = self.book.metas[sig.idx]
+        self.n_eval += 1
+        hs = sig.spread_bps / 2.0
+        tick_bps = (meta.tick / sig.mid * BPS) if meta.tick > 0 else 0.0
+        two_ticks = meta.tick > 0 and (sig.ask - sig.bid) >= 2 * meta.tick - 1e-12
+        credit_bps = c.edge_credit * abs(sig.gap_bps)
+        tp_bps = c.tp_capture * credit_bps
+        px = sig.bid if sig.side > 0 else sig.ask
+        fee_in = maker_fee_bps(meta, c.fee_maker_bps)
+        fee_ot = taker_fee_bps(meta, px, c.fee_taker_bps)
+        p_xm = c.snipe_p_exit_maker
+        fees = fee_in + p_xm * fee_in + (1.0 - p_xm) * fee_ot
+        exit_spread = (1.0 - p_xm) * hs
+        buf = max(c.snipe_adverse_bps.get(meta.venue, 0.0), c.snipe_adverse_hs_frac * hs)
+
+        def net(mode):
+            adv = hs - (tick_bps if mode == "penny" else 0.0)
+            return tp_bps + adv - exit_spread - fees - buf - c.safety_hurdle_bps
+
+        options = {"join": (net("join"), c.snipe_p_fill)}
+        if c.snipe_penny and two_ticks:
+            options["penny"] = (net("penny"), min(0.95, 1.5 * c.snipe_p_fill))
+        mode = max(options, key=lambda m: options[m][0] * options[m][1])
+        nf, pf = options[mode]
+        dec = Decision(approved=False, reason="", mode="snipe", entry_mode=mode, net_edge_bps=nf, net_edge_taker_bps=nf, net_edge_maker_bps=nf,
+                       gap_credit_bps=credit_bps, spread_bps=exit_spread, fee_bps=fees, slip_bps=buf, hurdle_bps=c.safety_hurdle_bps)
+
+        def reject(reason: str, cohort: str = "rejected_other") -> Decision:
+            dec.reason, dec.cohort = reason, cohort
+            self.reasons[reason] += 1
+            self.cohorts[cohort] += 1
+            return dec
+
+        if meta.venue in c.snipe_blocked:
+            return reject("venue_disabled")
+        if self.halted:
+            return reject("halted")
+        if self.is_blacklisted(sig.market, now):
+            return reject("quarantined")
+        if sig.spread_bps > c.snipe_gate_bps and meta.kind != "prediction":
+            return reject("spread_too_wide", "rejected_gate")
+        if sig.side < 0 and not c.allow_short:
+            return reject("short_disabled")
+        if has_position or n_open >= c.max_snipe_open:
+            return reject("in_position")
+        if nf <= 0.0:
+            return reject("net_edge_below_hurdle", "rejected_edge")
+        if pf * nf < c.snipe_min_ev_bps:
+            return reject("low_ev", "rejected_edge")
+        eq = self.equity
+        stop_bps = max(c.stop_mult * sig.sigma_res_bps, c.min_stop_bps)
+        hold = min(max(3.0 * max(sig.window_s, 3.0), c.time_stop_min_s), c.time_stop_max_s)
+        sigma_trade = max(sig.sigma_res_bps * 0.5, 1.0)
+        kelly = c.kelly_fraction * (pf * nf / BPS) / (sigma_trade / BPS) ** 2 * eq
+        caps = {"kelly": kelly, "risk": c.risk_per_trade_frac * eq / (stop_bps / BPS), "trade": c.max_notional_frac * eq,
+                "market": c.max_market_frac * eq - abs(self.exposure.get(sig.market, 0.0)),
+                "gross": c.max_gross_frac * eq - sum(abs(v) for v in self.exposure.values())}
+        notional = max(min(caps.values()), 0.0) * c.size_mult
+        if notional <= 0.0:
+            return reject("exposure_cap")
+        if notional < max(c.min_notional, meta.min_notional):
+            return reject("size_below_min")
+        dec.approved, dec.reason, dec.cohort = True, "ok", "approved"
+        dec.notional, dec.qty = notional, notional / max(px, 1e-12)
+        dec.tp_bps, dec.stop_bps, dec.time_stop_s = tp_bps, stop_bps, hold
+        self.n_approved += 1
+        self.reasons["ok"] += 1
+        self.cohorts["approved"] += 1
+        return dec
+
+    def set_snipe_base(self, venue: str, val: float) -> None:
+        """CEO directive: raise/lower the venue's base adverse-selection buffer (survives the CFO's online learning)."""
+        base = getattr(self, "_adv_base", None)
+        if base is None:
+            base = self._adv_base = dict(self.cfg.snipe_adverse_bps)
+        base[venue] = max(val, 0.0)
+        ew = getattr(self, "_adv_ew", {}).get(venue, 0.0)
+        self.cfg.snipe_adverse_bps[venue] = min(max(base[venue], ew), 400.0)
+        self.directive_log.append({"directive": {"snipe_adverse_base": (venue, val)}})
+
+    def on_snipe_result(self, r: dict) -> None:
+        """Learn fill probability, passive-exit probability and the adverse-selection buffer from account attempts."""
+        c = self.cfg
+        self._snipe_n = getattr(self, "_snipe_n", 0) + 1
+        a = 0.15
+        if self._snipe_n >= 5:
+            c.snipe_p_fill = min(max((1 - a) * c.snipe_p_fill + a * float(r["outcome"] == "filled"), 0.03), 0.95)
+        if r["outcome"] == "filled":
+            c.snipe_p_exit_maker = min(max((1 - a) * c.snipe_p_exit_maker + a * float(r.get("exit_kind") == "passive"), 0.05), 0.95)
+            short = max(r.get("pred_net_bps", 0.0) - r["net_bps"], 0.0)
+            ew = getattr(self, "_adv_ew", {})
+            ew[r["venue"]] = 0.8 * ew.get(r["venue"], short) + 0.2 * short
+            self._adv_ew = ew
+            base = getattr(self, "_adv_base", None)
+            if base is None:
+                base = self._adv_base = dict(c.snipe_adverse_bps)
+            c.snipe_adverse_bps[r["venue"]] = min(max(base.get(r["venue"], 0.0), ew[r["venue"]]), 400.0)
 
     # ------------------------------------------------------------------ position / PnL accounting
     def on_open(self, market: str, side: int, notional: float, beta: float) -> None:

@@ -54,6 +54,8 @@ class Agency:
         self.engine = ExecutionEngine(self.book, self.cfo, self.cfg.exec)
         self.arb = CrossVenueArb(self.book, self.cfo, self.cfg.arb)
         self.pm = None                            # set by attach_polymarket()
+        self.sniper = None                        # set by attach_sniper()
+        self.n_mkt_trades = 0
         # latency-sensitivity shadow trackers: same signals, different assumed order latency (does the edge survive speed?)
         self.alt_trackers = {lat: MarkoutTracker(self.book, self.cfg.cfo.markout_horizons_s, lat, self.cfg.cfo.fee_taker_bps)
                              for lat in (0.0, 0.5) if lat != self.cfg.cfo.latency_s}
@@ -82,6 +84,10 @@ class Agency:
     def attach_polymarket(self, watcher) -> None:
         self.pm = watcher
 
+    def attach_sniper(self, sniper) -> None:
+        self.sniper = sniper
+        self.ceo.sniper = sniper
+
     def start_recording(self) -> None:
         self.tape = tuple(array("d") for _ in range(6))
 
@@ -106,7 +112,18 @@ class Agency:
             self.n_btc += 1
         else:
             self.engine.on_quote(i, t)
+            if self.sniper is not None:
+                self.sniper.on_quote(i, t, bid, ask, bq, aq)
         self.last_t = t
+
+    def on_market_trade(self, i: int, t: float, price: float, size: float, aggressor: int) -> None:
+        """Trade print on market i (aggressor +1 = buyer-initiated). Recorded on the tape as idx = -(i+2)."""
+        tp = self.tape
+        if tp is not None:
+            tp[0].append(t); tp[1].append(-(i + 2)); tp[2].append(price); tp[3].append(size); tp[4].append(float(aggressor)); tp[5].append(0.0)
+        self.n_mkt_trades += 1
+        if self.sniper is not None:
+            self.sniper.on_trade(i, t, price, size, aggressor)
 
     def on_trade(self, t: float, price: float, qty: float, buyer_is_maker: bool) -> None:
         tp = self.tape
@@ -135,6 +152,8 @@ class Agency:
             self._write("trades", tr.as_dict())
         self.arb.scan(t)                                                   # also scanned on the BTC path; 10 ms internal throttle
         self._poll_arb(t)
+        if self.sniper is not None:
+            self.sniper.poll(t, float(self.oracle.micro))
         self.ceo.maybe_review(t)
         if self.cfo.flatten_requested:
             self.engine.flatten_all(t, "breaker_flatten")
@@ -162,6 +181,8 @@ class Agency:
             self._handle_signal(s, t)
         self.arb.scan(t)
         self._poll_arb(t)
+        if self.sniper is not None:
+            self.sniper.poll(t, float(self.oracle.micro))
         return sigs
 
     def step(self, t: float, force_scan: bool = False) -> List[Signal]:
@@ -171,6 +192,17 @@ class Agency:
 
     def _handle_signal(self, s: Signal, t: float) -> None:
         meta = self.book.metas[s.idx]
+        sn = self.sniper
+        if sn is not None and sn.enabled and sn.eligible(s.idx) and self.cfo.cfg.snipe_enabled and self.cfo.cfg.mode_policy != "taker_only":
+            dec = self.cfo.evaluate_snipe(s, t, has_position=sn.has_position(s.idx), n_open=len(sn.account_open))
+            s.decision = dec
+            sn.on_signal(s, float(self.oracle.micro), dec)
+            self.cfo.markouts.register(s, dec)
+            for tk in self.alt_trackers.values():
+                tk.register(s, dec)
+            self._write("signals", {**s.as_dict(), "decision": dec.as_dict()})
+            self.signals.append(s)
+            return
         dec = self.cfo.evaluate(s, t, has_position=self.engine.has_position(s.idx), tradable=meta.tradable)
         s.decision = dec
         payload = None

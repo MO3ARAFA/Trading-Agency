@@ -105,6 +105,9 @@ class CEOAgent:
         self._bump = False
         self.last_probation: Dict[str, float] = {}
         self.arb = None                          # CrossVenueArb, attached by the Agency
+        self.sniper = None                       # MakerSniper, attached by the Agency
+        self.snipe_epoch = -1e18
+        self.snipe_strikes: Dict[str, int] = {}
 
     # ----------------------------------------------------------------------------- KPIs
     def kpis(self, now: float) -> dict:
@@ -252,6 +255,58 @@ class CEOAgent:
                                      f"leg-risk {st['leg_risk']}, missed {st['missed']}); blacklisted {dur:.0f}s",
                                      {"locked": st["locked"], "leg_risk": st["leg_risk"], "missed": st["missed"]}, {}, {"until": round(float(now + dur), 1)}))
 
+    def _snipe_review(self, now, out):
+        """Phase 5: audit the passive maker sniper — fill rate, cancel-latency adverse fills, net maker markout per venue."""
+        sn = self.sniper
+        if sn is None or not sn.account_results:
+            return
+        c, cc = self.cfg, self.cfo.cfg
+        for venue in ("hyperliquid", "polymarket"):
+            rows = [r for r in sn.account_results if r["venue"] == venue and r["t_end"] >= self.snipe_epoch]
+            if venue in cc.snipe_blocked or len(rows) < 8:
+                continue
+            fills = [r for r in rows if r["outcome"] == "filled"]
+            fr = len(fills) / len(rows)
+            unit = 1.0 if venue == "hyperliquid" else 100.0          # bps tolerance scales with the venue's price units
+            ev = {"venue": venue, "attempts": len(rows), "fills": len(fills), "fill_rate": round(fr, 3),
+                  "shield_cancels": sum(1 for r in rows if r["shield_cancel"])}
+            if len(fills) >= 4:
+                nb = np.array([r["net_bps"] for r in fills])
+                se = float(nb.std(ddof=1) / np.sqrt(len(nb))) if len(nb) > 1 else 0.0
+                fdc = [r for r in fills if r["fill_during_cancel"]]
+                ev.update({"net_bps_per_fill": round(float(nb.mean()), 3), "se": round(se, 3), "fill_during_cancel": len(fdc)})
+                if len(fdc) >= 3 and len(fdc) / len(fills) >= 0.3 and float(np.mean([r["net_bps"] for r in fdc])) < 0 and sn.cfg.hold_frac < 0.8:
+                    before = {"hold_frac": sn.cfg.hold_frac}
+                    sn.cfg.hold_frac = round(min(sn.cfg.hold_frac + 0.1, 0.8), 2)
+                    out.append(self._log(now, "SNIPE_SHIELD_TIGHTEN", venue,
+                                         f"{len(fdc)}/{len(fills)} fills landed inside the cancel-latency window with net {np.mean([r['net_bps'] for r in fdc]):+.2f}bps: "
+                                         f"pulling orders earlier", ev, before, {"hold_frac": sn.cfg.hold_frac}))
+                    self.snipe_epoch = now
+                    continue
+                if float(nb.mean()) + se < -0.5 * unit * (1.0 if venue == "hyperliquid" else 1.5):
+                    base = dict(cc.snipe_adverse_bps)
+                    step = 0.3 if venue == "hyperliquid" else 50.0
+                    self.cfo.set_snipe_base(venue, base[venue] + step)
+                    self.snipe_strikes[venue] = self.snipe_strikes.get(venue, 0) + 1
+                    if self.snipe_strikes[venue] >= 3:
+                        cc.snipe_blocked = tuple(set(cc.snipe_blocked) | {venue})
+                        out.append(self._log(now, "SNIPE_DISABLE_VENUE", venue,
+                                             f"maker net {nb.mean():+.2f}±{se:.2f}bps per fill after {self.snipe_strikes[venue]} corrections; switching the sniper off for this venue",
+                                             ev, {"enabled": True}, {"enabled": False}))
+                    else:
+                        out.append(self._log(now, "SNIPE_RAISE_ADVERSE_BUFFER", venue,
+                                             f"maker net {nb.mean():+.2f}±{se:.2f}bps per fill < tolerance: CFO adverse-selection buffer {base[venue]:g}→{cc.snipe_adverse_bps[venue]:g}bps",
+                                             ev, {"buffer": base[venue]}, {"buffer": cc.snipe_adverse_bps[venue]}))
+                    self.snipe_epoch = now
+                    continue
+            if len(rows) >= 15 and fr < 0.08 and sum(1 for r in rows if r["shield_cancel"]) / len(rows) >= 0.6 and sn.cfg.hold_frac > 0.1:
+                before = {"hold_frac": sn.cfg.hold_frac}
+                sn.cfg.hold_frac = round(max(sn.cfg.hold_frac - 0.1, 0.1), 2)
+                out.append(self._log(now, "SNIPE_RELAX_SHIELD", venue,
+                                     f"fill rate {fr:.0%} with {sum(1 for r in rows if r['shield_cancel'])/len(rows):.0%} of orders pulled by the shield: shield too jumpy",
+                                     ev, before, {"hold_frac": sn.cfg.hold_frac}))
+                self.snipe_epoch = now
+
     def _tune_hunter(self, now, k, out):
         c, hc = self.cfg, self.hunter.cfg
         before = {"z_thr": hc.z_thr, "window_mult": hc.window_mult}
@@ -392,6 +447,7 @@ class CEOAgent:
                              "kpi": self._compact(k)})
         self._quarantine(now, k, out)
         self._quarantine_arbs(now, out)
+        self._snipe_review(now, out)
         self._audit_cfo(now, k, out)
         self._tune_hunter(now, k, out)
         self._escalate(now, k, verdict, reasons, out)
