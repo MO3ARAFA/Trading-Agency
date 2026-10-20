@@ -70,6 +70,7 @@ class Signal:
     hurdle_bps: float = 0.0    # |gap| hurdle in force for this market (max of the flat floor and the leader-volatility-scaled floor)
     lead_sigma_bps: float = 0.0  # EW std of the leader's move over the impulse horizon (the "historical sector volatility")
     net_gap_bps: float = 0.0   # |gap| - (spread + round-trip fee + slippage), only filled when the hunter has a cost model
+    tag: Optional[dict] = None  # free-form per-signal context; the markout tracker copies it into its rows (keys should start with "x_")
     # filled by downstream agents
     decision: Optional[object] = None
 

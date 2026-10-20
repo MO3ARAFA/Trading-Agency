@@ -65,6 +65,8 @@ def parse():
     p.add_argument("--sectors", action="store_true", help="Sector lead-lag study: BTC + SOL/PEPE/RENDER (+DOGE/TAO) oracles vs their ecosystems on Binance/Gate/Kraken/Hyperliquid; observe-only")
     p.add_argument("--sector-list", default="sol,pepe,render,doge,tao", help="comma list of sector oracles to run")
     p.add_argument("--sector-mult", type=float, default=0.5, help="sector gap hurdle = max(min_gap, mult * beta * leader sigma_h); 0 = flat hurdle")
+    p.add_argument("--midcap-xv", action="store_true", help="1-to-1 same-asset Binance spot -> Hyperliquid perp tail-lag scan over ~50 matched mid-caps (+BTC/ETH baseline); observe-only")
+    p.add_argument("--xv-pairs", type=int, default=50)
     p.add_argument("--placebo-shift", type=float, default=0.0, help="replay control: circularly shift every sector leader's (and BTC's) quote stream by this many seconds against the members, "
                    "so impulses are unrelated to member moves (null distribution of the selection effect)")
     p.add_argument("--sim", action="store_true")
@@ -85,6 +87,9 @@ def make_cfg(a) -> AgencyConfig:
     cfg.ceo.window_s = a.ceo_window
     cfg.watchers.n_markets = a.markets
     cfg.watchers.cross_venue = not a.no_cross_venue
+    if getattr(a, "midcap_xv", False):
+        cfg.watchers.ring_cap = 16384
+        cfg.poly.enabled = False
     if getattr(a, "sectors", False):
         cfg.watchers.ring_cap = 16384                     # busy leaders (SOL, DOGE) tick faster than BTC-era alts
         cfg.poly.enabled = False
@@ -166,6 +171,13 @@ def attach_phase7(ag: Agency, cfg: AgencyConfig, a, has_prints: bool) -> None:
     ag.attach_hc(HighConvictionSniper(ag, cfg.hc, sleeves), govern=False)
 
 
+def attach_xv(ag: Agency, a, pairs, cfg=None):
+    from .midcap_crossvenue import XvConfig, XvScanner
+    xv = XvScanner(ag, cfg or XvConfig(n_pairs=getattr(a, "xv_pairs", 50)), pairs)
+    ag.attach_xv(xv)
+    return xv
+
+
 def attach_sectors(ag: Agency, a, names, sc=None):
     from .sector_oracles import SectorConfig, SectorHub
     want = [n.strip() for n in a.sector_list.split(",") if n.strip()]
@@ -187,6 +199,10 @@ def finish(ag: Agency, t_end: float, info: dict, run_dir: str) -> str:
     ag.housekeeping(t_rep)
     ag.ceo.review(t_rep)
     ag.close()
+    if ag.xv is not None:
+        ag.xv.poll(t_rep + 31.0)
+        ag.xv.dump(run_dir, t_end)
+        return f"xv run: {ag.xv.n_signals} signals over {len(ag.xv.pairs)} pairs"
     if ag.sectors is not None:
         ag.sectors.poll(t_rep + 31.0)                       # resolve the 30 s markouts of the final signals against the last known quotes
         ag.sectors.dump(run_dir, t_end)
@@ -206,7 +222,16 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
 
     pm_specs, pm_tokens, pm_metas = {}, {}, []
     universe = None
-    if a.sectors:
+    xv_uni = None
+    if a.midcap_xv:
+        from .midcap_crossvenue import XvConfig, discover_xv_universe
+        print("discovering Binance<->Hyperliquid matched universe …", flush=True)
+        xv_uni = await discover_xv_universe(cfg=XvConfig(n_pairs=a.xv_pairs))
+        metas = xv_uni.metas
+        with open(os.path.join(run_dir, "xv_universe.json"), "w") as uf:
+            json.dump(xv_uni.as_dict(), uf, indent=1, default=float)
+        print(f"pairs: {xv_uni.counts} | dropped: {len(xv_uni.dropped)}", flush=True)
+    elif a.sectors:
         from .sector_oracles import discover_sector_universe
         print("discovering sector universe (Binance Vision, Gate, Kraken, Hyperliquid) …", flush=True)
         universe = await discover_sector_universe()
@@ -259,6 +284,9 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     perf = time.perf_counter
     ag = Agency(metas, cfg, out_dir=run_dir, t0=perf(), wall0=time.time())
     tape_extra = {}
+    if xv_uni is not None:
+        xv = attach_xv(ag, a, xv_uni.pairs)
+        tape_extra = {"xv": {"config": asdict(xv.cfg), "pairs": xv_uni.pairs}, "universe": xv_uni.as_dict(), "t0": ag.t0}
     if universe is not None:
         hub = attach_sectors(ag, a, [s["name"] for s in universe.sectors])
         hub.use_threads()
@@ -270,7 +298,7 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
         w = pmw.PolymarketWatcher(ag, pm_metas, pm_specs, pm_tokens, cfg.poly, wall0=tape_extra["wall0"], t0=ag.t0)
         ag.attach_polymarket(w)
     ag.hunter.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="calib")
-    if a.sectors:
+    if a.sectors or a.midcap_xv:
         pass
     elif a.phase5 and getattr(a, "phase7", False):
         attach_phase7(ag, cfg, a, has_prints=True)
@@ -369,10 +397,13 @@ def run_replay(a, cfg: AgencyConfig, run_dir: str):
         metas.append(MarketMeta(**m))
     extra = json.loads(str(z["extra"])) if "extra" in z.files else {}
     t, idx, b, aa, bq, aq = z["t"], z["i"], z["b"], z["a"], z["bq"], z["aq"]
-    if extra.get("sectors"):
+    if extra.get("sectors") or extra.get("xv"):
         cfg.watchers.ring_cap = 16384
         cfg.poly.enabled = False
     ag = Agency(metas, cfg, out_dir=run_dir, t0=float(t[0]), wall0=time.time())
+    if extra.get("xv"):
+        from .midcap_crossvenue import XvConfig
+        attach_xv(ag, a, extra["xv"]["pairs"], XvConfig(**{k: (tuple(v) if isinstance(v, list) else v) for k, v in extra["xv"]["config"].items()}))
     if extra.get("sectors"):
         from .sector_oracles import SectorConfig
         sc = SectorConfig(**{**extra["sectors"]["config"], "sectors": tuple(extra["sectors"]["names"])})
@@ -414,6 +445,9 @@ def run_replay(a, cfg: AgencyConfig, run_dir: str):
     if shift and ag.sectors is not None:
         t, idx, b, aa, bq, aq = placebo_shift(t, idx, b, aa, bq, aq, {0} | scan_idx, shift)
         ag.sectors.placebo_shift = shift
+    elif shift and ag.xv is not None:                       # the Binance leg of every pair is shifted against the (unmoved) perp
+        t, idx, b, aa, bq, aq = placebo_shift(t, idx, b, aa, bq, aq, {p["b"] for p in ag.xv.pairs}, shift)
+        ag.xv.placebo_shift = shift
     last_hk = last_st = float(t[0])
     for k in range(t.shape[0]):
         tk, i = float(t[k]), int(idx[k])

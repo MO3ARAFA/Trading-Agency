@@ -1,0 +1,33 @@
+{
+ "supersedes": null,
+ "primary": {
+  "lat": 0.15,
+  "h": 5.0,
+  "tier": "full_cost",
+  "min_top_usd": 1000.0,
+  "fee_per_side_bps": 4.5,
+  "min_clusters": 15,
+  "alpha": 0.05
+ },
+ "stop_clusters": 20,
+ "max_stages": 4,
+ "stage_minutes": 60,
+ "n_pairs": 50,
+ "base_commit": "64dec5daf3d5f82df05002710c090db294dca70c",
+ "frozen_sha256": {
+  "quant_agency/midcap_crossvenue.py": "86165f4688944492cf0880f49ffe923fb267c4c7af42e396fd57cca5a089fde1",
+  "quant_agency/midcap_eval.py": "4beb68ea4dda683ae3021a5bdb0a1e331b6bda1035aac80299ea3e3268770167",
+  "quant_agency/agency.py": "7d095b6a5662478b656b98183cd2521fb0e2d3c4432b0e3e5ebbd6bdf9448066",
+  "quant_agency/cfo_agent.py": "37031c1d10e406985ddd8d8045af78573fe505ad27be71aea8e0119932279c4e",
+  "quant_agency/inefficiency_hunter.py": "1b6ab1b194c65f20d65ed33fa6e04da99eb0ae723c41ee4dc34eb4847b21d936",
+  "quant_agency/market_watchers.py": "0177389706d786b6437c955176246f716c52a4f496b7729dd44678a241d2c86f",
+  "quant_agency/feeds.py": "292279e703ec68faa2d2781a996a9b5365618584f0a8e27324182638ab9be2ba",
+  "quant_agency/run_live.py": "a79bd2dbdf1e699ef707d61d7ff879d4c818ced5335fde82dcb2b2c265fee293",
+  "quant_agency/venues.py": "d26549f902d91794e770cac85eb02ca188c93fecb8eccc1f65a0c17369bfad79",
+  "quant_agency/config.py": "c60812f5fac170ea06dba033640babe04f475b877a3472df059f21f154d40aed",
+  "quant_agency/p8_eval.py": "e3f8eb69cfe43644100ad79fe897e9ccdadd7bbed6995887f540c8c6935dd814",
+  "quant_agency/p9_eval.py": "bba3d757370e83ae064fabf3a84a7364202115800a7fbc8130895b25f3adb105",
+  "quant_agency/mathkit.py": "8c6592407f0a3413b9337eb047ed3b93bd141ff2c57aa3655e265e89563fa7a9",
+  "quant_agency/btc_oracle.py": "4192eb9736c013a6141a3e79549836c07b93c997b5a0abb6335d80e74f68b162"
+ }
+}

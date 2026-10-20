@@ -60,6 +60,7 @@ class Agency:
         self.hc = None                            # Phase 6 Architecture B, set by attach_hc()
         self.sleeves = None                       # Phase 7 isolated per-venue risk sleeves, set by attach_sleeves()
         self.sectors = None                       # sector oracles + observe-only sink, set by attach_sectors()
+        self.xv = None                            # same-asset cross-venue scanner (midcap_crossvenue), set by attach_xv()
         self.n_mkt_trades = 0
         # latency-sensitivity shadow trackers: same signals, different assumed order latency (does the edge survive speed?)
         self.alt_trackers = {lat: MarkoutTracker(self.book, self.cfg.cfo.markout_horizons_s, lat, self.cfg.cfo.fee_taker_bps)
@@ -108,6 +109,10 @@ class Agency:
         """Sector oracles (SOL / PEPE / RENDER ...): every hunter's signals - BTC included - become observe-only markout rows."""
         self.sectors = hub
 
+    def attach_xv(self, xv) -> None:
+        """1-to-1 same-asset cross-venue scanner: measurement only; the arb module, the CEO and every order path stay idle."""
+        self.xv = xv
+
     def start_recording(self) -> None:
         self.tape = tuple(array("d") for _ in range(6))
 
@@ -125,6 +130,8 @@ class Agency:
         self.n_events += 1
         if not self.book.on_quote(i, t, bid, ask, bq, aq):
             return
+        if self.xv is not None:
+            self.xv.on_quote(i, t, bid, ask, bq, aq)
         if i == 0:
             self._recv_wall = self.perf()
             self.oracle.on_book(t, bid, ask, bq, aq)
@@ -174,6 +181,8 @@ class Agency:
                 self.hunter.cooldown_until[i] = max(self.hunter.cooldown_until[i], t + hold_s)
         if self.sectors is not None:
             self.sectors.reset(t, idxs, hold_s)
+        if self.xv is not None:
+            self.xv.reset(t, idxs, hold_s)
 
     # ------------------------------------------------------------------ main step
     def housekeeping(self, t: float) -> None:
@@ -184,15 +193,18 @@ class Agency:
             tk.poll(t)
         if self.sectors is not None:
             self.sectors.poll(t)
+        if self.xv is not None:
+            self.xv.poll(t)
         for tr in self.engine.poll(t):
             self._write("trades", tr.as_dict())
-        self.arb.scan(t)                                                   # also scanned on the BTC path; 10 ms internal throttle
-        self._poll_arb(t)
+        if self.xv is None:
+            self.arb.scan(t)                                               # also scanned on the BTC path; 10 ms internal throttle
+            self._poll_arb(t)
         self._poll_engines(t)
         if self.sleeves is not None:
             for ev in self.sleeves.review(t):
                 self._write("sleeve_events", ev.as_dict())
-        if self.sectors is None:                                            # measurement runs: nothing may retune the baseline hunter mid-capture
+        if self.sectors is None and self.xv is None:                        # measurement runs: nothing may retune the baseline hunter mid-capture
             self.ceo.maybe_review(t)
         if self.cfo.flatten_requested:
             self.engine.flatten_all(t, "breaker_flatten")
@@ -231,8 +243,9 @@ class Agency:
         self.scan_lat.add((self.perf() - t1) * 1e6)
         for s in sigs:
             self._handle_signal(s, t)
-        self.arb.scan(t)
-        self._poll_arb(t)
+        if self.xv is None:
+            self.arb.scan(t)
+            self._poll_arb(t)
         self._poll_engines(t)
         return sigs
 

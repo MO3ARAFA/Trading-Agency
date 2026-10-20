@@ -87,7 +87,8 @@ class MarkoutTracker:
                              "reason": dec.reason, "todo": list(self.horizons),
                              "oracle": getattr(sig, "oracle", "BTC"), "net_gap": getattr(sig, "net_gap_bps", 0.0), "lag_s": sig.lag_s, "beta": sig.beta,
                              "fair": abs(sig.fair_bps), "ldelta": sig.btc_delta_bps, "lz": sig.btc_z, "hurdle": getattr(sig, "hurdle_bps", 0.0),
-                             "lsig": getattr(sig, "lead_sigma_bps", 0.0), "hz": sig.horizon_s, "age": sig.age_s})
+                             "lsig": getattr(sig, "lead_sigma_bps", 0.0), "hz": sig.horizon_s, "age": sig.age_s,
+                             "tag": getattr(sig, "tag", None)})
 
     def poll(self, now: float) -> int:
         n = 0
@@ -118,7 +119,8 @@ class MarkoutTracker:
                                   "closure": closure, "approved": p["approved"], "sid": p["sid"], "imp": p["imp"],
                                   "oracle": p["oracle"], "asset": meta.asset or meta.base, "net_gap": p["net_gap"], "lag_s": p["lag_s"], "beta": p["beta"],
                                   "fair": p["fair"], "ldelta": p["ldelta"], "lz": p["lz"], "hurdle": p["hurdle"], "lsig": p["lsig"], "hz": p["hz"],
-                                  "age": p["age"], "fee_in": taker_fee_bps(meta, ex_in, self.fee), "fee_out": taker_fee_bps(meta, ex_out, self.fee)})
+                                  "age": p["age"], "fee_in": taker_fee_bps(meta, ex_in, self.fee), "fee_out": taker_fee_bps(meta, ex_out, self.fee),
+                                  "hin": 0.5 * (qe[1] - qe[0]) / mid_e * BPS, "hout": 0.5 * (qx[1] - qx[0]) / mid_x * BPS, **(p["tag"] or {})})
                 n += 1
             p["todo"] = todo
             if todo:
