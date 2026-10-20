@@ -1,0 +1,1634 @@
+{
+ "duration_s": 2616.0324821279974,
+ "markets": 100,
+ "signals": 255,
+ "impulses": 52,
+ "cfo": {
+  "equity": 10000.0,
+  "peak": 10000.0,
+  "drawdown_frac": 0.0,
+  "closed_pnl": 0.0,
+  "fees_paid": 0.0,
+  "evaluated": 0,
+  "approved": 0,
+  "reasons": {},
+  "halted": false,
+  "halt_reason": "",
+  "gross_exposure": 0,
+  "blacklist": {
+   "pm:bitcoin-up-or-down-october-19-2026-7pm-et:updown_1h": "negative_markouts",
+   "pm:btc-updown-4h-1792454400:updown_4h": "negative_markouts",
+   "pm:bitcoin-up-or-down-october-19-2026-8pm-et:updown_1h": "negative_markouts",
+   "hyperliquid:SOL": "negative_markouts",
+   "hyperliquid:ADA": "negative_markouts",
+   "hyperliquid:XRP": "negative_markouts",
+   "hyperliquid:BTC": "negative_markouts",
+   "hyperliquid:DOGE": "negative_markouts",
+   "pm:btc-updown-15m-1792455300:updown_15m": "negative_markouts",
+   "hyperliquid:LTC": "negative_markouts",
+   "hyperliquid:LINK": "negative_markouts",
+   "hyperliquid:AVAX": "negative_markouts",
+   "hyperliquid:ETH": "negative_markouts",
+   "pm:bitcoin-price-on-october-20-2026:range-82000-84000": "negative_markouts",
+   "pm:bitcoin-price-on-october-21-2026:range-82000-84000": "negative_markouts",
+   "pm:bitcoin-above-on-october-20-2026:above-82000": "negative_markouts"
+  },
+  "hurdle_bps": 2.5,
+  "edge_credit": 0.7224999999999999,
+  "mode_policy": "maker_only",
+  "size_mult": 0.4,
+  "p_fill_maker": 0.2
+ },
+ "engine": {
+  "submitted": 0,
+  "filled": 0,
+  "partial": 0,
+  "closed": 0,
+  "open": 0,
+  "pending": 0,
+  "dropped": {}
+ },
+ "interventions": [
+  {
+   "iid": 1,
+   "t": 20673.429383725,
+   "wall": "23:49:02",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 12% over 16 fresh signals, regime normal-vol (vol ratio 1.13)",
+   "evidence": {
+    "n_signals": 16,
+    "gross5": 620.553,
+    "net5": -86.758,
+    "false_gap": 0.125,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.074,
+    "drawdown": 0.0,
+    "vol_ratio": 1.133
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   }
+  },
+  {
+   "iid": 2,
+   "t": 20763.533813093,
+   "wall": "23:50:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:btc-updown-15m-1792453500:updown_15m",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "toxic_flow: n=6 gross@1s=-449.36 gross@5s=-546.42 net@5s=-2775.89bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": -546.421,
+    "net": -2775.889,
+    "hit_net": 0.0,
+    "gross1": -449.357
+   },
+   "before": {},
+   "after": {
+    "until": 21363.5
+   }
+  },
+  {
+   "iid": 3,
+   "t": 20883.614474083,
+   "wall": "23:52:32",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 26% over 53 fresh signals, regime normal-vol (vol ratio 1.00)",
+   "evidence": {
+    "n_signals": 53,
+    "gross5": 237.949,
+    "net5": -596.222,
+    "false_gap": 0.264,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.198,
+    "drawdown": 0.0,
+    "vol_ratio": 1.004
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 4,
+   "t": 20973.691770279,
+   "wall": "23:54:02",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-up-or-down-october-19-2026-7pm-et:updown_1h",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=6 gross@1s=+380.44 gross@5s=-4.85 net@5s=-2182.31bps hit=33%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": -4.846,
+    "net": -2182.31,
+    "hit_net": 0.333,
+    "gross1": 380.44
+   },
+   "before": {},
+   "after": {
+    "until": 21573.7
+   }
+  },
+  {
+   "iid": 5,
+   "t": 21363.992622257,
+   "wall": "00:00:32",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "false-gap 25% over 36 fresh signals, regime high-vol (vol ratio 1.73)",
+   "evidence": {
+    "n_signals": 36,
+    "gross5": 528.895,
+    "net5": -23.222,
+    "false_gap": 0.25,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.712,
+    "drawdown": 0.0,
+    "vol_ratio": 1.725
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 6,
+   "t": 21454.020317835,
+   "wall": "00:02:02",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:btc-updown-15m-1792454400:updown_15m",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=10 gross@1s=+209.59 gross@5s=+433.64 net@5s=-407.30bps hit=30%; blacklisted 600s",
+   "evidence": {
+    "n": 10,
+    "gross": 433.641,
+    "net": -407.304,
+    "hit_net": 0.3,
+    "gross1": 209.588
+   },
+   "before": {},
+   "after": {
+    "until": 22054.0
+   }
+  },
+  {
+   "iid": 7,
+   "t": 21454.020317835,
+   "wall": "00:02:02",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:btc-updown-4h-1792454400:updown_4h",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "negative_markouts: n=8 gross@1s=+24.27 gross@5s=+248.24 net@5s=-669.90bps hit=12%; blacklisted 600s",
+   "evidence": {
+    "n": 8,
+    "gross": 248.239,
+    "net": -669.897,
+    "hit_net": 0.125,
+    "gross1": 24.272
+   },
+   "before": {},
+   "after": {
+    "until": 22054.0
+   }
+  },
+  {
+   "iid": 8,
+   "t": 21454.020317835,
+   "wall": "00:02:02",
+   "kind": "CFO_EDGE_RECALIBRATION",
+   "target": "cfo",
+   "state_before": "NORMAL",
+   "state_after": "NORMAL",
+   "reason": "CFO predicted net +679.52bps but realised -359.99bps (ratio -0.53): haircutting gap credit",
+   "evidence": {
+    "n_signals": 72,
+    "gross5": 250.699,
+    "net5": -365.12,
+    "false_gap": 0.333,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -0.53,
+    "drawdown": 0.0,
+    "vol_ratio": 1.563
+   },
+   "before": {
+    "edge_credit": 1.0
+   },
+   "after": {
+    "edge_credit": 0.85
+   }
+  },
+  {
+   "iid": 9,
+   "t": 21454.020317835,
+   "wall": "00:02:02",
+   "kind": "TIGHTEN_CFO",
+   "target": "cfo",
+   "state_before": "NORMAL",
+   "state_after": "TIGHTENED",
+   "reason": "CFO edge realization -0.53 < 0.5",
+   "evidence": {
+    "n_signals": 72,
+    "gross5": 250.699,
+    "net5": -365.12,
+    "false_gap": 0.333,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -0.53,
+    "drawdown": 0.0,
+    "vol_ratio": 1.563
+   },
+   "before": {
+    "hurdle": 1.0,
+    "size_mult": 1.0,
+    "mode": "auto"
+   },
+   "after": {
+    "hurdle": 1.5,
+    "size_mult": 0.8,
+    "mode": "auto"
+   }
+  },
+  {
+   "iid": 10,
+   "t": 21514.085130813,
+   "wall": "00:03:02",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:SOL",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+1.03 gross@5s=+2.86 net@5s=-7.10bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 2.857,
+    "net": -7.095,
+    "hit_net": 0.0,
+    "gross1": 1.032
+   },
+   "before": {},
+   "after": {
+    "until": 22114.1
+   }
+  },
+  {
+   "iid": 11,
+   "t": 21514.085130813,
+   "wall": "00:03:02",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-up-or-down-october-19-2026-8pm-et:updown_1h",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+322.50 gross@5s=+686.62 net@5s=-260.14bps hit=17%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 686.622,
+    "net": -260.145,
+    "hit_net": 0.167,
+    "gross1": 322.501
+   },
+   "before": {},
+   "after": {
+    "until": 22114.1
+   }
+  },
+  {
+   "iid": 12,
+   "t": 21514.085130813,
+   "wall": "00:03:02",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 16% over 19 fresh signals, regime normal-vol (vol ratio 1.46)",
+   "evidence": {
+    "n_signals": 19,
+    "gross5": 266.392,
+    "net5": -291.698,
+    "false_gap": 0.158,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.11,
+    "drawdown": 0.0,
+    "vol_ratio": 1.456
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 13,
+   "t": 21544.126100997,
+   "wall": "00:03:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:ADA",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+0.61 gross@5s=+1.15 net@5s=-8.54bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 1.149,
+    "net": -8.539,
+    "hit_net": 0.0,
+    "gross1": 0.612
+   },
+   "before": {},
+   "after": {
+    "until": 22144.1
+   }
+  },
+  {
+   "iid": 14,
+   "t": 21544.126100997,
+   "wall": "00:03:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:DOGE",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=7 gross@1s=+0.28 gross@5s=+2.10 net@5s=-7.17bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 7,
+    "gross": 2.097,
+    "net": -7.172,
+    "hit_net": 0.0,
+    "gross1": 0.278
+   },
+   "before": {},
+   "after": {
+    "until": 22144.1
+   }
+  },
+  {
+   "iid": 15,
+   "t": 21544.126100997,
+   "wall": "00:03:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:XRP",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=7 gross@1s=+1.10 gross@5s=+2.30 net@5s=-7.47bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 7,
+    "gross": 2.302,
+    "net": -7.466,
+    "hit_net": 0.0,
+    "gross1": 1.096
+   },
+   "before": {},
+   "after": {
+    "until": 22144.1
+   }
+  },
+  {
+   "iid": 16,
+   "t": 21544.126100997,
+   "wall": "00:03:32",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:BTC",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=7 gross@1s=+1.11 gross@5s=+2.69 net@5s=-6.44bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 7,
+    "gross": 2.686,
+    "net": -6.436,
+    "hit_net": 0.0,
+    "gross1": 1.107
+   },
+   "before": {},
+   "after": {
+    "until": 22144.1
+   }
+  },
+  {
+   "iid": 17,
+   "t": 21544.126100997,
+   "wall": "00:03:32",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 21% over 48 fresh signals, regime high-vol (vol ratio 1.52)",
+   "evidence": {
+    "n_signals": 48,
+    "gross5": 629.09,
+    "net5": 99.196,
+    "false_gap": 0.208,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 2.323,
+    "drawdown": 0.0,
+    "vol_ratio": 1.524
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 18,
+   "t": 21604.204449899,
+   "wall": "00:04:32",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 64 fresh signals, regime normal-vol (vol ratio 1.46)",
+   "evidence": {
+    "n_signals": 64,
+    "gross5": 927.699,
+    "net5": 225.682,
+    "false_gap": 0.234,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 2.34,
+    "drawdown": 0.0,
+    "vol_ratio": 1.455
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 19,
+   "t": 21634.228308054,
+   "wall": "00:05:02",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 65 fresh signals, regime normal-vol (vol ratio 1.37)",
+   "evidence": {
+    "n_signals": 65,
+    "gross5": 922.894,
+    "net5": 212.264,
+    "false_gap": 0.231,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 2.34,
+    "drawdown": 0.0,
+    "vol_ratio": 1.37
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.5
+   }
+  },
+  {
+   "iid": 20,
+   "t": 21694.273950599,
+   "wall": "00:06:02",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 65 fresh signals, regime normal-vol (vol ratio 1.21)",
+   "evidence": {
+    "n_signals": 65,
+    "gross5": 922.894,
+    "net5": 212.264,
+    "false_gap": 0.231,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 2.34,
+    "drawdown": 0.0,
+    "vol_ratio": 1.215
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.5
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   }
+  },
+  {
+   "iid": 21,
+   "t": 21784.330227982,
+   "wall": "00:07:33",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 65 fresh signals, regime normal-vol (vol ratio 1.00)",
+   "evidence": {
+    "n_signals": 65,
+    "gross5": 922.894,
+    "net5": 212.264,
+    "false_gap": 0.231,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 2.34,
+    "drawdown": 0.0,
+    "vol_ratio": 0.997
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 22,
+   "t": 21814.375003805,
+   "wall": "00:08:03",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 65 fresh signals, regime normal-vol (vol ratio 0.93)",
+   "evidence": {
+    "n_signals": 65,
+    "gross5": 922.894,
+    "net5": 212.264,
+    "false_gap": 0.231,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 2.34,
+    "drawdown": 0.0,
+    "vol_ratio": 0.934
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.25
+   }
+  },
+  {
+   "iid": 23,
+   "t": 21844.382792005,
+   "wall": "00:08:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-price-on-october-20-2026:range-82000-84000",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=-16.91 gross@5s=+16.47 net@5s=-1363.12bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 16.471,
+    "net": -1363.121,
+    "hit_net": 0.0,
+    "gross1": -16.905
+   },
+   "before": {},
+   "after": {
+    "until": 22444.4
+   }
+  },
+  {
+   "iid": 24,
+   "t": 21844.382792005,
+   "wall": "00:08:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:LTC",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=7 gross@1s=+1.31 gross@5s=+1.04 net@5s=-8.52bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 7,
+    "gross": 1.044,
+    "net": -8.519,
+    "hit_net": 0.0,
+    "gross1": 1.307
+   },
+   "before": {},
+   "after": {
+    "until": 22444.4
+   }
+  },
+  {
+   "iid": 25,
+   "t": 21844.382792005,
+   "wall": "00:08:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:LINK",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=8 gross@1s=+1.14 gross@5s=+2.08 net@5s=-8.17bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 8,
+    "gross": 2.079,
+    "net": -8.166,
+    "hit_net": 0.0,
+    "gross1": 1.143
+   },
+   "before": {},
+   "after": {
+    "until": 22444.4
+   }
+  },
+  {
+   "iid": 26,
+   "t": 21844.382792005,
+   "wall": "00:08:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:AVAX",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+0.97 gross@5s=+2.01 net@5s=-7.42bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 2.008,
+    "net": -7.418,
+    "hit_net": 0.0,
+    "gross1": 0.965
+   },
+   "before": {},
+   "after": {
+    "until": 22444.4
+   }
+  },
+  {
+   "iid": 27,
+   "t": 21844.382792005,
+   "wall": "00:08:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:ETH",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=8 gross@1s=+1.53 gross@5s=+1.53 net@5s=-7.96bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 8,
+    "gross": 1.535,
+    "net": -7.959,
+    "hit_net": 0.0,
+    "gross1": 1.534
+   },
+   "before": {},
+   "after": {
+    "until": 22444.4
+   }
+  },
+  {
+   "iid": 28,
+   "t": 21844.382792005,
+   "wall": "00:08:33",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 21% over 97 fresh signals, regime normal-vol (vol ratio 1.33)",
+   "evidence": {
+    "n_signals": 97,
+    "gross5": 635.105,
+    "net5": -10.648,
+    "false_gap": 0.206,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 2.34,
+    "drawdown": 0.0,
+    "vol_ratio": 1.328
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.5
+   }
+  },
+  {
+   "iid": 29,
+   "t": 21994.567340439,
+   "wall": "00:11:03",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 147 fresh signals, regime normal-vol (vol ratio 1.18)",
+   "evidence": {
+    "n_signals": 147,
+    "gross5": 459.666,
+    "net5": -175.196,
+    "false_gap": 0.231,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 1.218,
+    "drawdown": 0.0,
+    "vol_ratio": 1.178
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.5
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   }
+  },
+  {
+   "iid": 30,
+   "t": 22054.642096176,
+   "wall": "00:12:03",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:btc-updown-4h-1792454400:updown_4h",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=20 gross@1s=+64.03 gross@5s=+43.06 net@5s=-1224.18bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 20,
+    "gross": 43.065,
+    "net": -1224.177,
+    "hit_net": 0.0,
+    "gross1": 64.029
+   },
+   "before": {},
+   "after": {
+    "until": 23254.6
+   }
+  },
+  {
+   "iid": 31,
+   "t": 22114.678684778,
+   "wall": "00:13:03",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-up-or-down-october-19-2026-8pm-et:updown_1h",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=15 gross@1s=+219.01 gross@5s=+456.95 net@5s=-795.91bps hit=7%; blacklisted 1200s",
+   "evidence": {
+    "n": 15,
+    "gross": 456.954,
+    "net": -795.91,
+    "hit_net": 0.067,
+    "gross1": 219.009
+   },
+   "before": {},
+   "after": {
+    "until": 23314.7
+   }
+  },
+  {
+   "iid": 32,
+   "t": 22114.678684778,
+   "wall": "00:13:03",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:SOL",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=9 gross@1s=+0.72 gross@5s=+3.08 net@5s=-6.88bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 9,
+    "gross": 3.076,
+    "net": -6.879,
+    "hit_net": 0.0,
+    "gross1": 0.716
+   },
+   "before": {},
+   "after": {
+    "until": 23314.7
+   }
+  },
+  {
+   "iid": 33,
+   "t": 22144.684180392,
+   "wall": "00:13:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:ADA",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=7 gross@1s=+2.63 gross@5s=+3.33 net@5s=-6.83bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 7,
+    "gross": 3.326,
+    "net": -6.826,
+    "hit_net": 0.0,
+    "gross1": 2.635
+   },
+   "before": {},
+   "after": {
+    "until": 23344.7
+   }
+  },
+  {
+   "iid": 34,
+   "t": 22144.684180392,
+   "wall": "00:13:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:XRP",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=8 gross@1s=+1.73 gross@5s=+2.74 net@5s=-7.08bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 8,
+    "gross": 2.738,
+    "net": -7.079,
+    "hit_net": 0.0,
+    "gross1": 1.729
+   },
+   "before": {},
+   "after": {
+    "until": 23344.7
+   }
+  },
+  {
+   "iid": 35,
+   "t": 22144.684180392,
+   "wall": "00:13:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:BTC",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=8 gross@1s=+1.12 gross@5s=+2.22 net@5s=-6.92bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 8,
+    "gross": 2.216,
+    "net": -6.921,
+    "hit_net": 0.0,
+    "gross1": 1.123
+   },
+   "before": {},
+   "after": {
+    "until": 23344.7
+   }
+  },
+  {
+   "iid": 36,
+   "t": 22144.684180392,
+   "wall": "00:13:33",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 21% over 112 fresh signals, regime normal-vol (vol ratio 1.05)",
+   "evidence": {
+    "n_signals": 112,
+    "gross5": 185.211,
+    "net5": -413.837,
+    "false_gap": 0.214,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.484,
+    "drawdown": 0.0,
+    "vol_ratio": 1.054
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.75
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 37,
+   "t": 22234.745865278,
+   "wall": "00:15:03",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 22% over 107 fresh signals, regime normal-vol (vol ratio 0.89)",
+   "evidence": {
+    "n_signals": 107,
+    "gross5": 164.607,
+    "net5": -412.18,
+    "false_gap": 0.224,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.484,
+    "drawdown": 0.0,
+    "vol_ratio": 0.886
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.25
+   }
+  },
+  {
+   "iid": 38,
+   "t": 22264.749592114,
+   "wall": "00:15:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:DOGE",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+1.48 gross@5s=+2.74 net@5s=-6.69bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 6,
+    "gross": 2.736,
+    "net": -6.693,
+    "hit_net": 0.0,
+    "gross1": 1.479
+   },
+   "before": {},
+   "after": {
+    "until": 23464.7
+   }
+  },
+  {
+   "iid": 39,
+   "t": 22264.749592114,
+   "wall": "00:15:33",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 21% over 124 fresh signals, regime normal-vol (vol ratio 0.97)",
+   "evidence": {
+    "n_signals": 124,
+    "gross5": 170.396,
+    "net5": -404.419,
+    "false_gap": 0.21,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.295,
+    "drawdown": 0.0,
+    "vol_ratio": 0.975
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   }
+  },
+  {
+   "iid": 40,
+   "t": 22324.795693166,
+   "wall": "00:16:33",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 127 fresh signals, regime normal-vol (vol ratio 0.93)",
+   "evidence": {
+    "n_signals": 127,
+    "gross5": 166.371,
+    "net5": -425.152,
+    "false_gap": 0.228,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -0.089,
+    "drawdown": 0.0,
+    "vol_ratio": 0.933
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.0
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 2.25
+   }
+  },
+  {
+   "iid": 41,
+   "t": 22354.812265581,
+   "wall": "00:17:03",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 22% over 150 fresh signals, regime high-vol (vol ratio 1.78)",
+   "evidence": {
+    "n_signals": 150,
+    "gross5": 283.504,
+    "net5": -345.29,
+    "false_gap": 0.22,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -0.331,
+    "drawdown": 0.0,
+    "vol_ratio": 1.781
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 2.25
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 42,
+   "t": 22384.818381973,
+   "wall": "00:17:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:btc-updown-15m-1792455300:updown_15m",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+318.92 gross@5s=+601.03 net@5s=-489.91bps hit=33%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 601.034,
+    "net": -489.909,
+    "hit_net": 0.333,
+    "gross1": 318.924
+   },
+   "before": {},
+   "after": {
+    "until": 22984.8
+   }
+  },
+  {
+   "iid": 43,
+   "t": 22444.870373341,
+   "wall": "00:18:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:LTC",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=8 gross@1s=+1.35 gross@5s=+2.45 net@5s=-6.86bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 8,
+    "gross": 2.447,
+    "net": -6.858,
+    "hit_net": 0.0,
+    "gross1": 1.354
+   },
+   "before": {},
+   "after": {
+    "until": 23644.9
+   }
+  },
+  {
+   "iid": 44,
+   "t": 22444.870373341,
+   "wall": "00:18:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:LINK",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=9 gross@1s=+1.95 gross@5s=+4.08 net@5s=-6.03bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 9,
+    "gross": 4.078,
+    "net": -6.034,
+    "hit_net": 0.0,
+    "gross1": 1.946
+   },
+   "before": {},
+   "after": {
+    "until": 23644.9
+   }
+  },
+  {
+   "iid": 45,
+   "t": 22444.870373341,
+   "wall": "00:18:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:AVAX",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=7 gross@1s=+2.39 gross@5s=+3.48 net@5s=-6.44bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 7,
+    "gross": 3.478,
+    "net": -6.442,
+    "hit_net": 0.0,
+    "gross1": 2.394
+   },
+   "before": {},
+   "after": {
+    "until": 23644.9
+   }
+  },
+  {
+   "iid": 46,
+   "t": 22444.870373341,
+   "wall": "00:18:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "hyperliquid:ETH",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=8 gross@1s=+1.77 gross@5s=+2.92 net@5s=-6.50bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 8,
+    "gross": 2.917,
+    "net": -6.5,
+    "hit_net": 0.0,
+    "gross1": 1.771
+   },
+   "before": {},
+   "after": {
+    "until": 23644.9
+   }
+  },
+  {
+   "iid": 47,
+   "t": 22564.938402767,
+   "wall": "00:20:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-price-on-october-20-2026:range-82000-84000",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+45.37 gross@5s=+164.26 net@5s=-1243.40bps hit=0%; blacklisted 1200s",
+   "evidence": {
+    "n": 6,
+    "gross": 164.26,
+    "net": -1243.399,
+    "hit_net": 0.0,
+    "gross1": 45.367
+   },
+   "before": {},
+   "after": {
+    "until": 23764.9
+   }
+  },
+  {
+   "iid": 48,
+   "t": 22564.938402767,
+   "wall": "00:20:33",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 22% over 136 fresh signals, regime normal-vol (vol ratio 1.47)",
+   "evidence": {
+    "n_signals": 136,
+    "gross5": 300.632,
+    "net5": -519.144,
+    "false_gap": 0.221,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -0.21,
+    "drawdown": 0.0,
+    "vol_ratio": 1.469
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 49,
+   "t": 22655.06225716,
+   "wall": "00:22:03",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-price-on-october-21-2026:range-82000-84000",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "negative_markouts: n=6 gross@1s=+144.07 gross@5s=+168.18 net@5s=-1693.98bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 6,
+    "gross": 168.182,
+    "net": -1693.978,
+    "hit_net": 0.0,
+    "gross1": 144.071
+   },
+   "before": {},
+   "after": {
+    "until": 23255.1
+   }
+  },
+  {
+   "iid": 50,
+   "t": 22655.06225716,
+   "wall": "00:22:03",
+   "kind": "CFO_EDGE_RECALIBRATION",
+   "target": "cfo",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "CFO predicted net +858.36bps but realised +43.11bps (ratio 0.05): haircutting gap credit",
+   "evidence": {
+    "n_signals": 181,
+    "gross5": 276.797,
+    "net5": -553.728,
+    "false_gap": 0.227,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.05,
+    "drawdown": 0.0,
+    "vol_ratio": 1.397
+   },
+   "before": {
+    "edge_credit": 0.85
+   },
+   "after": {
+    "edge_credit": 0.722
+   }
+  },
+  {
+   "iid": 51,
+   "t": 22655.06225716,
+   "wall": "00:22:03",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "TIGHTENED",
+   "state_after": "TIGHTENED",
+   "reason": "false-gap 23% over 181 fresh signals, regime normal-vol (vol ratio 1.40)",
+   "evidence": {
+    "n_signals": 181,
+    "gross5": 276.797,
+    "net5": -553.728,
+    "false_gap": 0.227,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.05,
+    "drawdown": 0.0,
+    "vol_ratio": 1.397
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.5
+   }
+  },
+  {
+   "iid": 52,
+   "t": 22655.06225716,
+   "wall": "00:22:03",
+   "kind": "DEFENSIVE_MAKER_ONLY",
+   "target": "cfo",
+   "state_before": "TIGHTENED",
+   "state_after": "DEFENSIVE",
+   "reason": "CFO edge realization 0.05 < 0.5; fee bleed: gross +276.80 vs net -553.73bps",
+   "evidence": {
+    "n_signals": 181,
+    "gross5": 276.797,
+    "net5": -553.728,
+    "false_gap": 0.227,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": 0.05,
+    "drawdown": 0.0,
+    "vol_ratio": 1.397
+   },
+   "before": {
+    "hurdle": 1.5,
+    "size_mult": 0.8,
+    "mode": "auto"
+   },
+   "after": {
+    "hurdle": 2.5,
+    "size_mult": 0.4,
+    "mode": "maker_only"
+   }
+  },
+  {
+   "iid": 53,
+   "t": 22715.106127555,
+   "wall": "00:23:03",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "DEFENSIVE",
+   "state_after": "DEFENSIVE",
+   "reason": "false-gap 35% over 26 fresh signals, regime high-vol (vol ratio 1.77)",
+   "evidence": {
+    "n_signals": 26,
+    "gross5": -220.343,
+    "net5": -1162.787,
+    "false_gap": 0.346,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -3.694,
+    "drawdown": 0.0,
+    "vol_ratio": 1.77
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.5
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 54,
+   "t": 22835.174491538,
+   "wall": "00:25:03",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "DEFENSIVE",
+   "state_after": "DEFENSIVE",
+   "reason": "false-gap 34% over 35 fresh signals, regime normal-vol (vol ratio 1.48)",
+   "evidence": {
+    "n_signals": 35,
+    "gross5": -122.168,
+    "net5": -1330.865,
+    "false_gap": 0.343,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -3.694,
+    "drawdown": 0.0,
+    "vol_ratio": 1.483
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 55,
+   "t": 22865.200457517,
+   "wall": "00:25:33",
+   "kind": "QUARANTINE_MARKET",
+   "target": "pm:bitcoin-above-on-october-20-2026:above-82000",
+   "state_before": "DEFENSIVE",
+   "state_after": "DEFENSIVE",
+   "reason": "negative_markouts: n=7 gross@1s=+59.04 gross@5s=+214.87 net@5s=-1026.07bps hit=0%; blacklisted 600s",
+   "evidence": {
+    "n": 7,
+    "gross": 214.873,
+    "net": -1026.07,
+    "hit_net": 0.0,
+    "gross1": 59.038
+   },
+   "before": {},
+   "after": {
+    "until": 23465.2
+   }
+  },
+  {
+   "iid": 56,
+   "t": 22865.200457517,
+   "wall": "00:25:33",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "DEFENSIVE",
+   "state_after": "DEFENSIVE",
+   "reason": "false-gap 38% over 58 fresh signals, regime high-vol (vol ratio 1.50)",
+   "evidence": {
+    "n_signals": 58,
+    "gross5": -52.297,
+    "net5": -1125.838,
+    "false_gap": 0.379,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -0.409,
+    "drawdown": 0.0,
+    "vol_ratio": 1.502
+   },
+   "before": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   }
+  },
+  {
+   "iid": 57,
+   "t": 22869.051238456,
+   "wall": "00:25:37",
+   "kind": "RETUNE_IMPULSE",
+   "target": "hunter",
+   "state_before": "DEFENSIVE",
+   "state_after": "DEFENSIVE",
+   "reason": "false-gap 41% over 61 fresh signals, regime normal-vol (vol ratio 1.49)",
+   "evidence": {
+    "n_signals": 61,
+    "gross5": -73.65,
+    "net5": -1156.709,
+    "false_gap": 0.41,
+    "trades": 0,
+    "exp_bps": 0.0,
+    "realization": -0.477,
+    "drawdown": 0.0,
+    "vol_ratio": 1.489
+   },
+   "before": {
+    "z_thr": 3.25,
+    "window_mult": 1.25
+   },
+   "after": {
+    "z_thr": 3.0,
+    "window_mult": 1.25
+   }
+  }
+ ],
+ "ceo_state": "DEFENSIVE",
+ "scan_latency_us": {
+  "n": 359328,
+  "p50": 41.74800051259808,
+  "p90": 257.6344973931556,
+  "p99": 625.5103601870392,
+  "max": 7194.609999714885,
+  "mean": 99.03263655703995
+ },
+ "decide_latency_us": {
+  "n": 0
+ },
+ "markout_all": {
+  "1.0": {
+   "n": 527,
+   "gross": 223.48700882195132,
+   "net": -557.5830555563784,
+   "hit_gross": 0.6527514231499051,
+   "hit_net": 0.04933586337760911,
+   "net_se": 89.63177436810557,
+   "gross_se": 57.656447311991734,
+   "n_imp": 109,
+   "closure": 0.840577598048101,
+   "pred": -242.6906500927197
+  },
+  "3.0": {
+   "n": 527,
+   "gross": 321.0563618931101,
+   "net": -455.79226260339476,
+   "hit_gross": 0.7324478178368121,
+   "hit_net": 0.08349146110056926,
+   "net_se": 109.98775443785836,
+   "gross_se": 81.98046279359144,
+   "n_imp": 109,
+   "closure": 1.2267349688409146,
+   "pred": -242.6906500927197
+  },
+  "5.0": {
+   "n": 527,
+   "gross": 291.07081915775717,
+   "net": -477.2800542764232,
+   "hit_gross": 0.7381404174573055,
+   "hit_net": 0.09297912713472485,
+   "net_se": 120.76941495125554,
+   "gross_se": 93.68950417367108,
+   "n_imp": 109,
+   "closure": 1.2175374918014135,
+   "pred": -242.6906500927197
+  },
+  "10.0": {
+   "n": 523,
+   "gross": 248.87575317193446,
+   "net": -513.7266375719363,
+   "hit_gross": 0.6596558317399618,
+   "hit_net": 0.09751434034416825,
+   "net_se": 149.05766354386955,
+   "gross_se": 121.2629946982861,
+   "n_imp": 108,
+   "closure": 1.0518092894670505,
+   "pred": -242.82998017256443
+  },
+  "30.0": {
+   "n": 502,
+   "gross": 85.13569287391233,
+   "net": -678.9581971487484,
+   "hit_gross": 0.5697211155378487,
+   "hit_net": 0.11155378486055777,
+   "net_se": 189.49100119518795,
+   "gross_se": 167.3650948955349,
+   "n_imp": 104,
+   "closure": 0.7070933324283979,
+   "pred": -248.46160576141992
+  }
+ },
+ "markout_approved": {
+  "1.0": {
+   "n": 49,
+   "gross": 1005.9379872422332,
+   "net": -7.63217357483145,
+   "hit_gross": 0.6326530612244898,
+   "hit_net": 0.30612244897959184,
+   "net_se": 218.09500087603485,
+   "gross_se": 270.0346107855084,
+   "n_imp": 28,
+   "closure": 0.7256183306037678,
+   "pred": 830.8243383902299
+  },
+  "3.0": {
+   "n": 49,
+   "gross": 1154.998679532603,
+   "net": 138.67478859772308,
+   "hit_gross": 0.673469387755102,
+   "hit_net": 0.42857142857142855,
+   "net_se": 210.76506888468182,
+   "gross_se": 254.09845587104968,
+   "n_imp": 28,
+   "closure": 0.8599838980239825,
+   "pred": 830.8243383902299
+  },
+  "5.0": {
+   "n": 49,
+   "gross": 1111.865673704405,
+   "net": 102.13187898627822,
+   "hit_gross": 0.6938775510204082,
+   "hit_net": 0.46938775510204084,
+   "net_se": 244.3212027689854,
+   "gross_se": 274.01388204295733,
+   "n_imp": 28,
+   "closure": 0.9520982827191872,
+   "pred": 830.8243383902299
+  },
+  "10.0": {
+   "n": 48,
+   "gross": 1121.2309167142969,
+   "net": 88.32689356728292,
+   "hit_gross": 0.6041666666666666,
+   "hit_net": 0.4791666666666667,
+   "net_se": 426.1049669960215,
+   "gross_se": 442.01986987085024,
+   "n_imp": 27,
+   "closure": 0.9052328880214832,
+   "pred": 821.4584795123232
+  },
+  "30.0": {
+   "n": 44,
+   "gross": 187.55158829824143,
+   "net": -875.7556067846143,
+   "hit_gross": 0.45454545454545453,
+   "hit_net": 0.36363636363636365,
+   "net_se": 633.8690697951486,
+   "gross_se": 644.3659586136007,
+   "n_imp": 26,
+   "closure": 0.082922447379629,
+   "pred": 777.7751095255812
+  }
+ },
+ "sleeves": [
+  {
+   "sleeve": "hyperliquid_b",
+   "state": "NORMAL",
+   "equity": 10000.0,
+   "peak": 10000.0,
+   "halted": false,
+   "halt_reason": "",
+   "round_trips": 0,
+   "fees_paid": 0.0,
+   "closed_pnl": 0.0,
+   "b_floor_mult": 1.5,
+   "size_mult": 1.0,
+   "n_halts": 0,
+   "events": 0
+  },
+  {
+   "sleeve": "polymarket_b",
+   "state": "NORMAL",
+   "equity": 9994.65,
+   "peak": 10026.1,
+   "halted": false,
+   "halt_reason": "",
+   "round_trips": 23,
+   "fees_paid": 43.66,
+   "closed_pnl": -5.35,
+   "b_floor_mult": 1.5,
+   "size_mult": 1.0,
+   "n_halts": 0,
+   "events": 0
+  }
+ ]
+}

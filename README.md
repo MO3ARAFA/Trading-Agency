@@ -104,3 +104,14 @@ python -m quant_agency.p6_stress --seeds 3 --duration 600
 python -m quant_agency.run_live --phase7 --b-exit wide2.0 --duration 3000 --record tapes/p7.npz
 python -m quant_agency.p7_pool tapes/p4_tape_1.npz tapes/p5_tape_1.npz tapes/p6_tape_1.npz tapes/p7_tape_1.npz
 ```
+
+## Phase 8 — single pre-registered exit validation (`trail` vs `fixed0.7`) and operator guide
+Hypothesis, metric, stopping rule and code hashes were committed **before** any new data (`docs/PREREG_PHASE8.md/.json`). **Result: not supported** — fresh-only paired difference −175 bps
+(t = −0.63, N = 24); cumulative N = 72, `trail` t = +1.67 (< 2.0, < 2.63). The Phase 7 improvement did not replicate; B with the reference exit remains an unproven lead (+162 ± 144 bps).
+See **[docs/PHASE8.md](docs/PHASE8.md)**; **[docs/OPERATOR_GUIDE.md](docs/OPERATOR_GUIDE.md)** covers live paper runs, tape record/replay, sleeve inspection (`inspect_run`),
+volatility-window collection (`regime_check`) and the conditions that must hold before any wallet is connected (none do today).
+```bash
+python -m quant_agency.p8_eval --check-frozen
+python -m quant_agency.inspect_run runs/<run_dir>
+python -m quant_agency.regime_check
+```
