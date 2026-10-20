@@ -42,11 +42,13 @@ quant_agency/
   execution_engine.py   Tier 3  payloads + paper exchange
   ceo_agent.py          Tier 4  supervisor + state machine + audit
   sector_oracles.py     secondary oracles (SOL / PEPE / RENDER / DOGE / TAO): universe discovery, per-leader hunters, observe-only sink
+  midcap_crossvenue.py  1-to-1 same-asset Binance spot -> Hyperliquid perp tail-lag scanner (+ matched-universe builder)
+  midcap_eval.py / midcap_report.py  frozen pre-registered primary test / report generator
   sector_report.py      sector lead-lag report generator (+ live capture driver, time-shift control)
   agency.py             wiring (sync, clock-injected)        feeds.py   asyncio/uvloop/orjson websockets
   telemetry.py          markdown report                      sim.py     synthetic lead-lag market
   run_live.py           CLI: live | --sim | --replay tape    sweep.py   replay one tape under many fee tiers
-tests/                  239 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
+tests/                  256 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
 docs/RESEARCH.md        Phase 1 reconnaissance → code map
 ```
 
@@ -145,3 +147,9 @@ a quote-validation gate and a CFO-model net gap `|gap| − (spread + 2·fee + sl
 **Result of the first 20-minute capture (exploratory):** median |gap| 2–4 bps (not 10–20), spread ≈ gap, net gap > 0 in 0 % of signals for five of six oracles, no sector oracle better than BTC on the same
 instruments, and a time-shifted-leader control shows most of the gross markout is selection, not lead-lag. Rare ≥ 10 bps dislocations (7 impulses) reached only the leader's own asset on Hyperliquid.
 See **[docs/SECTOR_LEAD_LAG.md](docs/SECTOR_LEAD_LAG.md)**; regenerate with `python -m quant_agency.sector_report --run docs/live_runs/sector20 --placebo docs/live_runs/sector20/placebo/shift* --notes docs/SECTOR_NOTES.md`.
+
+## Same-asset cross-venue tail lag — Binance spot → Hyperliquid perp, 50 mid-caps (pre-registered)
+`python -m quant_agency.run_live --midcap-xv --duration 3660 --record runs/tapes/xvr_s1.npz` pairs coin *i* on Binance Vision (sole oracle) 1-to-1 with coin *i* on Hyperliquid (50 mid-caps by HL volume, BTC/ETH as baseline),
+records every basis-neutral gap ≥ 4 bps with its tier flags (≥ 8 / 10 / 15 bps, full cost = spread + 9 bps fees + slippage), markouts at 0 / 150 / 500 / 1 000 ms latency, and a time-shifted-leg placebo.
+**Pre-registered test (`docs/PREREG_MIDCAP_XV.md`, frozen before data): not rejected — mean net −8.46 ± 1.63 bps over 27 full-cost-cleared signals (26 clusters, t = −5.2).** The lag is real (+3.9 bps gross vs ≈ 0 placebo at ≥ 8 bps)
+but sub-second, closes only ~⅓ of the gap, and the large gaps sit in books with a median touch of ~250 USD. See **[docs/MIDCAP_CROSSVENUE.md](docs/MIDCAP_CROSSVENUE.md)**.

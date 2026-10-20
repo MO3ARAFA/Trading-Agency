@@ -32,20 +32,32 @@ def _open_json(path):
     return json.load(open(path) if os.path.exists(path) else gzip.open(path + ".gz", "rt"))
 
 
-def load_set(dirs: Sequence[str]) -> dict:
-    rows, infos, unis = [], [], []
+LEAN_KEYS = ("x_asset", "lat", "h", "gap", "x_hurdle", "gross", "net0", "x_top_usd", "cl", "imp", "x_baseline", "side", "hin", "x_spread_h", "x_hl_age", "x_spread_b", "t0")
+
+
+def load_set(dirs: Sequence[str], lean: bool = False) -> dict:
+    """``lean`` keeps only the main-latency, h = 5 s rows and the columns the control tables need (the 24 control replays would not fit in memory otherwise)."""
+    rows, infos, unis, rows_all = [], [], [], []
     for d in dirs:
         tag = os.path.basename(os.path.normpath(d))
         info = _open_json(os.path.join(d, "xv_map.json"))
         cut = info["t_start"] + info.get("warm_s", 60.0)
-        r = [x for x in load_rows(d, tag) if x["t0"] >= cut]
+        if lean:
+            r = []
+            for x in load_rows(d, tag):
+                if x["t0"] >= cut and abs(x["lat"] - 0.15) < 1e-9 and abs(x["h"] - 5.0) < 1e-9:
+                    r.append({k: x[k] for k in LEAN_KEYS})
+        else:
+            allr = load_rows(d, tag)
+            rows_all += [x for x in allr if abs(x["lat"] - PRIMARY["lat"]) < 1e-9 and abs(x["h"] - PRIMARY["h"]) < 1e-9]     # the frozen evaluator does not trim the warm-up
+            r = [x for x in allr if x["t0"] >= cut]
         rows += r
         infos.append(info)
         up = os.path.join(d, "xv_universe.json")
         if os.path.exists(up) or os.path.exists(up + ".gz"):
             unis.append(_open_json(up))
     hours = sum((i["t_end"] - i["t_start"] - 60.0) / 3600.0 for i in infos)
-    return {"rows": rows, "infos": infos, "unis": unis, "hours": hours, "dirs": list(dirs)}
+    return {"rows": rows, "rows_all": rows_all, "infos": infos, "unis": unis, "hours": hours, "dirs": list(dirs)}
 
 
 def stat(rows: List[dict], key=lambda r: r["gross"]) -> dict:
@@ -81,7 +93,7 @@ def analyse(real: dict, placebo: Optional[dict] = None) -> dict:
     n_mid = sum(1 for p in (real["infos"][0]["pairs"] if real["infos"] else []) if not p["baseline"])
     n_base = sum(1 for p in (real["infos"][0]["pairs"] if real["infos"] else []) if p["baseline"])
     out: dict = {"hours": real["hours"], "n_mid": n_mid, "n_base": n_base, "runs": [os.path.basename(d) for d in real["dirs"]]}
-    out["primary"] = primary(rows)
+    out["primary"] = primary(real["rows_all"] or rows)               # exactly the frozen evaluator's population (no warm-up trim)
     out["occurrence"] = occurrence(rows, real["hours"], n_mid)
     # tier x latency (h = 5)
     tl = {}
@@ -117,6 +129,27 @@ def analyse(real: dict, placebo: Optional[dict] = None) -> dict:
               "gross_up": stat([r for r in t10 if r["side"] > 0]), "gross_down": stat([r for r in t10 if r["side"] < 0]),
               "binance_spread_med": float(np.median([r["x_spread_b"] for r in t10]))}
     out["trade"] = tr
+    sens = {}
+    for tier in ("10", "full_cost"):
+        for mt in (0.0, 250.0, 500.0, 1000.0, 5000.0):
+            sel = select(rows, 0.15, 5.0, tier, False, mt)
+            sens[f"{tier}|{mt:g}"] = {"gross": stat(sel), "net9": stat(sel, lambda r: r["net0"] - 9.0)}
+    out["touch_sens"] = sens
+    strat = {}
+    for lat in (0.0, 0.15):
+        for lo, hi in ((0.0, 2.0), (2.0, 5.0), (5.0, 1e9)):
+            sel = [r for r in select(rows, lat, 5.0, "8", False) if lo < r["x_spread_b"] <= hi]
+            gap = float(np.mean([r["gap"] for r in sel])) if sel else float("nan")
+            g = stat(sel)
+            strat[f"{lat}|{lo:g}|{hi:g}"] = {"gross": g, "net9": stat(sel, lambda r: r["net0"] - 9.0), "gap": gap, "closure": g["mean"] / gap if sel else float("nan"),
+                                             "touch": float(np.median([r["x_top_usd"] for r in sel])) if sel else float("nan"), "spread_h": float(np.median([r["x_spread_h"] for r in sel])) if sel else float("nan")}
+    out["leader_quality"] = strat
+    cl_curve = {}
+    for h in HZ:
+        sel = select(rows, 0.15, h, "8", False)
+        gap = float(np.mean([r["gap"] for r in sel])) if sel else float("nan")
+        cl_curve[str(h)] = {"gross": stat(sel)["mean"], "gap": gap, "closure": stat(sel)["mean"] / gap if sel else float("nan")}
+    out["closure_curve"] = cl_curve
     # per asset
     pa = defaultdict(list)
     for r in select(rows, 0.15, 5.0, "8", False):
@@ -179,7 +212,8 @@ def render_md(res: dict, real: dict, notes: str = "") -> str:
     if rb:
         L += [f"Robustness of the primary estimate: dropping the single best cluster leaves a mean net of {rb['drop_best_cluster']['mean']:+.2f} bps (n = {rb['drop_best_cluster']['n']}); "
               f"dropping the most frequent asset ({rb['drop_top_asset']['asset']}, {pct(rb['drop_top_asset']['share'])} of the subset) leaves {rb['drop_top_asset']['mean']:+.2f} bps (n = {rb['drop_top_asset']['n']}). "
-              f"The best cluster carries {pct(rb['max_cluster_share'])} of the summed net.", ""]
+              + (f"The best cluster carries {pct(rb['max_cluster_share'])} of the summed net." if rb["max_cluster_share"] == rb["max_cluster_share"] else "")]
+        L.append("")
     # ---- occurrence
     L += ["## 2. How often do same-asset dislocations occur?", "",
           "A signal is a Binance tick on which the coin moved ≥ 4 bps over 1 or 3 s and the perp has not followed by ≥ 4 bps (cooldown 3 s per pair). An *event* is a distinct (coin, 10-second block). "
@@ -226,7 +260,7 @@ def render_md(res: dict, real: dict, notes: str = "") -> str:
     pb = res.get("placebo")
     if pb:
         L += ["## 6. Control: Binance legs time-shifted against the perps", "",
-              f"The same tape(s) were replayed {pb['n_runs']} times with every Binance leg circularly shifted by {', '.join(f'{x:g}' for x in pb['shifts'] if x is not None)} s while the perps kept their clock, "
+              f"The same tape(s) were replayed {pb['n_runs']} times with every Binance leg circularly shifted by {', '.join(f'{x:g}' for x in sorted({x for x in pb['shifts'] if x is not None}))} s (each on every stage's tape) while the perps kept their clock, "
               "so the same-asset relationship is destroyed. Compare with §3 (150 ms, h = 5 s).", "",
               "| gap tier | real signals | placebo signals per replay | placebo gross | placebo hit | placebo net 9 bps | real gross | real − placebo gross (±, approx.) |", "|---|---|---|---|---|---|---|---|"]
         for tier in ("4", "8", "10", "15", "full_cost"):
@@ -246,6 +280,24 @@ def render_md(res: dict, real: dict, notes: str = "") -> str:
               f"* Perp spread at the signal: median {tr['spread_h_med']:.2f} bps; Binance spread: median {tr['binance_spread_med']:.2f} bps.",
               f"* Age of the perp quote at the signal: median {tr['hl_age_med']:.2f} s; {pct(tr['hl_age_gt1'])} older than 1 s (a quote that old is a resting order nobody has repriced – or a dead book).",
               f"* Direction: {tr['up']} up-moves (gross {pm(tr['gross_up'])}) and {tr['down']} down-moves (gross {pm(tr['gross_down'])}); the perp short leg additionally pays/receives funding, ignored here (seconds).", ""]
+    L += ["Sensitivity to the touch-size filter (150 ms, h = 5 s; descriptive — the primary test uses ≥ 1 000 USD):", "",
+          "| gap tier | min touch (USD) | signals | clusters | gross | net 9 bps |", "|---|---|---|---|---|---|"]
+    for key, c in res["touch_sens"].items():
+        tier, mt = key.split("|")
+        if c["gross"]["n"]:
+            L.append(f"| {TIER_LABEL[tier]} | {float(mt):,.0f} | {c['gross']['n']} | {c['gross']['k']} | {pm(c['gross'])} | {pm(c['net9'])} |")
+    L.append("")
+    lq = res["leader_quality"]
+    L += ["**Exploratory (post hoc, not pre-registered): is the incomplete gap closure a leader-book-quality artefact?** The Binance leg's mid can jump on a wide, thin book without any price change; "
+          "if that explained why the perp closes only part of the gap, closure would be much higher on tight Binance books. Gap ≥ 8 bps, h = 5 s, by the Binance spread at the signal:", "",
+          "| latency | Binance spread (bps) | signals | clusters | mean gap | gross | closure (gross ÷ gap) | net 9 bps | median touch (USD) | median perp spread |", "|---|---|---|---|---|---|---|---|---|---|"]
+    for key, c in lq.items():
+        lat, lo, hi = key.split("|")
+        if c["gross"]["n"]:
+            rng = f"≤ {float(hi):g}" if float(lo) == 0 else (f"{float(lo):g}–{float(hi):g}" if float(hi) < 1e8 else f"> {float(lo):g}")
+            L.append(f"| {float(lat) * 1000:.0f} ms | {rng} | {c['gross']['n']} | {c['gross']['k']} | {c['gap']:.1f} | {pm(c['gross'])} | {pct(c['closure'])} | {pm(c['net9'])} | {c['touch']:,.0f} | {c['spread_h']:.2f} |")
+    cc = res["closure_curve"]
+    L += ["", "Gap closure over the horizon (gap ≥ 8 bps, 150 ms): " + ", ".join(f"{h} s: {pct(c['closure'])}" for h, c in cc.items()) + ". A lagging perp would keep closing with the horizon; this one stops.", ""]
     L += ["## 8. By coin (gap ≥ 8 bps, 150 ms, h = 5 s; coins with ≥ 1 signal)", "", "| coin | signals ≥ 8 | signals ≥ 10 | events | mean gap | median perp spread | median touch (USD) | gross | net 9 bps |", "|---|---|---|---|---|---|---|---|---|"]
     for a in res["assets"][:25]:
         L.append(f"| {a['asset']} | {a['n8']} | {a['n10']} | {a['events']} | {a['gap']:.1f} | {a['spread_h']:.2f} | {a['top_med']:,.0f} | {pm(a['gross'])} | {pm(a['net9'])} |")
@@ -271,7 +323,7 @@ def main(argv=None):
     runs = sorted({d for g in a.runs for d in glob.glob(g)})
     pls = sorted({d for g in a.placebo for d in glob.glob(g)})
     real = load_set(runs)
-    pl = load_set(pls) if pls else None
+    pl = load_set(pls, lean=True) if pls else None
     res = analyse(real, pl)
     md = render_md(res, real, open(a.notes).read() if a.notes else "")
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)

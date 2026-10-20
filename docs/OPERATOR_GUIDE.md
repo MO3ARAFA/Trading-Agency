@@ -112,6 +112,18 @@ python -m quant_agency.sector_report --run runs/sector_<stamp> --placebo runs/pl
 the CFO book is untouched; every signal (BTC baseline included) becomes a markout row tagged with the oracle that produced it. Run directory artefacts: `sector_markouts.jsonl`, `sector_signals.jsonl`,
 `sector_map.json`, `sector_models.json`, `sector_universe.json`. A sector tape replays deterministically (the sector map is stored in the tape).
 
+## 6c. Same-asset cross-venue capture (Binance spot -> Hyperliquid perp; measurement only)
+
+```bash
+python -m quant_agency.midcap_eval --check-frozen                                   # pre-registered files intact?
+python -m quant_agency.run_live --midcap-xv --duration 3660 --out runs --tag xvr_s1 --record runs/tapes/xvr_s1.npz   # one 60-minute stage
+python -m quant_agency.midcap_eval --count --runs 'runs/xvr_s*_2026*'               # count-only stopping statistic (stop at >= 20 clusters or 4 stages)
+python -m quant_agency.midcap_eval --runs 'runs/xvr_s*_2026*'                       # the single pre-registered test (refuses non-xvr* directories and changed frozen files)
+python -m quant_agency.run_live --replay runs/tapes/xvr_s1.npz --placebo-shift 600 --out runs --tag xvp_s1_600   # control: Binance legs shifted against the perps
+python -m quant_agency.midcap_report --runs 'runs/xvr_s*_2026*' --placebo 'runs/xvp_s*_2026*' --notes docs/MIDCAP_NOTES.md
+```
+Naming matters: confirmatory stages are `xvr*`, validation/smoke runs `xvv*`, controls `xvp*`. Nothing in this mode prepares an order; the arb module and the CEO are idle.
+
 ## 7. Troubleshooting
 
 | symptom | likely cause / action |
