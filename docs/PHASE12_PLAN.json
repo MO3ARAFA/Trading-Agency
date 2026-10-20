@@ -1,0 +1,15 @@
+{
+ "primary": {
+  "thr_bps": 30.0,
+  "h_bars": 4,
+  "cost_bps": 6.0,
+  "min_clusters": 30,
+  "alpha": 0.05,
+  "exclude_last_bars": 84
+ },
+ "base_commit": "1c6819a80e8d202341075777525dd3a1a70a2754",
+ "frozen_sha256": {
+  "quant_agency/hl_funding_basis.py": "4a321df0cd0857d86c06bec3855d1fef0c683ab94706faa039d913b504f83e6e",
+  "runs/history/phase12_hourly.npz": "0adf7bbc579c0b99c31ad8f04426aaa59f1ece3f29256b9b7bdbe3965f6808a3"
+ }
+}
