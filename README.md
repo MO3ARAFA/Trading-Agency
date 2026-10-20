@@ -41,10 +41,12 @@ quant_agency/
   cfo_agent.py          Tier 2  gating, sizing, breakers, MarkoutTracker
   execution_engine.py   Tier 3  payloads + paper exchange
   ceo_agent.py          Tier 4  supervisor + state machine + audit
+  sector_oracles.py     secondary oracles (SOL / PEPE / RENDER / DOGE / TAO): universe discovery, per-leader hunters, observe-only sink
+  sector_report.py      sector lead-lag report generator (+ live capture driver, time-shift control)
   agency.py             wiring (sync, clock-injected)        feeds.py   asyncio/uvloop/orjson websockets
   telemetry.py          markdown report                      sim.py     synthetic lead-lag market
   run_live.py           CLI: live | --sim | --replay tape    sweep.py   replay one tape under many fee tiers
-tests/                  140 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
+tests/                  239 tests (math, oracle, hunter, CFO, execution, CEO state machine, end-to-end)
 docs/RESEARCH.md        Phase 1 reconnaissance → code map
 ```
 
@@ -135,3 +137,11 @@ git clone -b claude/kind-cori-5ei4hp https://github.com/MO3ARAFA/Trading-Agency.
 python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 python -m quant_agency.regime_daemon --continuous
 ```
+
+## Sector lead-lag study — altcoin ecosystems vs their own leaders (BTC baseline)
+`python -m quant_agency.run_live --sectors --duration 1380 --record runs/tapes/sector20.npz` runs BTC plus sector oracles (SOL, PEPE, RENDER, and DOGE / TAO as alternative leaders) in parallel on one `MarketBook`:
+each leader has its own `BtcOracle` and its own `InefficiencyHunter` over its ecosystem's alts on Binance Vision, Gate, Kraken and Hyperliquid (111 markets), with a leader-volatility-scaled gap hurdle,
+a quote-validation gate and a CFO-model net gap `|gap| − (spread + 2·fee + slippage)`. Observe-only: no order is ever prepared.
+**Result of the first 20-minute capture (exploratory):** median |gap| 2–4 bps (not 10–20), spread ≈ gap, net gap > 0 in 0 % of signals for five of six oracles, no sector oracle better than BTC on the same
+instruments, and a time-shifted-leader control shows most of the gross markout is selection, not lead-lag. Rare ≥ 10 bps dislocations (7 impulses) reached only the leader's own asset on Hyperliquid.
+See **[docs/SECTOR_LEAD_LAG.md](docs/SECTOR_LEAD_LAG.md)**; regenerate with `python -m quant_agency.sector_report --run docs/live_runs/sector20 --placebo docs/live_runs/sector20/placebo/shift* --notes docs/SECTOR_NOTES.md`.

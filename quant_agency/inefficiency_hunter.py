@@ -28,7 +28,7 @@ from numba import njit
 from . import mathkit as mk
 from .btc_oracle import BtcOracle, OracleState
 from .config import HunterConfig
-from .market_watchers import (ASK, BID, BQ, AQ, LAST_T, LMID, MEAN_DT, MID, NTICK, MarketBook,
+from .market_watchers import (ASK, BID, BQ, AQ, LAST_T, LMID, MEAN_DT, MID, NTICK, SPR_FAST, SPR_SLOW, MarketBook,
                               log_mid_asof, ring_window_lmid)
 
 BPS = mk.BPS
@@ -66,6 +66,10 @@ class Signal:
     mid: float
     impulse_id: int
     t_decide: float = 0.0
+    oracle: str = "BTC"        # which leader produced the impulse (BTC | sol | pepe | ...); impulse ids are globally unique across hunters
+    hurdle_bps: float = 0.0    # |gap| hurdle in force for this market (max of the flat floor and the leader-volatility-scaled floor)
+    lead_sigma_bps: float = 0.0  # EW std of the leader's move over the impulse horizon (the "historical sector volatility")
+    net_gap_bps: float = 0.0   # |gap| - (spread + round-trip fee + slippage), only filled when the hunter has a cost model
     # filled by downstream agents
     decision: Optional[object] = None
 
@@ -139,10 +143,10 @@ def _kalman_obs(rt, rb, ra, n, cap, state, btc_t, btc_lmid, btc_n, btc_cap, t, l
 
 
 @njit(cache=True)
-def _resid_update(rt, rb, ra, n, cap, state, btc_t, btc_lmid, btc_n, btc_cap, t, lag, horizons, beta, alpha, res_m2, res_n):
+def _resid_update(rt, rb, ra, n, cap, state, btc_t, btc_lmid, btc_n, btc_cap, t, lag, horizons, beta, alpha, res_m2, res_n, active):
     M = beta.shape[0]
     for i in range(1, M):
-        if state[i, NTICK] < 10:
+        if not active[i] or state[i, NTICK] < 10:
             continue
         lm1 = state[i, LMID]
         for k in range(horizons.shape[0]):
@@ -162,7 +166,7 @@ def _resid_update(rt, rb, ra, n, cap, state, btc_t, btc_lmid, btc_n, btc_cap, t,
 @njit(cache=True)
 def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmin, lag, decay, calibrated, tradable,
           cooldown_until, res_m2, res_n, min_gap_bps, gap_z_thr, rho_min, max_repriced, window_mult,
-          window_base, window_min, window_max, max_spread_bps, spread_gate, min_rate, max_quote_age, age, out_idx):
+          window_base, window_min, window_max, max_spread_bps, spread_gate, min_rate, max_quote_age, age, out_idx, wide_ratio):
     M = beta.shape[0]
     cnt = 0
     for i in range(1, M):
@@ -175,6 +179,8 @@ def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmi
         mid = state[i, MID]
         if (state[i, ASK] - state[i, BID]) / mid * 1e4 > min(max_spread_bps, spread_gate[i]):
             continue
+        if wide_ratio > 0.0 and state[i, SPR_FAST] > wide_ratio * state[i, SPR_SLOW]:
+            continue                        # quote-validation gate: the book is momentarily blown out vs its own norm
         win = window_mult * max(lag[i], 0.0) + decay[i] + window_base
         win = min(max(win, window_min), window_max)
         if age > win:
@@ -185,7 +191,7 @@ def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmi
         actual = state[i, LMID] - lm0
         fair = beta[i] * dbtc
         gap = fair - actual
-        if gap * dirn <= 0.0 or abs(gap) * 1e4 < min_gap_bps:
+        if gap * dirn <= 0.0 or abs(gap) * 1e4 < min_gap_bps[i]:
             continue
         if res_n[i, hk] < 30:
             continue
@@ -201,9 +207,11 @@ def _scan(rt, rb, ra, n, cap, state, t, h, hk, dbtc, dirn, beta, rho, tstat, tmi
 
 # --------------------------------------------------------------------------------- model
 class LeadLagModel:
-    def __init__(self, book: MarketBook, oracle: BtcOracle, cfg: HunterConfig):
+    def __init__(self, book: MarketBook, oracle: BtcOracle, cfg: HunterConfig, members: Optional[np.ndarray] = None):
         self.book, self.oracle, self.cfg = book, oracle, cfg
         M = book.M
+        self.members = np.ones(M, dtype=np.bool_) if members is None else np.asarray(members, dtype=np.bool_).copy()
+        self.members[0] = False
         H = len(oracle.horizons)
         a, b, s = cfg.lag_grid_s
         self.lags = np.arange(round(a / s), round(b / s) + 1) * s
@@ -218,9 +226,9 @@ class LeadLagModel:
         self.decay = np.zeros(M)
         self.calibrated = np.zeros(M, dtype=np.bool_)
         self.n_calib = np.zeros(M, dtype=np.int64)
-        self.tradable = np.array([m.tradable and m.hunt for m in book.metas], dtype=np.bool_)
+        self.hunt = np.array([m.hunt for m in book.metas], dtype=np.bool_) & self.members
+        self.tradable = np.array([m.tradable and m.hunt for m in book.metas], dtype=np.bool_) & self.members
         self.gate = np.array([np.inf if m.spread_gate_bps is None else m.spread_gate_bps for m in book.metas])
-        self.hunt = np.array([m.hunt for m in book.metas], dtype=np.bool_)
         self.tradable[0] = False
         self.res_m2 = np.full((M, H), 1e-8)
         self.res_n = np.zeros((M, H), dtype=np.int64)
@@ -290,7 +298,7 @@ class LeadLagModel:
         if t - self.last_resid >= c.resid_period_s:
             _resid_update(bk.rt, bk.rb, bk.ra, bk.n, bk.cap, bk.state, o.tick_t, o.tick_lmid, o.n,
                           o.cfg.tick_cap, t, self.lag, o.horizons, self.beta, self.alpha_res,
-                          self.res_m2, self.res_n)
+                          self.res_m2, self.res_n, self.hunt)
             self.last_resid = t
         if t - self.last_kalman >= c.kalman_period_s and self.calibrated.any():
             _kalman_obs(bk.rt, bk.rb, bk.ra, bk.n, bk.cap, bk.state, o.tick_t, o.tick_lmid, o.n,
@@ -309,7 +317,7 @@ class LeadLagModel:
     def table(self) -> List[dict]:
         rows = []
         for i, m in enumerate(self.book.metas):
-            if i == 0:
+            if i == 0 or not self.members[i]:
                 continue
             rows.append({"market": m.id, "beta": float(self.beta[i]), "rho": float(self.rho[i]), "rho_hy": float(self.rho_hy[i]), "tstat": float(self.tstat[i]),
                          "rho0": float(self.rho0[i]), "lag_s": float(self.lag[i]),
@@ -323,18 +331,36 @@ class InefficiencyHunter:
     DIRECTIVE_KEYS = {"z_thr", "z_release", "min_impulse_bps", "min_gap_bps", "gap_z_thr", "rho_min",
                       "max_repriced", "window_mult", "cooldown_s", "beta_tmin"}
 
-    def __init__(self, book: MarketBook, oracle: BtcOracle, cfg: Optional[HunterConfig] = None):
+    def __init__(self, book: MarketBook, oracle: BtcOracle, cfg: Optional[HunterConfig] = None, name: str = "BTC",
+                 members: Optional[np.ndarray] = None, id_base: int = 0, gap_vol_mult: float = 0.0, wide_ratio: float = 0.0,
+                 cost_model=None, net_gate: bool = False):
+        """One hunter = one leader (``oracle``) against a set of ``members`` of the shared book.
+
+        ``name`` tags every signal; ``id_base`` offsets signal and impulse ids so several hunters never collide in the
+        impulse-clustered statistics. ``gap_vol_mult`` scales the gap hurdle with the leader's own volatility:
+
+            hurdle_i = max(min_gap_bps, gap_vol_mult * beta_i * sigma_leader(h))
+
+        so a leader that moves 5x as much needs a proportionally larger gap before a lagging market counts as dislocated.
+        ``cost_model(sig) -> (spread, fee, slip)`` (bps) fills ``Signal.net_gap_bps = |gap| - (spread + fee + slip)``; with
+        ``net_gate`` the signal is suppressed unless that is positive (otherwise it is only recorded).
+        """
         self.cfg = cfg or HunterConfig()
         self.book, self.oracle = book, oracle
-        self.model = LeadLagModel(book, oracle, self.cfg)
+        self.name, self.id_base = name, int(id_base)
+        self.gap_vol_mult, self.wide_ratio = float(gap_vol_mult), float(wide_ratio)
+        self.cost_model, self.net_gate = cost_model, bool(net_gate)
+        self.model = LeadLagModel(book, oracle, self.cfg, members)
+        self.min_gap = np.full(book.M, self.cfg.min_gap_bps)
+        self.n_net_suppressed = 0
         self.cooldown_until = np.zeros(book.M)
         self._out = np.zeros(book.M, dtype=np.int64)
         self.active = False
         self.dir = 0
         self.onset_t = 0.0
-        self.impulse_id = 0
+        self.impulse_id = self.id_base
         self.hk = 0
-        self._sid = 0
+        self._sid = self.id_base
         self.last_scan = -1e18
         self.n_scans = 0
         self.n_signals = 0
@@ -415,11 +441,16 @@ class InefficiencyHunter:
             return []
         m = self.model
         age = t - self.onset_t
+        lead_sig_bps = float(st.sigma[hk] * BPS)
+        if self.gap_vol_mult > 0.0:
+            np.maximum(c.min_gap_bps, self.gap_vol_mult * m.beta * lead_sig_bps, out=self.min_gap)
+        else:
+            self.min_gap[:] = c.min_gap_bps
         n = _scan(self.book.rt, self.book.rb, self.book.ra, self.book.n, self.book.cap, self.book.state, t, h, hk,
                   float(st.delta[hk]), float(self.dir), m.beta, m.rho, m.tstat, c.beta_tmin, m.lag, m.decay, m.calibrated, m.tradable,
-                  self.cooldown_until, m.res_m2, m.res_n, c.min_gap_bps, c.gap_z_thr, c.rho_min, c.max_repriced,
+                  self.cooldown_until, m.res_m2, m.res_n, self.min_gap, c.gap_z_thr, c.rho_min, c.max_repriced,
                   c.window_mult, c.window_base_s, c.window_min_s, c.window_max_s, c.max_spread_bps, m.gate,
-                  c.min_tick_rate, c.max_quote_age_s, age, self._out)
+                  c.min_tick_rate, c.max_quote_age_s, age, self._out, self.wide_ratio)
         sigs: List[Signal] = []
         bk = self.book
         for k in range(n):
@@ -440,7 +471,14 @@ class InefficiencyHunter:
                 gap_z=abs(gap) / math.sqrt(max(m.res_m2[i, hk], 1e-10)),
                 sigma_res_bps=math.sqrt(max(m.res_m2[i, hk], 1e-10)) * BPS,
                 spread_bps=float((s[ASK] - s[BID]) / s[MID] * BPS), bid=float(s[BID]), ask=float(s[ASK]),
-                bq=float(s[BQ]), aq=float(s[AQ]), mid=float(s[MID]), impulse_id=self.impulse_id)
+                bq=float(s[BQ]), aq=float(s[AQ]), mid=float(s[MID]), impulse_id=self.impulse_id,
+                oracle=self.name, hurdle_bps=float(self.min_gap[i]), lead_sigma_bps=lead_sig_bps)
+            if self.cost_model is not None:
+                sp, fee, slip = self.cost_model(sig)
+                sig.net_gap_bps = abs(sig.gap_bps) - (sp + fee + slip)
+                if self.net_gate and sig.net_gap_bps <= 0.0:
+                    self.n_net_suppressed += 1
+                    continue
             self.cooldown_until[i] = t + c.cooldown_s
             self.n_signals += 1
             self.per_market_signals[sig.market] = self.per_market_signals.get(sig.market, 0) + 1

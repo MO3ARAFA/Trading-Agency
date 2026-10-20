@@ -84,7 +84,10 @@ class MarkoutTracker:
         self.pending.append({"sid": sig.sid, "idx": sig.idx, "market": sig.market, "side": sig.side, "t0": sig.t,
                              "mid0": sig.mid, "gap": abs(sig.gap_bps), "pred": dec.net_edge_taker_bps,
                              "pred_sel": dec.net_edge_bps, "imp": sig.impulse_id, "spread": sig.spread_bps, "px": sig.mid, "cohort": dec.cohort, "approved": dec.approved,
-                             "reason": dec.reason, "todo": list(self.horizons)})
+                             "reason": dec.reason, "todo": list(self.horizons),
+                             "oracle": getattr(sig, "oracle", "BTC"), "net_gap": getattr(sig, "net_gap_bps", 0.0), "lag_s": sig.lag_s, "beta": sig.beta,
+                             "fair": abs(sig.fair_bps), "ldelta": sig.btc_delta_bps, "lz": sig.btc_z, "hurdle": getattr(sig, "hurdle_bps", 0.0),
+                             "lsig": getattr(sig, "lead_sigma_bps", 0.0), "hz": sig.horizon_s, "age": sig.age_s})
 
     def poll(self, now: float) -> int:
         n = 0
@@ -112,7 +115,10 @@ class MarkoutTracker:
                 self.rows.append({"market": p["market"], "cohort": p["cohort"], "side": s, "h": h, "t0": p["t0"],
                                   "gap": p["gap"], "pred": p["pred"], "gross": gross, "net": net, "net0": net0,
                                   "spread": p["spread"], "px": p["px"], "lat": self.lat, "venue": meta.venue, "kind": meta.kind,
-                                  "closure": closure, "approved": p["approved"], "sid": p["sid"], "imp": p["imp"]})
+                                  "closure": closure, "approved": p["approved"], "sid": p["sid"], "imp": p["imp"],
+                                  "oracle": p["oracle"], "asset": meta.asset or meta.base, "net_gap": p["net_gap"], "lag_s": p["lag_s"], "beta": p["beta"],
+                                  "fair": p["fair"], "ldelta": p["ldelta"], "lz": p["lz"], "hurdle": p["hurdle"], "lsig": p["lsig"], "hz": p["hz"],
+                                  "age": p["age"], "fee_in": taker_fee_bps(meta, ex_in, self.fee), "fee_out": taker_fee_bps(meta, ex_out, self.fee)})
                 n += 1
             p["todo"] = todo
             if todo:

@@ -98,6 +98,20 @@ B is built for large, continuing BTC impulses; every recorded session was quiet.
 
 **Things you should NOT do:** switch Hyperliquid on (B abstains there at 4.5 bps taker; 0 of 317 signals pass); re-enable Architecture A (shelved: it loses on Polymarket in every non-optimistic fill model); change the floor, the exit, or the sleeves' tolerances after seeing results and then pool the data as if nothing changed; pick the best of the six exits after the fact and report its t-statistic without the multiplicity adjustment; lift the governor's HALT by hand to "get a trade"; size by notional on binary contracts (the CFO's worst-case sizing exists because a short at 0.33 can lose 2× its notional); read a paper P&L as a forecast of live P&L.
 
+## 6b. Sector lead-lag capture (measurement only)
+
+```bash
+# 3 min warm-up + 20 min window, records the tape, writes docs/SECTOR_LEAD_LAG.md
+python -m quant_agency.sector_report --capture --duration 1200 --notes docs/SECTOR_NOTES.md
+# or by hand
+python -m quant_agency.run_live --sectors --duration 1380 --record runs/tapes/sector.npz --out runs --tag sector
+python -m quant_agency.run_live --replay runs/tapes/sector.npz --placebo-shift 300 --out runs --tag placebo300   # control: leaders time-shifted
+python -m quant_agency.sector_report --run runs/sector_<stamp> --placebo runs/placebo*_<stamp>
+```
+`--sector-list sol,pepe,render,doge,tao` chooses the oracles, `--sector-mult` the leader-volatility factor of the gap hurdle (`0` = flat 1 bp). Nothing in this mode places or prepares orders, the CEO is not run, and
+the CFO book is untouched; every signal (BTC baseline included) becomes a markout row tagged with the oracle that produced it. Run directory artefacts: `sector_markouts.jsonl`, `sector_signals.jsonl`,
+`sector_map.json`, `sector_models.json`, `sector_universe.json`. A sector tape replays deterministically (the sector map is stored in the tape).
+
 ## 7. Troubleshooting
 
 | symptom | likely cause / action |

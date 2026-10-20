@@ -10,7 +10,7 @@ from __future__ import annotations
 import math
 import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 from numba import njit
@@ -172,6 +172,21 @@ class MarketBook:
         q = self.quote_asof(i, tq)
         return float("nan") if q is None else 0.5 * (q[0] + q[1])
 
+    def validation_mask(self, t: float, max_spread_bps: float = 40.0, max_age_s: float = 10.0, wide_ratio: float = 3.0,
+                        min_ticks: int = 30) -> np.ndarray:
+        """Per-market top-of-book validation gate (True = the quote may be used as a trading reference).
+
+        A quote is valid when the market has ticked ``min_ticks`` times, the last tick is no older than ``max_age_s``, the live
+        spread is <= ``max_spread_bps`` and not momentarily blown out vs the market's own slow spread (fast EW <= ``wide_ratio`` x slow EW).
+        """
+        s = self.state
+        sp = self.spread_bps()
+        with np.errstate(invalid="ignore"):
+            ok = (s[:, NTICK] >= min_ticks) & ((t - s[:, LAST_T]) <= max_age_s) & (sp <= max_spread_bps)
+            if wide_ratio > 0.0:
+                ok &= s[:, SPR_FAST] <= wide_ratio * np.maximum(s[:, SPR_SLOW], 1e-9)
+        return ok
+
     def telemetry(self, t: float) -> List[dict]:
         sp = self.spread_bps()
         st = self.staleness(t)
@@ -262,3 +277,59 @@ def ring_window_lmid(rt, rb, ra, n, cap, t0, t1):
         tt[extra + k] = rt[q]
         vv[extra + k] = math.log(0.5 * (rb[q] + ra[q]))
     return tt, vv
+
+
+# ------------------------------------------------------------------------------ sector baskets
+@dataclass(frozen=True)
+class SectorDef:
+    """One secondary oracle: ``leader`` (a Binance USDT base asset) against the other members of its ``group``.
+
+    ``group`` is the full ecosystem (leader included); a sector's members are every venue copy of every group asset except the
+    leader's own Binance market (the oracle itself). The leader's copies on Gate / Kraken / Hyperliquid *are* members: they are the
+    classic lagging-venue case. ``variant_of`` marks a second leader for an ecosystem another sector already covers (robustness
+    to the choice of leader, e.g. DOGE vs PEPE for memes).
+    """
+    name: str
+    leader: str
+    group: Tuple[str, ...]
+    label: str
+    variant_of: str = ""
+
+
+_SOL = ("SOL", "JUP", "PYTH", "RAY", "BONK", "WIF", "JTO", "ORCA", "W", "PENGU", "TRUMP")
+_MEME = ("PEPE", "DOGE", "SHIB", "FLOKI", "BOME", "NEIRO", "TURBO", "PNUT", "MEME", "DOGS")
+_AI = ("RENDER", "TAO", "FET", "NEAR", "AR", "WLD", "GRT", "AIXBT", "VIRTUAL", "ICP", "ARKM", "IO", "AGIX")
+SECTOR_DEFS: Tuple[SectorDef, ...] = (
+    SectorDef("sol", "SOL", _SOL, "L1 / Solana ecosystem"),
+    SectorDef("pepe", "PEPE", _MEME, "memecoins"),
+    SectorDef("render", "RENDER", _AI, "AI / compute"),
+    SectorDef("doge", "DOGE", _MEME, "memecoins (alt leader)", variant_of="pepe"),
+    SectorDef("tao", "TAO", _AI, "AI / compute (alt leader)", variant_of="render"),
+)
+
+
+def sector_assets(defs: Sequence[SectorDef] = SECTOR_DEFS) -> List[str]:
+    seen: Dict[str, None] = {}
+    for d in defs:
+        for a in d.group:
+            seen.setdefault(a)
+    return list(seen)
+
+
+def sector_members(book: "MarketBook", sd: SectorDef) -> np.ndarray:
+    """Boolean mask over the book: every market whose canonical asset is in the sector group, minus the Binance leader itself."""
+    mask = np.zeros(book.M, dtype=np.bool_)
+    for i, m in enumerate(book.metas):
+        if i == 0:
+            continue
+        a = m.asset or m.base
+        if a in sd.group and not (m.venue == "binance" and a == sd.leader):
+            mask[i] = True
+    return mask
+
+
+def leader_index(book: "MarketBook", sd: SectorDef) -> int:
+    for i, m in enumerate(book.metas):
+        if m.venue == "binance" and (m.asset or m.base) == sd.leader:
+            return i
+    raise KeyError(f"leader {sd.leader} not on the book")

@@ -1,0 +1,1167 @@
+{
+ "t_start": 759.733940967,
+ "t_end": 2138.525423363,
+ "config": {
+  "sectors": [
+   "sol",
+   "pepe",
+   "render",
+   "doge",
+   "tao"
+  ],
+  "gap_vol_mult": 0.5,
+  "max_spread_bps": 40.0,
+  "wide_ratio": 3.0,
+  "observe_notional_usd": 1000.0,
+  "id_stride": 10000000,
+  "latencies_s": [
+   0.0,
+   0.15,
+   0.5
+  ],
+  "oracle_tick_cap": 65536,
+  "oracle_gap_s": 8.0,
+  "min_gap_bps": 1.0,
+  "sig_keep": 20000
+ },
+ "skipped": {},
+ "sectors": [
+  {
+   "name": "sol",
+   "leader": "SOL",
+   "label": "L1 / Solana ecosystem",
+   "variant_of": "",
+   "group": [
+    "SOL",
+    "JUP",
+    "PYTH",
+    "RAY",
+    "BONK",
+    "WIF",
+    "JTO",
+    "ORCA",
+    "W",
+    "PENGU",
+    "TRUMP"
+   ],
+   "leader_idx": 1,
+   "members": [
+    "JUPUSDT",
+    "PYTHUSDT",
+    "RAYUSDT",
+    "BONKUSDT",
+    "WIFUSDT",
+    "JTOUSDT",
+    "ORCAUSDT",
+    "WUSDT",
+    "PENGUUSDT",
+    "TRUMPUSDT",
+    "gate:SOL_USDT",
+    "kraken:SOL/USD",
+    "hyperliquid:SOL",
+    "kraken:JUP/USD",
+    "hyperliquid:JUP",
+    "gate:PYTH_USDT",
+    "kraken:PYTH/USD",
+    "hyperliquid:PYTH",
+    "gate:RAY_USDT",
+    "kraken:RAY/USD",
+    "kraken:BONK/USD",
+    "hyperliquid:kBONK",
+    "gate:WIF_USDT",
+    "kraken:WIF/USD",
+    "hyperliquid:WIF",
+    "gate:JTO_USDT",
+    "kraken:JTO/USD",
+    "hyperliquid:JTO",
+    "kraken:ORCA/USD",
+    "gate:W_USDT",
+    "kraken:W/USD",
+    "hyperliquid:W",
+    "gate:PENGU_USDT",
+    "kraken:PENGU/USD",
+    "hyperliquid:PENGU",
+    "gate:TRUMP_USDT",
+    "kraken:TRUMP/USD",
+    "hyperliquid:TRUMP"
+   ]
+  },
+  {
+   "name": "pepe",
+   "leader": "PEPE",
+   "label": "memecoins",
+   "variant_of": "",
+   "group": [
+    "PEPE",
+    "DOGE",
+    "SHIB",
+    "FLOKI",
+    "BOME",
+    "NEIRO",
+    "TURBO",
+    "PNUT",
+    "MEME",
+    "DOGS"
+   ],
+   "leader_idx": 2,
+   "members": [
+    "DOGEUSDT",
+    "SHIBUSDT",
+    "FLOKIUSDT",
+    "BOMEUSDT",
+    "NEIROUSDT",
+    "TURBOUSDT",
+    "PNUTUSDT",
+    "MEMEUSDT",
+    "DOGSUSDT",
+    "gate:PEPE_USDT",
+    "kraken:PEPE/USD",
+    "hyperliquid:kPEPE",
+    "gate:DOGE_USDT",
+    "hyperliquid:DOGE",
+    "gate:SHIB_USDT",
+    "kraken:SHIB/USD",
+    "hyperliquid:kSHIB",
+    "kraken:FLOKI/USD",
+    "hyperliquid:kFLOKI",
+    "hyperliquid:BOME",
+    "kraken:NEIRO/USD",
+    "hyperliquid:kNEIRO",
+    "kraken:TURBO/USD",
+    "hyperliquid:TURBO",
+    "kraken:PNUT/USD",
+    "hyperliquid:PNUT",
+    "kraken:MEME/USD",
+    "hyperliquid:MEME",
+    "kraken:DOGS/USD"
+   ]
+  },
+  {
+   "name": "render",
+   "leader": "RENDER",
+   "label": "AI / compute",
+   "variant_of": "",
+   "group": [
+    "RENDER",
+    "TAO",
+    "FET",
+    "NEAR",
+    "AR",
+    "WLD",
+    "GRT",
+    "AIXBT",
+    "VIRTUAL",
+    "ICP",
+    "ARKM",
+    "IO",
+    "AGIX"
+   ],
+   "leader_idx": 4,
+   "members": [
+    "TAOUSDT",
+    "FETUSDT",
+    "NEARUSDT",
+    "ARUSDT",
+    "WLDUSDT",
+    "GRTUSDT",
+    "VIRTUALUSDT",
+    "ICPUSDT",
+    "ARKMUSDT",
+    "IOUSDT",
+    "gate:RENDER_USDT",
+    "kraken:RENDER/USD",
+    "hyperliquid:RENDER",
+    "gate:TAO_USDT",
+    "kraken:TAO/USD",
+    "hyperliquid:TAO",
+    "gate:FET_USDT",
+    "kraken:FET/USD",
+    "hyperliquid:FET",
+    "gate:NEAR_USDT",
+    "kraken:NEAR/USD",
+    "hyperliquid:NEAR",
+    "gate:AR_USDT",
+    "kraken:AR/USD",
+    "hyperliquid:AR",
+    "gate:WLD_USDT",
+    "kraken:WLD/USD",
+    "hyperliquid:WLD",
+    "kraken:GRT/USD",
+    "kraken:AIXBT/USD",
+    "hyperliquid:AIXBT",
+    "gate:VIRTUAL_USDT",
+    "kraken:VIRTUAL/USD",
+    "hyperliquid:VIRTUAL",
+    "gate:ICP_USDT",
+    "kraken:ICP/USD",
+    "hyperliquid:ICP",
+    "gate:ARKM_USDT",
+    "kraken:ARKM/USD",
+    "hyperliquid:IO"
+   ]
+  },
+  {
+   "name": "doge",
+   "leader": "DOGE",
+   "label": "memecoins (alt leader)",
+   "variant_of": "pepe",
+   "group": [
+    "PEPE",
+    "DOGE",
+    "SHIB",
+    "FLOKI",
+    "BOME",
+    "NEIRO",
+    "TURBO",
+    "PNUT",
+    "MEME",
+    "DOGS"
+   ],
+   "leader_idx": 3,
+   "members": [
+    "PEPEUSDT",
+    "SHIBUSDT",
+    "FLOKIUSDT",
+    "BOMEUSDT",
+    "NEIROUSDT",
+    "TURBOUSDT",
+    "PNUTUSDT",
+    "MEMEUSDT",
+    "DOGSUSDT",
+    "gate:PEPE_USDT",
+    "kraken:PEPE/USD",
+    "hyperliquid:kPEPE",
+    "gate:DOGE_USDT",
+    "hyperliquid:DOGE",
+    "gate:SHIB_USDT",
+    "kraken:SHIB/USD",
+    "hyperliquid:kSHIB",
+    "kraken:FLOKI/USD",
+    "hyperliquid:kFLOKI",
+    "hyperliquid:BOME",
+    "kraken:NEIRO/USD",
+    "hyperliquid:kNEIRO",
+    "kraken:TURBO/USD",
+    "hyperliquid:TURBO",
+    "kraken:PNUT/USD",
+    "hyperliquid:PNUT",
+    "kraken:MEME/USD",
+    "hyperliquid:MEME",
+    "kraken:DOGS/USD"
+   ]
+  },
+  {
+   "name": "tao",
+   "leader": "TAO",
+   "label": "AI / compute (alt leader)",
+   "variant_of": "render",
+   "group": [
+    "RENDER",
+    "TAO",
+    "FET",
+    "NEAR",
+    "AR",
+    "WLD",
+    "GRT",
+    "AIXBT",
+    "VIRTUAL",
+    "ICP",
+    "ARKM",
+    "IO",
+    "AGIX"
+   ],
+   "leader_idx": 5,
+   "members": [
+    "RENDERUSDT",
+    "FETUSDT",
+    "NEARUSDT",
+    "ARUSDT",
+    "WLDUSDT",
+    "GRTUSDT",
+    "VIRTUALUSDT",
+    "ICPUSDT",
+    "ARKMUSDT",
+    "IOUSDT",
+    "gate:RENDER_USDT",
+    "kraken:RENDER/USD",
+    "hyperliquid:RENDER",
+    "gate:TAO_USDT",
+    "kraken:TAO/USD",
+    "hyperliquid:TAO",
+    "gate:FET_USDT",
+    "kraken:FET/USD",
+    "hyperliquid:FET",
+    "gate:NEAR_USDT",
+    "kraken:NEAR/USD",
+    "hyperliquid:NEAR",
+    "gate:AR_USDT",
+    "kraken:AR/USD",
+    "hyperliquid:AR",
+    "gate:WLD_USDT",
+    "kraken:WLD/USD",
+    "hyperliquid:WLD",
+    "kraken:GRT/USD",
+    "kraken:AIXBT/USD",
+    "hyperliquid:AIXBT",
+    "gate:VIRTUAL_USDT",
+    "kraken:VIRTUAL/USD",
+    "hyperliquid:VIRTUAL",
+    "gate:ICP_USDT",
+    "kraken:ICP/USD",
+    "hyperliquid:ICP",
+    "gate:ARKM_USDT",
+    "kraken:ARKM/USD",
+    "hyperliquid:IO"
+   ]
+  }
+ ],
+ "markets": [
+  {
+   "id": "BTCUSDT",
+   "venue": "binance",
+   "asset": "BTC",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "SOLUSDT",
+   "venue": "binance",
+   "asset": "SOL",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "PEPEUSDT",
+   "venue": "binance",
+   "asset": "PEPE",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "DOGEUSDT",
+   "venue": "binance",
+   "asset": "DOGE",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "RENDERUSDT",
+   "venue": "binance",
+   "asset": "RENDER",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "TAOUSDT",
+   "venue": "binance",
+   "asset": "TAO",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "JUPUSDT",
+   "venue": "binance",
+   "asset": "JUP",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "PYTHUSDT",
+   "venue": "binance",
+   "asset": "PYTH",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "RAYUSDT",
+   "venue": "binance",
+   "asset": "RAY",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "BONKUSDT",
+   "venue": "binance",
+   "asset": "BONK",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "WIFUSDT",
+   "venue": "binance",
+   "asset": "WIF",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "JTOUSDT",
+   "venue": "binance",
+   "asset": "JTO",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "ORCAUSDT",
+   "venue": "binance",
+   "asset": "ORCA",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "WUSDT",
+   "venue": "binance",
+   "asset": "W",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "PENGUUSDT",
+   "venue": "binance",
+   "asset": "PENGU",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "TRUMPUSDT",
+   "venue": "binance",
+   "asset": "TRUMP",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "SHIBUSDT",
+   "venue": "binance",
+   "asset": "SHIB",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "FLOKIUSDT",
+   "venue": "binance",
+   "asset": "FLOKI",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "BOMEUSDT",
+   "venue": "binance",
+   "asset": "BOME",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "NEIROUSDT",
+   "venue": "binance",
+   "asset": "NEIRO",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "TURBOUSDT",
+   "venue": "binance",
+   "asset": "TURBO",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "PNUTUSDT",
+   "venue": "binance",
+   "asset": "PNUT",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "MEMEUSDT",
+   "venue": "binance",
+   "asset": "MEME",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "DOGSUSDT",
+   "venue": "binance",
+   "asset": "DOGS",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "FETUSDT",
+   "venue": "binance",
+   "asset": "FET",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "NEARUSDT",
+   "venue": "binance",
+   "asset": "NEAR",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "ARUSDT",
+   "venue": "binance",
+   "asset": "AR",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "WLDUSDT",
+   "venue": "binance",
+   "asset": "WLD",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "GRTUSDT",
+   "venue": "binance",
+   "asset": "GRT",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "VIRTUALUSDT",
+   "venue": "binance",
+   "asset": "VIRTUAL",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "ICPUSDT",
+   "venue": "binance",
+   "asset": "ICP",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "ARKMUSDT",
+   "venue": "binance",
+   "asset": "ARKM",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "IOUSDT",
+   "venue": "binance",
+   "asset": "IO",
+   "kind": "spot",
+   "fee_taker_bps": 7.5
+  },
+  {
+   "id": "gate:SOL_USDT",
+   "venue": "gate",
+   "asset": "SOL",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:SOL/USD",
+   "venue": "kraken",
+   "asset": "SOL",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:SOL",
+   "venue": "hyperliquid",
+   "asset": "SOL",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:PEPE_USDT",
+   "venue": "gate",
+   "asset": "PEPE",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:PEPE/USD",
+   "venue": "kraken",
+   "asset": "PEPE",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:kPEPE",
+   "venue": "hyperliquid",
+   "asset": "PEPE",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:DOGE_USDT",
+   "venue": "gate",
+   "asset": "DOGE",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "hyperliquid:DOGE",
+   "venue": "hyperliquid",
+   "asset": "DOGE",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:RENDER_USDT",
+   "venue": "gate",
+   "asset": "RENDER",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:RENDER/USD",
+   "venue": "kraken",
+   "asset": "RENDER",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:RENDER",
+   "venue": "hyperliquid",
+   "asset": "RENDER",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:TAO_USDT",
+   "venue": "gate",
+   "asset": "TAO",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:TAO/USD",
+   "venue": "kraken",
+   "asset": "TAO",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:TAO",
+   "venue": "hyperliquid",
+   "asset": "TAO",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:JUP/USD",
+   "venue": "kraken",
+   "asset": "JUP",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:JUP",
+   "venue": "hyperliquid",
+   "asset": "JUP",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:PYTH_USDT",
+   "venue": "gate",
+   "asset": "PYTH",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:PYTH/USD",
+   "venue": "kraken",
+   "asset": "PYTH",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:PYTH",
+   "venue": "hyperliquid",
+   "asset": "PYTH",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:RAY_USDT",
+   "venue": "gate",
+   "asset": "RAY",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:RAY/USD",
+   "venue": "kraken",
+   "asset": "RAY",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "kraken:BONK/USD",
+   "venue": "kraken",
+   "asset": "BONK",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:kBONK",
+   "venue": "hyperliquid",
+   "asset": "BONK",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:WIF_USDT",
+   "venue": "gate",
+   "asset": "WIF",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:WIF/USD",
+   "venue": "kraken",
+   "asset": "WIF",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:WIF",
+   "venue": "hyperliquid",
+   "asset": "WIF",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:JTO_USDT",
+   "venue": "gate",
+   "asset": "JTO",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:JTO/USD",
+   "venue": "kraken",
+   "asset": "JTO",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:JTO",
+   "venue": "hyperliquid",
+   "asset": "JTO",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:ORCA/USD",
+   "venue": "kraken",
+   "asset": "ORCA",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "gate:W_USDT",
+   "venue": "gate",
+   "asset": "W",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:W/USD",
+   "venue": "kraken",
+   "asset": "W",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:W",
+   "venue": "hyperliquid",
+   "asset": "W",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:PENGU_USDT",
+   "venue": "gate",
+   "asset": "PENGU",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:PENGU/USD",
+   "venue": "kraken",
+   "asset": "PENGU",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:PENGU",
+   "venue": "hyperliquid",
+   "asset": "PENGU",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:TRUMP_USDT",
+   "venue": "gate",
+   "asset": "TRUMP",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:TRUMP/USD",
+   "venue": "kraken",
+   "asset": "TRUMP",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:TRUMP",
+   "venue": "hyperliquid",
+   "asset": "TRUMP",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:SHIB_USDT",
+   "venue": "gate",
+   "asset": "SHIB",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:SHIB/USD",
+   "venue": "kraken",
+   "asset": "SHIB",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:kSHIB",
+   "venue": "hyperliquid",
+   "asset": "SHIB",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:FLOKI/USD",
+   "venue": "kraken",
+   "asset": "FLOKI",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:kFLOKI",
+   "venue": "hyperliquid",
+   "asset": "FLOKI",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "hyperliquid:BOME",
+   "venue": "hyperliquid",
+   "asset": "BOME",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:NEIRO/USD",
+   "venue": "kraken",
+   "asset": "NEIRO",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:kNEIRO",
+   "venue": "hyperliquid",
+   "asset": "NEIRO",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:TURBO/USD",
+   "venue": "kraken",
+   "asset": "TURBO",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:TURBO",
+   "venue": "hyperliquid",
+   "asset": "TURBO",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:PNUT/USD",
+   "venue": "kraken",
+   "asset": "PNUT",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:PNUT",
+   "venue": "hyperliquid",
+   "asset": "PNUT",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:MEME/USD",
+   "venue": "kraken",
+   "asset": "MEME",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:MEME",
+   "venue": "hyperliquid",
+   "asset": "MEME",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:DOGS/USD",
+   "venue": "kraken",
+   "asset": "DOGS",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "gate:FET_USDT",
+   "venue": "gate",
+   "asset": "FET",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:FET/USD",
+   "venue": "kraken",
+   "asset": "FET",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:FET",
+   "venue": "hyperliquid",
+   "asset": "FET",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:NEAR_USDT",
+   "venue": "gate",
+   "asset": "NEAR",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:NEAR/USD",
+   "venue": "kraken",
+   "asset": "NEAR",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:NEAR",
+   "venue": "hyperliquid",
+   "asset": "NEAR",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:AR_USDT",
+   "venue": "gate",
+   "asset": "AR",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:AR/USD",
+   "venue": "kraken",
+   "asset": "AR",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:AR",
+   "venue": "hyperliquid",
+   "asset": "AR",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:WLD_USDT",
+   "venue": "gate",
+   "asset": "WLD",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:WLD/USD",
+   "venue": "kraken",
+   "asset": "WLD",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:WLD",
+   "venue": "hyperliquid",
+   "asset": "WLD",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "kraken:GRT/USD",
+   "venue": "kraken",
+   "asset": "GRT",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "kraken:AIXBT/USD",
+   "venue": "kraken",
+   "asset": "AIXBT",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:AIXBT",
+   "venue": "hyperliquid",
+   "asset": "AIXBT",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:VIRTUAL_USDT",
+   "venue": "gate",
+   "asset": "VIRTUAL",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:VIRTUAL/USD",
+   "venue": "kraken",
+   "asset": "VIRTUAL",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:VIRTUAL",
+   "venue": "hyperliquid",
+   "asset": "VIRTUAL",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:ICP_USDT",
+   "venue": "gate",
+   "asset": "ICP",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:ICP/USD",
+   "venue": "kraken",
+   "asset": "ICP",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:ICP",
+   "venue": "hyperliquid",
+   "asset": "ICP",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  },
+  {
+   "id": "gate:ARKM_USDT",
+   "venue": "gate",
+   "asset": "ARKM",
+   "kind": "spot",
+   "fee_taker_bps": 20.0
+  },
+  {
+   "id": "kraken:ARKM/USD",
+   "venue": "kraken",
+   "asset": "ARKM",
+   "kind": "spot",
+   "fee_taker_bps": 40.0
+  },
+  {
+   "id": "hyperliquid:IO",
+   "venue": "hyperliquid",
+   "asset": "IO",
+   "kind": "perp",
+   "fee_taker_bps": 4.5
+  }
+ ],
+ "summary": {
+  "BTC": {
+   "impulses": 28,
+   "scans": 48810,
+   "signals": 59,
+   "net_suppressed": 0,
+   "members": 110,
+   "calibrated": 110,
+   "calib_errors": [],
+   "gap_vol_mult": 0.0,
+   "id_base": 0
+  },
+  "sol": {
+   "impulses": 41,
+   "scans": 16244,
+   "signals": 9,
+   "net_suppressed": 0,
+   "members": 38,
+   "calibrated": 38,
+   "calib_errors": [],
+   "gap_vol_mult": 0.5,
+   "id_base": 10000000
+  },
+  "pepe": {
+   "impulses": 48,
+   "scans": 5583,
+   "signals": 4,
+   "net_suppressed": 0,
+   "members": 29,
+   "calibrated": 29,
+   "calib_errors": [],
+   "gap_vol_mult": 0.5,
+   "id_base": 20000000
+  },
+  "render": {
+   "impulses": 30,
+   "scans": 2043,
+   "signals": 0,
+   "net_suppressed": 0,
+   "members": 40,
+   "calibrated": 40,
+   "calib_errors": [],
+   "gap_vol_mult": 0.5,
+   "id_base": 30000000
+  },
+  "doge": {
+   "impulses": 48,
+   "scans": 21341,
+   "signals": 2,
+   "net_suppressed": 0,
+   "members": 29,
+   "calibrated": 29,
+   "calib_errors": [],
+   "gap_vol_mult": 0.5,
+   "id_base": 40000000
+  },
+  "tao": {
+   "impulses": 48,
+   "scans": 9203,
+   "signals": 10,
+   "net_suppressed": 0,
+   "members": 40,
+   "calibrated": 40,
+   "calib_errors": [],
+   "gap_vol_mult": 0.5,
+   "id_base": 50000000
+  }
+ },
+ "main_latency_s": 0.15,
+ "placebo_shift": 400.0
+}

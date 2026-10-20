@@ -59,6 +59,7 @@ class Agency:
         self.mm = None                            # Phase 6 Architecture A, set by attach_mm()
         self.hc = None                            # Phase 6 Architecture B, set by attach_hc()
         self.sleeves = None                       # Phase 7 isolated per-venue risk sleeves, set by attach_sleeves()
+        self.sectors = None                       # sector oracles + observe-only sink, set by attach_sectors()
         self.n_mkt_trades = 0
         # latency-sensitivity shadow trackers: same signals, different assumed order latency (does the edge survive speed?)
         self.alt_trackers = {lat: MarkoutTracker(self.book, self.cfg.cfo.markout_horizons_s, lat, self.cfg.cfo.fee_taker_bps)
@@ -103,6 +104,10 @@ class Agency:
     def attach_sleeves(self, sleeves) -> None:
         self.sleeves = sleeves
 
+    def attach_sectors(self, hub) -> None:
+        """Sector oracles (SOL / PEPE / RENDER ...): every hunter's signals - BTC included - become observe-only markout rows."""
+        self.sectors = hub
+
     def start_recording(self) -> None:
         self.tape = tuple(array("d") for _ in range(6))
 
@@ -128,6 +133,8 @@ class Agency:
             if self.hc is not None:
                 self.hc.on_btc_mid(t, 0.5 * (bid + ask))
         else:
+            if self.sectors is not None:
+                self.sectors.on_quote(i, t, bid, ask, bq, aq)
             self.engine.on_quote(i, t)
             if self.sniper is not None:
                 self.sniper.on_quote(i, t, bid, ask, bq, aq)
@@ -165,6 +172,8 @@ class Agency:
         else:
             for i in idxs:
                 self.hunter.cooldown_until[i] = max(self.hunter.cooldown_until[i], t + hold_s)
+        if self.sectors is not None:
+            self.sectors.reset(t, idxs, hold_s)
 
     # ------------------------------------------------------------------ main step
     def housekeeping(self, t: float) -> None:
@@ -173,6 +182,8 @@ class Agency:
         self.cfo.markouts.poll(t)
         for tk in self.alt_trackers.values():
             tk.poll(t)
+        if self.sectors is not None:
+            self.sectors.poll(t)
         for tr in self.engine.poll(t):
             self._write("trades", tr.as_dict())
         self.arb.scan(t)                                                   # also scanned on the BTC path; 10 ms internal throttle
@@ -181,7 +192,8 @@ class Agency:
         if self.sleeves is not None:
             for ev in self.sleeves.review(t):
                 self._write("sleeve_events", ev.as_dict())
-        self.ceo.maybe_review(t)
+        if self.sectors is None:                                            # measurement runs: nothing may retune the baseline hunter mid-capture
+            self.ceo.maybe_review(t)
         if self.cfo.flatten_requested:
             self.engine.flatten_all(t, "breaker_flatten")
             self.cfo.flatten_requested = False
@@ -206,10 +218,14 @@ class Agency:
 
     def scan(self, t: float, force: bool = False) -> List[Signal]:
         """Latency-critical path: hunter scan -> CFO gate -> payload -> paper order."""
-        if not (self.hunter.dirty or force):
+        sec = self.sectors
+        sec_dirty = sec is not None and sec.any_dirty()
+        if not (self.hunter.dirty or force or sec_dirty):
             return []
         t1 = self.perf()
-        sigs = self.hunter.scan(t, self._recv_wall)
+        sigs = self.hunter.scan(t, self._recv_wall) if (self.hunter.dirty or force) else []
+        if sec_dirty:
+            sigs = sigs + sec.scan(t)
         if self.pm is not None:
             sigs = sigs + self.pm.scan(t, self.oracle.state(t))
         self.scan_lat.add((self.perf() - t1) * 1e6)
@@ -226,6 +242,9 @@ class Agency:
         return self.scan(t, force_scan)
 
     def _handle_signal(self, s: Signal, t: float) -> None:
+        if self.sectors is not None:                    # measurement mode: no order is ever prepared, the CFO/CEO books stay untouched
+            self.sectors.observe(s, t)
+            return
         meta = self.book.metas[s.idx]
         sn = self.sniper
         hc = self.hc

@@ -94,6 +94,7 @@ class FeedManager:
         idxs = list(idx.values())
         perf, loads = self.perf, orjson.loads
         on_quote, scan, on_trade = a.on_quote, a.scan, a.on_trade
+        scan_idx = set(a.sectors.scan_idx) if getattr(a, "sectors", None) is not None else set()
 
         async def noop(ws):
             return None
@@ -112,7 +113,7 @@ class FeedManager:
                     continue
                 st.quotes += 1
                 on_quote(i, t, float(d["b"]), float(d["a"]), float(d["B"]), float(d["A"]))
-                if i == 0:
+                if i == 0 or i in scan_idx:                     # BTC tick, or a sector leader's tick, can open an impulse
                     scan(t)
 
         await self._run("binance", self.BINANCE_WS + "/".join(streams), noop, handler, idxs)

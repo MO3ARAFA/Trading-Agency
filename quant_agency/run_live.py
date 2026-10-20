@@ -12,6 +12,7 @@ import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import asdict
 
 from .agency import Agency
 from .config import AgencyConfig
@@ -61,6 +62,11 @@ def parse():
     p.add_argument("--b-floor", type=float, default=None, help="B: absolute floor multiple of (spread + taker-in + maker-out fee)")
     p.add_argument("--no-mm", action="store_true")
     p.add_argument("--no-b", action="store_true")
+    p.add_argument("--sectors", action="store_true", help="Sector lead-lag study: BTC + SOL/PEPE/RENDER (+DOGE/TAO) oracles vs their ecosystems on Binance/Gate/Kraken/Hyperliquid; observe-only")
+    p.add_argument("--sector-list", default="sol,pepe,render,doge,tao", help="comma list of sector oracles to run")
+    p.add_argument("--sector-mult", type=float, default=0.5, help="sector gap hurdle = max(min_gap, mult * beta * leader sigma_h); 0 = flat hurdle")
+    p.add_argument("--placebo-shift", type=float, default=0.0, help="replay control: circularly shift every sector leader's (and BTC's) quote stream by this many seconds against the members, "
+                   "so impulses are unrelated to member moves (null distribution of the selection effect)")
     p.add_argument("--sim", action="store_true")
     p.add_argument("--record", default=None, help="save the live tape (npz) for deterministic replay")
     p.add_argument("--replay", default=None, help="replay a recorded tape through the full agency")
@@ -79,6 +85,9 @@ def make_cfg(a) -> AgencyConfig:
     cfg.ceo.window_s = a.ceo_window
     cfg.watchers.n_markets = a.markets
     cfg.watchers.cross_venue = not a.no_cross_venue
+    if getattr(a, "sectors", False):
+        cfg.watchers.ring_cap = 16384                     # busy leaders (SOL, DOGE) tick faster than BTC-era alts
+        cfg.poly.enabled = False
     if getattr(a, "phase7", False):
         from .high_conviction_sniper import parse_exit
         a.phase5 = True                                   # same universe; Architecture A is not instantiated at all
@@ -157,6 +166,15 @@ def attach_phase7(ag: Agency, cfg: AgencyConfig, a, has_prints: bool) -> None:
     ag.attach_hc(HighConvictionSniper(ag, cfg.hc, sleeves), govern=False)
 
 
+def attach_sectors(ag: Agency, a, names, sc=None):
+    from .sector_oracles import SectorConfig, SectorHub
+    want = [n.strip() for n in a.sector_list.split(",") if n.strip()]
+    sc = sc or SectorConfig(sectors=tuple(n for n in names if n in want), gap_vol_mult=a.sector_mult)
+    hub = SectorHub(ag, sc)
+    ag.attach_sectors(hub)
+    return hub
+
+
 def finish(ag: Agency, t_end: float, info: dict, run_dir: str) -> str:
     ag.engine.flatten_all(t_end, "end_of_run")
     if ag.sniper is not None:
@@ -169,6 +187,11 @@ def finish(ag: Agency, t_end: float, info: dict, run_dir: str) -> str:
     ag.housekeeping(t_rep)
     ag.ceo.review(t_rep)
     ag.close()
+    if ag.sectors is not None:
+        ag.sectors.poll(t_rep + 31.0)                       # resolve the 30 s markouts of the final signals against the last known quotes
+        ag.sectors.dump(run_dir, t_end)
+        ag.sectors.shutdown()
+        return f"sector run: {json.dumps(ag.sectors.summary(), default=float)}"
     rep = (build_report_p7 if info.get("phase7") else build_report_p6 if info.get("phase6") else build_report_p5 if info.get("phase5") else (build_report_p4 if info.get("phase4") else build_report))(ag, t_rep, info)
     with open(os.path.join(run_dir, "report.md"), "w") as f:
         f.write(rep)
@@ -182,7 +205,16 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     from .feeds import FeedManager
 
     pm_specs, pm_tokens, pm_metas = {}, {}, []
-    if a.phase5:
+    universe = None
+    if a.sectors:
+        from .sector_oracles import discover_sector_universe
+        print("discovering sector universe (Binance Vision, Gate, Kraken, Hyperliquid) …", flush=True)
+        universe = await discover_sector_universe()
+        metas = universe.metas
+        with open(os.path.join(run_dir, "sector_universe.json"), "w") as uf:
+            json.dump(universe.as_dict(), uf, indent=1, default=float)
+        print(f"markets: {universe.counts} | sectors: {[s['name'] for s in universe.sectors]}", flush=True)
+    elif a.phase5:
         import aiohttp
         from . import polymarket_watcher as pmw
         from .venues import cross_venue_metas as p4_cross
@@ -227,6 +259,10 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     perf = time.perf_counter
     ag = Agency(metas, cfg, out_dir=run_dir, t0=perf(), wall0=time.time())
     tape_extra = {}
+    if universe is not None:
+        hub = attach_sectors(ag, a, [s["name"] for s in universe.sectors])
+        hub.use_threads()
+        tape_extra = {"sectors": {"names": [so.sd.name for so in hub.sectors], "config": asdict(hub.sc)}, "universe": universe.as_dict(), "t0": ag.t0}
     if (a.phase4 or a.phase5) and pm_metas:
         import dataclasses
         tape_extra = {"wall0": time.time(), "t0": ag.t0, "specs": {k: dataclasses.asdict(v) for k, v in pm_specs.items()}, "tokens": pm_tokens,
@@ -234,7 +270,9 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
         w = pmw.PolymarketWatcher(ag, pm_metas, pm_specs, pm_tokens, cfg.poly, wall0=tape_extra["wall0"], t0=ag.t0)
         ag.attach_polymarket(w)
     ag.hunter.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="calib")
-    if a.phase5 and getattr(a, "phase7", False):
+    if a.sectors:
+        pass
+    elif a.phase5 and getattr(a, "phase7", False):
         attach_phase7(ag, cfg, a, has_prints=True)
     elif a.phase5 and getattr(a, "phase6", False):
         attach_phase6(ag, cfg, a, has_prints=True)
@@ -306,6 +344,20 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     return ag, fm, t_end
 
 
+def placebo_shift(t, idx, b, aa, bq, aq, leaders, shift: float):
+    """Circularly shift every leader quote (and the BTC aggTrade prints, idx -1) by ``shift`` seconds; members keep their clock.
+
+    The leader-to-member relationship is destroyed while each stream keeps its own statistics, so whatever the hunters then
+    'find' is the selection effect (gap >= k sigma of quote noise) and nothing else.
+    """
+    import numpy as np
+    is_lead = np.isin(idx, np.array(sorted(leaders))) | (idx == -1)
+    t0, span = float(t[0]), float(t[-1] - t[0]) + 1e-6
+    tt = np.where(is_lead, t0 + np.mod(t - t0 + shift, span), t)
+    o = np.argsort(tt, kind="stable")
+    return tt[o], idx[o], b[o], aa[o], bq[o], aq[o]
+
+
 def run_replay(a, cfg: AgencyConfig, run_dir: str):
     import dataclasses
     import numpy as np
@@ -317,7 +369,16 @@ def run_replay(a, cfg: AgencyConfig, run_dir: str):
         metas.append(MarketMeta(**m))
     extra = json.loads(str(z["extra"])) if "extra" in z.files else {}
     t, idx, b, aa, bq, aq = z["t"], z["i"], z["b"], z["a"], z["bq"], z["aq"]
+    if extra.get("sectors"):
+        cfg.watchers.ring_cap = 16384
+        cfg.poly.enabled = False
     ag = Agency(metas, cfg, out_dir=run_dir, t0=float(t[0]), wall0=time.time())
+    if extra.get("sectors"):
+        from .sector_oracles import SectorConfig
+        sc = SectorConfig(**{**extra["sectors"]["config"], "sectors": tuple(extra["sectors"]["names"])})
+        if getattr(a, "sector_mult", None) is not None and a.sector_mult != 0.5:
+            sc.gap_vol_mult = a.sector_mult
+        attach_sectors(ag, a, extra["sectors"]["names"], sc)
     if extra.get("specs"):
         from .polymarket_watcher import PmSpec, PolymarketWatcher
         specs = {k: PmSpec(**v) for k, v in extra["specs"].items()}
@@ -348,6 +409,11 @@ def run_replay(a, cfg: AgencyConfig, run_dir: str):
                 m.fee_maker_bps, m.fee_taker_bps = a.hl_maker_bps, a.hl_taker_bps
         ag.attach_sniper(MakerSniper(ag, cfg.snipe))
         ag.snipe_has_prints = has_prints
+    scan_idx = set(ag.sectors.scan_idx) if ag.sectors is not None else set()
+    shift = float(getattr(a, "placebo_shift", 0.0) or 0.0)
+    if shift and ag.sectors is not None:
+        t, idx, b, aa, bq, aq = placebo_shift(t, idx, b, aa, bq, aq, {0} | scan_idx, shift)
+        ag.sectors.placebo_shift = shift
     last_hk = last_st = float(t[0])
     for k in range(t.shape[0]):
         tk, i = float(t[k]), int(idx[k])
@@ -358,7 +424,7 @@ def run_replay(a, cfg: AgencyConfig, run_dir: str):
             ag.on_market_trade(-i - 2, tk, float(b[k]), float(aa[k]), int(bq[k]))
             continue
         ag.on_quote(i, tk, float(b[k]), float(aa[k]), float(bq[k]), float(aq[k]))
-        if i == 0:
+        if i == 0 or i in scan_idx:
             ag.scan(tk)
         if tk - last_hk >= 0.05:
             ag.housekeeping(tk)
