@@ -1,0 +1,75 @@
+{
+ "path": "runs/tapes/xvr_s1.npz",
+ "events": 1,
+ "cells": {
+  "8|300": {
+   "n": 1,
+   "clusters": 1,
+   "mean_abs_dev": 8.060857171721597,
+   "spread_h": 2.8288543140023865,
+   "spread_b": 3.5337770186703867,
+   "perp_mid": {
+    "mean": 8.424079225025647,
+    "se": NaN
+   },
+   "hedged_mid": {
+    "mean": 7.246222922132184,
+    "se": NaN
+   },
+   "perp_cross": {
+    "mean": 5.890877557636463,
+    "se": NaN
+   },
+   "hedged_cross": {
+    "mean": 2.3571005021921727,
+    "se": NaN
+   }
+  },
+  "8|900": {
+   "n": 1,
+   "clusters": 1,
+   "mean_abs_dev": 8.060857171721597,
+   "spread_h": 2.8288543140023865,
+   "spread_b": 3.5337770186703867,
+   "perp_mid": {
+    "mean": -60.35385215614801,
+    "se": NaN
+   },
+   "hedged_mid": {
+    "mean": 7.014326046462827,
+    "se": NaN
+   },
+   "perp_cross": {
+    "mean": -62.18322653370147,
+    "se": NaN
+   },
+   "hedged_cross": {
+    "mean": 2.824980658072704,
+    "se": NaN
+   }
+  },
+  "8|1800": {
+   "n": 1,
+   "clusters": 1,
+   "mean_abs_dev": 8.060857171721597,
+   "spread_h": 2.8288543140023865,
+   "spread_b": 3.5337770186703867,
+   "perp_mid": {
+    "mean": 11.014676548824042,
+    "se": NaN
+   },
+   "hedged_mid": {
+    "mean": 8.070295878023007,
+    "se": NaN
+   },
+   "perp_cross": {
+    "mean": 7.0686367543509485,
+    "se": NaN
+   },
+   "hedged_cross": {
+    "mean": -1.1749013677814988,
+    "se": NaN
+   }
+  }
+ }
+}

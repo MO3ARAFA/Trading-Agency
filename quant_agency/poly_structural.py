@@ -117,6 +117,26 @@ def _t_end(x: dict) -> Optional[float]:
         return None
 
 
+def _parse_ts(s) -> Optional[float]:
+    """Gamma timestamps come as ISO ('...Z') or as '2026-10-20 10:50:00+00'."""
+    if not s:
+        return None
+    import datetime as dt
+    try:
+        x = str(s).strip().replace("Z", "+00:00").replace(" ", "T", 1)
+        if len(x) >= 3 and x[-3] in "+-" and x[-2:].isdigit() and ":" not in x[-5:]:
+            x += ":00"
+        return dt.datetime.fromisoformat(x).timestamp()
+    except Exception:
+        return None
+
+
+def event_time(e: dict, m: dict) -> Optional[float]:
+    """When the *event* happens: the game start for sports markets (their ``endDate`` is a generic settlement deadline), else the market end date."""
+    gs = _parse_ts(m.get("gameStartTime"))
+    return gs if gs is not None else (_t_end(m) or _t_end(e))
+
+
 def _f(x, d=0.0) -> float:
     try:
         return float(x)
@@ -150,9 +170,13 @@ def build_poly_universe(events: Sequence[dict], now: float, cfg: Optional[PsConf
     groups: Dict[str, List[PmMarket]] = {}
     info: Dict[str, dict] = {}
     n_mk = n_live = 0
+    n_inplay = 0
     for e in events:
         legs: List[PmMarket] = []
         n_total = len(e.get("markets", []))
+        if e.get("live") or e.get("ended"):
+            n_inplay += n_total
+            continue                                          # in play, or finished and awaiting resolution: informed flow, not a slow market
         for m in e.get("markets", []):
             n_mk += 1
             if not (m.get("enableOrderBook") and m.get("acceptingOrders") and not m.get("closed")):
@@ -167,7 +191,7 @@ def build_poly_universe(events: Sequence[dict], now: float, cfg: Optional[PsConf
                           tick=_f(m.get("orderPriceMinTickSize"), 0.01) or 0.01, min_size=_f(m.get("orderMinSize"), cfg.qty) or cfg.qty, t_end=te,
                           v24=_f(m.get("volume24hr")), liq=_f(m.get("liquidity")), fee=_fee_schedule(m), kind="slow")
             legs.append(pm)
-            hrs = (te - now) / 3600.0
+            hrs = ((event_time(e, m) or te) - now) / 3600.0
             if bb > 0 and ba > bb and hrs > cfg.min_hours and pm.v24 >= cfg.v24_min and cfg.spread_lo <= ba - bb <= cfg.spread_hi and cfg.mid_lo < 0.5 * (ba + bb) < cfg.mid_hi:
                 slow_c.append((pm.v24, pm))
         if e.get("negRisk") and 3 <= len(legs) <= cfg.max_group_legs:
@@ -194,7 +218,7 @@ def build_poly_universe(events: Sequence[dict], now: float, cfg: Optional[PsConf
     ranked = sorted(groups, key=lambda g: (-score(g), -info[g]["v24"]))
     keep = ranked[: cfg.n_groups]
     return PolyUniverse(slow, {g: groups[g] for g in keep}, {g: info[g] for g in keep},
-                        {"events": len(events), "markets": n_mk, "live": n_live, "slow": len(slow), "slow_candidates": len(slow_c), "groups": len(groups), "groups_kept": len(keep)})
+                        {"events": len(events), "markets": n_mk, "live": n_live, "in_play_or_ended_excluded": n_inplay, "slow": len(slow), "slow_candidates": len(slow_c), "groups": len(groups), "groups_kept": len(keep)})
 
 
 async def fetch_events(session, max_events: int = 2100) -> List[dict]:
@@ -555,6 +579,18 @@ def maker_stats(attempts: Sequence[Attempt], hours: float, n_markets: int, qty: 
                     d[f"markout_{int(hz)}s_n"] = len(v)
                     d[f"usd_per_fill_{int(hz)}s"] = float(np.mean(v)) / 100.0 * qty
             d["median_half_spread_c"] = float(np.median(half) * 100.0)
+            # attempts in one market are not independent (one print can fill several, and a market that is moving fills them all): the market is the unit
+            per: Dict[str, List[float]] = defaultdict(list)
+            for a in fills:
+                if 300.0 in a.marks:
+                    per[a.token].append(a.side * (a.marks[300.0] - a.fill_px) * 100.0)
+            mm = [float(np.mean(v)) for v in per.values()]
+            d["markets_with_fills"] = len({a.token for a in fills})
+            d["top_market_fill_share"] = max((sum(1 for a in fills if a.token == t) for t in {a.token for a in fills}), default=0) / len(fills)
+            if mm:
+                d["markout_300s_market_mean_c"] = float(np.mean(mm))
+                d["markout_300s_market_se_c"] = float(np.std(mm, ddof=1) / math.sqrt(len(mm))) if len(mm) > 1 else float("nan")
+                d["markout_300s_markets"] = len(mm)
         out["|".join(key)] = d
     return out
 

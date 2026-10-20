@@ -47,6 +47,38 @@ def test_universe_filters_caps_and_groups():
     assert "A1" in toks and "A1n" in toks and "G1" in toks                           # quoted markets bring their NO token (mirror check); group legs bring the YES token
 
 
+def test_in_play_ended_and_game_start_markets_are_not_slow():
+    ev = [{"slug": "ended-match", "title": "m1", "negRisk": False, "ended": True, "markets": [_mk("e1", "E1", 0.40, 0.45, 9000)]},
+          {"slug": "live-match", "title": "m2", "negRisk": False, "live": True, "markets": [_mk("l1", "L1", 0.40, 0.45, 9000)]},
+          {"slug": "match-today", "title": "m3", "negRisk": False, "markets": [dict(_mk("s1", "S1", 0.40, 0.45, 9000), gameStartTime="2026-10-20 10:50:00+00")]},   # generic endDate 100 h away, game starts in 3 h
+          {"slug": "match-far", "title": "m4", "negRisk": False, "markets": [dict(_mk("s2", "S2", 0.40, 0.45, 9000), gameStartTime=_iso(NOW + 72 * 3600).replace("T", " ").replace("Z", "+00"))]},
+          {"slug": "plain", "title": "m5", "negRisk": False, "markets": [_mk("p1", "P1", 0.40, 0.45, 9000)]}]
+    import datetime as dt
+    now = dt.datetime(2026, 10, 20, 7, 50, tzinfo=dt.timezone.utc).timestamp()
+    for e in ev:
+        for m in e["markets"]:
+            m["endDate"] = _iso(now + 100 * 3600)
+    u = ps.build_poly_universe(ev, now, ps.PsConfig())
+    assert {m.token for m in u.slow} == {"S2", "P1"} and u.counts["in_play_or_ended_excluded"] == 2
+    assert ps._parse_ts("2026-10-20 10:50:00+00") == dt.datetime(2026, 10, 20, 10, 50, tzinfo=dt.timezone.utc).timestamp()
+    assert ps._parse_ts("2026-10-20T10:50:00Z") == ps._parse_ts("2026-10-20 10:50:00+00:00") and ps._parse_ts("junk") is None
+
+
+def test_maker_stats_use_the_market_as_the_unit():
+    from quant_agency.queue_model import RestOrder
+    def att(tok, k, px, mark):
+        a = ps.Attempt(k, tok, "slow", "join", "trades", 1, px, 5.0, 0.0, 0.04, 0.42, 0.01, RestOrder(1, px, 5.0, 0.0, 0.4), 1e9)
+        a.fill_t, a.fill_px, a.fill_qty = 1.0, px, 5.0
+        a.marks = {60.0: mark, 300.0: mark}
+        return a
+    busy = [att("A", k, 0.40, 0.36) for k in range(30)]                   # one moving market fills 30 times at -4c
+    rest = [att("B", 100, 0.40, 0.41), att("C", 101, 0.40, 0.41)]         # two quiet markets fill once each at +1c
+    s = ps.maker_stats(busy + rest, hours=1.0, n_markets=3, qty=5.0)["slow|join|trades"]
+    assert s["fills"] == 32 and s["markets_with_fills"] == 3 and s["top_market_fill_share"] == pytest.approx(30 / 32)
+    assert s["markout_300s_c"] == pytest.approx((30 * -4 + 2 * 1) / 32)               # fill-weighted: dominated by the busy market
+    assert s["markout_300s_market_mean_c"] == pytest.approx((-4 + 1 + 1) / 3) and s["markout_300s_markets"] == 3
+
+
 def test_fee_per_share():
     assert ps.fee_per_share(None, 0.4) == 0.0
     assert ps.fee_per_share((0.02, 1.0, True), 0.5) == pytest.approx(0.02 * 0.25)
