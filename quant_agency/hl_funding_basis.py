@@ -438,3 +438,105 @@ def premium_test(hists: Sequence[PairHistory], cfg: BasisConfig = HOURLY, spec: 
         res["decision"] = "REJECT H0 (net > 0)" if p["net_neutral"]["p1"] < spec["alpha"] else "do not reject H0"
     res["primary"] = p
     return res
+
+
+# ================================================================================ quote-level basis study on the Phase-11 tapes
+def _asof(t: np.ndarray, v: np.ndarray, grid: np.ndarray) -> np.ndarray:
+    j = np.searchsorted(t, grid, side="right") - 1
+    out = np.where(j >= 0, v[np.clip(j, 0, None)], np.nan)
+    return out
+
+
+@dataclass
+class TapeBasisConfig:
+    grid_s: float = 1.0
+    smooth_s: int = 60
+    eq_lo_s: int = 3600                       # equilibrium = median of the smoothed basis between t-3600 s and t-300 s
+    eq_hi_s: int = 300
+    eq_min_valid: int = 1200
+    thresholds_bps: Tuple[float, ...] = (8.0, 15.0)
+    horizons_s: Tuple[int, ...] = (300, 900, 1800)
+    latency_s: int = 1
+    cooldown_s: int = 1800
+    max_quote_age_s: float = 30.0
+    block_s: int = 1800
+
+
+def tape_basis_study(path: str, cfg: Optional[TapeBasisConfig] = None, exclude: Sequence[str] = ("BTC", "ETH")) -> dict:
+    """Same question as the minute study, with real bid/ask on both legs: short the rich leg / long the cheap one, filled at the touch ``latency_s`` after the trigger."""
+    cfg = cfg or TapeBasisConfig()
+    z = np.load(path, allow_pickle=False)
+    metas = json.loads(str(z["metas"]))
+    extra = json.loads(str(z["extra"]))
+    t, idx, b, a = z["t"], z["i"], z["b"], z["a"]
+    pairs = extra["xv"]["pairs"]
+    ids = {m["id"]: k for k, m in enumerate(metas)}
+    t0, t1 = float(t[0]), float(t[-1])
+    grid = np.arange(t0, t1, cfg.grid_s)
+    n = len(grid)
+    events: List[dict] = []
+    for p in pairs:
+        if p["asset"] in exclude:
+            continue
+        bi, hi = ids[p["binance"]], ids[p["hl"]]
+        mb, mh = idx == bi, idx == hi
+        if mb.sum() < 50 or mh.sum() < 50:
+            continue
+        tb, bb, ab = t[mb], b[mb], a[mb]
+        th, bh, ah = t[mh], b[mh], a[mh]
+        Bb, Ab, Bh, Ah = _asof(tb, bb, grid), _asof(tb, ab, grid), _asof(th, bh, grid), _asof(th, ah, grid)
+        age_b = grid - np.where(np.searchsorted(tb, grid, side="right") > 0, tb[np.clip(np.searchsorted(tb, grid, side="right") - 1, 0, None)], -1e9)
+        age_h = grid - np.where(np.searchsorted(th, grid, side="right") > 0, th[np.clip(np.searchsorted(th, grid, side="right") - 1, 0, None)], -1e9)
+        ok = np.isfinite(Bb) & np.isfinite(Bh) & (age_b <= cfg.max_quote_age_s) & (age_h <= cfg.max_quote_age_s)
+        basis = np.full(n, np.nan)
+        basis[ok] = np.log(0.5 * (Bh[ok] + Ah[ok]) / (0.5 * (Bb[ok] + Ab[ok]))) * BPS
+        sm = _rolling_mean_valid(basis, cfg.smooth_s)
+        dev = np.full(n, np.nan)
+        for i in range(cfg.eq_lo_s, n, 5):                                  # the equilibrium moves slowly: refresh every 5 s
+            win = sm[i - cfg.eq_lo_s: i - cfg.eq_hi_s]
+            v = win[np.isfinite(win)]
+            if len(v) >= cfg.eq_min_valid and np.isfinite(sm[i]):
+                dev[i: i + 5] = sm[i: i + 5] - np.median(v)
+        for thr in cfg.thresholds_bps:
+            last = -10 ** 9
+            for i in range(cfg.eq_lo_s, n):
+                d = dev[i]
+                if not np.isfinite(d) or abs(d) < thr or i - last < cfg.cooldown_s:
+                    continue
+                e = i + cfg.latency_s
+                s = 1.0 if d > 0 else -1.0                                  # + : perp rich -> short perp (sell at bid), long spot (buy at ask)
+                if e >= n or not (ok[e]):
+                    continue
+                perp_in = Bh[e] if s > 0 else Ah[e]
+                spot_in = Ab[e] if s > 0 else Bb[e]
+                row = {"asset": p["asset"], "thr": thr, "t": i, "dev": float(d), "side": s, "block": i // cfg.block_s, "spread_h": float((Ah[e] - Bh[e]) / (0.5 * (Ah[e] + Bh[e])) * BPS),
+                       "spread_b": float((Ab[e] - Bb[e]) / (0.5 * (Ab[e] + Bb[e])) * BPS), "out": {}}
+                for H in cfg.horizons_s:
+                    x = e + H
+                    if x >= n or not ok[x]:
+                        continue
+                    perp_out = Ah[x] if s > 0 else Bh[x]                    # buy back / sell at the touch
+                    spot_out = Bb[x] if s > 0 else Ab[x]
+                    perp = -s * math.log(perp_out / perp_in) * BPS
+                    spot = s * math.log(spot_out / spot_in) * BPS
+                    perp_mid = -s * math.log((0.5 * (Ah[x] + Bh[x])) / (0.5 * (Ah[e] + Bh[e]))) * BPS
+                    spot_mid = s * math.log((0.5 * (Ab[x] + Bb[x])) / (0.5 * (Ab[e] + Bb[e]))) * BPS
+                    row["out"][H] = {"perp_cross": perp, "spot_cross": spot, "hedged_cross": perp + spot, "perp_mid": perp_mid, "hedged_mid": perp_mid + spot_mid, "dev_exit": float(dev[x]) if np.isfinite(dev[x]) else float("nan")}
+                if row["out"]:
+                    events.append(row)
+                    last = i
+    res: dict = {"path": path, "events": len(events), "cells": {}}
+    for thr in cfg.thresholds_bps:
+        for H in cfg.horizons_s:
+            rows = [e for e in events if e["thr"] == thr and H in e["out"]]
+            if not rows:
+                continue
+            cl = [e["block"] for e in rows]
+            cell = {"n": len(rows), "clusters": len(set(cl)), "mean_abs_dev": float(np.mean([abs(e["dev"]) for e in rows])),
+                    "spread_h": float(np.median([e["spread_h"] for e in rows])), "spread_b": float(np.median([e["spread_b"] for e in rows]))}
+            for k in ("perp_mid", "hedged_mid", "perp_cross", "hedged_cross"):
+                m, se, _ = cluster_mean([e["out"][H][k] for e in rows], cl)
+                cell[k] = {"mean": m, "se": se}
+            res["cells"][f"{thr:g}|{H}"] = cell
+    res["events_rows"] = events
+    return res

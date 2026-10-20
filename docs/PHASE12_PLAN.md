@@ -18,3 +18,10 @@
 
 ## Real-money constraints used in every simulation (100 USD account)
 Notional 20 USD per position (Hyperliquid minimum order ≈ 10 USD), ≤ 4 concurrent positions, ≤ 2× leverage, stop at −10 % (`Bankroll`). Fees are public base-tier assumptions: Hyperliquid maker 1.5 bps / taker 4.5 bps, Binance spot 7.5 bps. This repository contains no code that sends orders and reads no credentials; every number here is a measurement or a paper simulation.
+
+## Track 1 (Polymarket) — plan written before the 60-minute capture (all descriptive; no confirmatory claim)
+* **Universe:** Gamma `/events` (≈ 2 100 events, ≈ 41 000 markets). *Slow* = > 24 h to expiry, 24 h volume ≥ 500 USD, cached spread 3–8 ¢, mid 5–95 ¢; the 80 most active (≤ 3 per event). *Control* = the BTC up/down markets of the Phase 5–6 population (8). *Groups* = 40 NegRisk events (3–20 live legs): those whose cached sums are closest to a locked margin, then the busiest.
+* **Structural scan (live CLOB books, net of the taker fee schedule, ≥ 5 shares on the thinnest leg):** exclusive sell-set (buy NO on every leg: Σ best bid YES > 1), exhaustive buy-set (Σ best ask YES < 1, only if Σ mids is within 0.05 of 1 and every outcome is live), binary YES/NO mirror check. Reported: counts, margin per set in USD and as a return on capital, duration, depth, **days until the capital is released**, annualised return.
+* **Maker evaluation:** virtual post-only bids and asks of the minimum size (5 shares), policies *join* and *penny*, fill models *strict* (lower bound) / *trades* (primary) / *depletion* (upper bound, shown only as a bound), TTL 300 s, markouts at +60 s / +300 s against later quotes, in dollars at 5 shares. Slow universe vs control, same session. Trade-print burstiness (Fano factor of per-minute counts).
+* **Set-maker:** join-bids on every leg of small exhaustive groups; completion rate, locked margin when complete, mark-to-mid result of partial sets (legging risk).
+* **Fills are simulated, not observed.** The strict / trades / depletion spread is the honest uncertainty; a real queue position and cancellations are not visible in public data.

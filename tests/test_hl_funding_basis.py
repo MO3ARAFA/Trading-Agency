@@ -160,3 +160,46 @@ def test_market_neutral_adjustment_removes_a_common_drift():
         h.hl_close = h.hl_close * drift
     r = fb.premium_test(hs, spec=dict(fb.PREMIUM_PRIMARY))["cells"]["30|4"]
     assert r["raw_perp"]["mean"] > 40.0 and abs(r["neutral"]["mean"]) < 0.5 * r["raw_perp"]["mean"]
+
+
+def _tape(tmp_path, shock_bps=30.0, revert=False, seconds=3400):
+    """One pair, 1 Hz quotes on both venues; a basis shock at t=2400 s (perp jumps up by shock_bps) that either stays or reverts after 300 s."""
+    rng = np.random.default_rng(2)
+    t = np.arange(0.0, seconds, 1.0)
+    spot = 100.0 * np.exp(np.cumsum(rng.normal(0, 1e-5, len(t))))
+    basis = np.full(len(t), 3.0)
+    basis[2400:] += shock_bps
+    if revert:
+        basis[2700:] -= shock_bps
+    perp = spot * np.exp(basis / fb.BPS)
+    rows = []
+    for k, tt in enumerate(t):
+        rows.append((tt, 0, spot[k] * (1 - 1e-5), spot[k] * (1 + 1e-5)))
+        rows.append((tt + 0.01, 1, perp[k] * (1 - 1e-4), perp[k] * (1 + 1e-4)))
+    a = np.array(rows)
+    metas = [{"id": "AAAUSDT"}, {"id": "hyperliquid:AAA"}]
+    extra = {"xv": {"pairs": [{"asset": "AAA", "binance": "AAAUSDT", "hl": "hyperliquid:AAA"}]}}
+    p = str(tmp_path / "tape.npz")
+    np.savez_compressed(p, t=a[:, 0], i=a[:, 1].astype(np.int32), b=a[:, 2], a=a[:, 3], metas=np.array(json.dumps(metas)), extra=np.array(json.dumps(extra)))
+    return p
+
+
+import json
+
+
+def test_tape_basis_study_finds_the_shock_and_prices_at_the_touch(tmp_path):
+    cfg = fb.TapeBasisConfig(eq_lo_s=1200, eq_hi_s=120, eq_min_valid=600, thresholds_bps=(15.0,), horizons_s=(300,), cooldown_s=900)
+    r = fb.tape_basis_study(_tape(tmp_path, 30.0, revert=True), cfg)
+    assert r["events"] == 1
+    e = r["events_rows"][0]
+    assert e["side"] == 1.0 and 2400 <= e["t"] <= 2500 and e["dev"] > 15.0
+    c = r["cells"]["15|300"]
+    assert c["spread_h"] == pytest.approx(2.0, abs=0.2) and c["spread_b"] == pytest.approx(0.2, abs=0.1)
+    assert c["hedged_mid"]["mean"] > 20.0                                              # the shock reverts after 300 s: the hedged spread earns it (mid to mid)
+    assert c["hedged_cross"]["mean"] < c["hedged_mid"]["mean"] - 1.5                    # crossing both spreads costs ~2.2 bps
+
+
+def test_tape_basis_study_permanent_shift_earns_nothing(tmp_path):
+    cfg = fb.TapeBasisConfig(eq_lo_s=1200, eq_hi_s=120, eq_min_valid=600, thresholds_bps=(15.0,), horizons_s=(300,), cooldown_s=900)
+    r = fb.tape_basis_study(_tape(tmp_path, 30.0, revert=False), cfg)
+    assert r["events"] == 1 and abs(r["cells"]["15|300"]["hedged_mid"]["mean"]) < 6.0
