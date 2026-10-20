@@ -65,7 +65,16 @@ What the governor does (per sleeve, every 30 s, ≥ 6 fresh round trips, cluster
 
 B is built for large, continuing BTC impulses; every recorded session was quiet. A quiet-regime result cannot confirm or refute B's design case, and Hyperliquid only clears the floor if moves are ≫ 10 bps. To collect the missing regime:
 
-1. **Check the regime before launching** (indicative Parkinson estimate in the oracle's own unit):
+0. **One command (Phase 9): let the regime daemon decide.** It sits in cheap standby (one Binance websocket, ≈ 1 % CPU, ≈ 43 MB) and launches/stops recorded Pure-B sessions (`--b-exit fixed0.7`, sleeves active, A never built) by pre-registered rules:
+   ```bash
+   python -m quant_agency.regime_daemon --dry-run      # watch the σ60 trace and the decisions it WOULD take; launches nothing
+   python -m quant_agency.regime_daemon                 # confirmatory mode: N* and the 24 h cap come from docs/PREREG_PHASE9.json
+   python -m quant_agency.p9_eval --check-frozen        # was anything changed since the pre-registration?
+   python -m quant_agency.p9_eval --tapes tapes/p9_seg*.npz --out docs/live_runs/phase9_eval.md
+   ```
+   Triggers (σ60 = RMS of the last 60 one-second Binance mid returns, bps/√s; `quant_agency/regime.py`): start in London 07:00–10:00 UTC or US 13:30–16:30 UTC (Mon–Fri), or when σ60 ≥ 0.45 for 30 s; stop only outside windows after σ60 < 0.35 for 300 s and ≥ 600 s of session. Segments are ≤ 2,700 s and saved as `tapes/p9_seg<k>.npz`; the log is `runs/p9_daemon/daemon_log.jsonl` (60 s σ60 trace, every start/stop with its reason, fills per segment). Stop the daemon with Ctrl-C/SIGTERM: it asks the running segment to finish gracefully (tape saved) first. Any threshold override (`--start-thr`, `--extra-window`, …) marks the run as *validation* (prefix `p9v_seg`, separate log) and `p9_eval` refuses those tapes. Keep it on a persistent host — the tapes are the data. A graceful segment end finalises open positions as a taker exit at the last quote; that is by design and part of the analysed sample.
+   Caveat from the data we have: `fixed0.7` was *worse* in the active regime (−161 ± 271 bps, N = 16) than in quiet (+248 ± 166, N = 55). The daemon is a collector, not a signal that active windows pay.
+1. **Check the regime before launching (manual alternative)** (indicative Parkinson estimate in the oracle's own unit):
    ```bash
    python -m quant_agency.regime_check          # e.g. "last 15 min 0.19 bps/√s (quiet)"
    ```

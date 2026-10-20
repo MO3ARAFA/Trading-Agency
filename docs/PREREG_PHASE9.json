@@ -39,8 +39,9 @@
   "quant_agency/p7_pool.py": "58b2f884c5385ea0cab1aecae37eccbcaf388fd01c36a04bbf607d5bd5dec5fb",
   "quant_agency/p8_eval.py": "e3f8eb69cfe43644100ad79fe897e9ccdadd7bbed6995887f540c8c6935dd814",
   "quant_agency/regime.py": "d9aa252f8e65a88a02819ee5b1065c4c41b0a69f85d3e82bc1310d77205888a3",
-  "quant_agency/regime_daemon.py": "93dfe033e7d23e09fad86fa9fbe63926126458d67f6fd7296c6fa08e0b9858fd",
+  "quant_agency/regime_daemon.py": "0c5481d19a8f2d0f91ed2acf018beb45f0da7fb23fb4c6f6bfc900901dc64795",
   "quant_agency/p9_regime.py": "6883c538706112562721202611c4c6787fa478bb9308a2319fd4336f4d873ec8",
   "quant_agency/p9_eval.py": "bba3d757370e83ae064fabf3a84a7364202115800a7fbc8130895b25f3adb105"
- }
+ },
+ "refrozen_note": "regime_daemon.py re-frozen twice after the live validation pass for cosmetic shutdown fixes (await the cancelled feed task; unwind pending websocket tasks); no confirmatory data existed."
 }

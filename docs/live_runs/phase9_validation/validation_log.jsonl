@@ -1,0 +1,13 @@
+{"t": "2026-10-20T04:21:17.679186+00:00", "kind": "daemon_start", "validation": true, "n_star": 1000, "prior": 0, "cfg": {"start_thr": 0.0, "stop_thr": 99.0, "confirm_s": 10.0, "calm_s": 20.0, "min_session_s": 120.0, "max_segment_s": 400.0, "windows": [["london", 420, 600], ["us", 810, 990]], "weekdays_only": true}, "dry_run": false}
+{"t": "2026-10-20T04:21:18.834392+00:00", "kind": "feed_up", "validation": true}
+{"t": "2026-10-20T04:21:22.680001+00:00", "kind": "trace", "validation": true, "sigma60": null, "capturing": false, "window": null, "cum_fills": 0}
+{"t": "2026-10-20T04:22:22.693761+00:00", "kind": "trace", "validation": true, "sigma60": 0.517, "capturing": false, "window": null, "cum_fills": 0}
+{"t": "2026-10-20T04:22:32.698641+00:00", "kind": "start", "validation": true, "why": "vol:0.59>=0.00", "segment": 1, "pid": 5017, "cum_fills": 0, "tape": "tapes/p9v_seg1.npz"}
+{"t": "2026-10-20T04:23:22.706389+00:00", "kind": "trace", "validation": true, "sigma60": 0.553, "capturing": true, "window": null, "cum_fills": 0}
+{"t": "2026-10-20T04:24:22.716487+00:00", "kind": "trace", "validation": true, "sigma60": 0.487, "capturing": true, "window": null, "cum_fills": 1}
+{"t": "2026-10-20T04:24:32.718774+00:00", "kind": "stop_requested", "validation": true, "why": "calm:0.25<99.00 for 20s, outside windows", "segment": 1}
+{"t": "2026-10-20T04:24:41.071156+00:00", "kind": "segment_end", "validation": true, "segment": 1, "seconds": 128, "live_floor_fills": 1, "cum_fills": 1, "capture_h": 0.04, "rc": 0}
+{"t": "2026-10-20T04:24:56.075208+00:00", "kind": "start", "validation": true, "why": "vol:0.12>=0.00", "segment": 2, "pid": 5125, "cum_fills": 1, "tape": "tapes/p9v_seg2.npz"}
+{"t": "2026-10-20T04:25:26.082541+00:00", "kind": "trace", "validation": true, "sigma60": 0.25, "capturing": true, "window": null, "cum_fills": 1}
+{"t": "2026-10-20T04:26:02.052239+00:00", "kind": "segment_end", "validation": true, "segment": 2, "seconds": 66, "live_floor_fills": 1, "cum_fills": 2, "capture_h": 0.05, "rc": 0}
+{"t": "2026-10-20T04:26:02.052386+00:00", "kind": "daemon_end", "validation": true, "cum_fills": 2, "capture_h": 0.05}

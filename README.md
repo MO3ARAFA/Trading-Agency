@@ -115,3 +115,13 @@ python -m quant_agency.p8_eval --check-frozen
 python -m quant_agency.inspect_run runs/<run_dir>
 python -m quant_agency.regime_check
 ```
+
+## Phase 9 — power-calculated `fixed0.7` protocol and the regime-triggered collector
+`regime.py` (σ60 estimator), `regime_daemon.py` (standby supervisor: launches/stops recorded Pure-B sessions on volatility or London/US windows, graceful segments), `p9_regime.py`
+(volatility breakdown + power calculation), `p9_eval.py` (the single confirmatory test). **No test result yet — by design:** N\* = **386** floor-passed Polymarket entries (power 0.80 at the observed +156 bps;
+0.34 if the truth is half of it), pre-registered with 21 code hashes before any confirmatory data; the existing data lean *against* an active-regime advantage (`fixed0.7` +248 bps quiet vs −161 active, not significant).
+See **[docs/PHASE9.md](docs/PHASE9.md)** and **[docs/PREREG_PHASE9.md](docs/PREREG_PHASE9.md)**; usage in **[docs/OPERATOR_GUIDE.md](docs/OPERATOR_GUIDE.md)** §5.
+```bash
+python -m quant_agency.regime_daemon --dry-run
+python -m quant_agency.regime_daemon
+```

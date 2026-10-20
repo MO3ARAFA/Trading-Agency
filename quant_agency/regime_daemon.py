@@ -273,6 +273,10 @@ class Daemon:
                 open(self.stop_file, "w").close()
                 await self._reap(timeout=240.0)
             feed.cancel()
+            try:
+                await feed
+            except (asyncio.CancelledError, Exception):
+                pass
             self.log("daemon_end", cum_fills=self.cum_fills, capture_h=round(self.capture_s / 3600, 2))
 
 
@@ -335,6 +339,10 @@ def main():
     try:
         loop.run_until_complete(d.run())
     finally:
+        pending = asyncio.all_tasks(loop)                              # let the websocket keepalive tasks unwind before the loop closes
+        for t in pending:
+            t.cancel()
+        loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
         loop.close()
 
 

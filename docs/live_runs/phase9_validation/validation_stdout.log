@@ -1,0 +1,13 @@
+04:21:17 daemon_start n_star=1000 prior=0 cfg={'start_thr': 0.0, 'stop_thr': 99.0, 'confirm_s': 10.0, 'calm_s': 20.0, 'min_session_s': 120.0, 'max_segment_s': 400.0, 'windows': (('london', 420, 600), ('us', 810, 990)), 'weekdays_only': True} dry_run=False
+04:21:18 feed_up 
+04:21:22 trace sigma60=None capturing=False window=None cum_fills=0
+04:22:22 trace sigma60=0.517 capturing=False window=None cum_fills=0
+04:22:32 start why=vol:0.59>=0.00 segment=1 pid=5017 cum_fills=0 tape=tapes/p9v_seg1.npz
+04:23:22 trace sigma60=0.553 capturing=True window=None cum_fills=0
+04:24:22 trace sigma60=0.487 capturing=True window=None cum_fills=1
+04:24:32 stop_requested why=calm:0.25<99.00 for 20s, outside windows segment=1
+04:24:41 segment_end segment=1 seconds=128 live_floor_fills=1 cum_fills=1 capture_h=0.04 rc=0
+04:24:56 start why=vol:0.12>=0.00 segment=2 pid=5125 cum_fills=1 tape=tapes/p9v_seg2.npz
+04:25:26 trace sigma60=0.25 capturing=True window=None cum_fills=1
+04:26:02 segment_end segment=2 seconds=66 live_floor_fills=1 cum_fills=2 capture_h=0.05 rc=0
+04:26:02 daemon_end cum_fills=2 capture_h=0.05
