@@ -34,6 +34,7 @@ from bisect import bisect_right
 from typing import Dict, List, Optional, Tuple
 
 from .config import BConfig
+from .regime import RollingSigma60
 from .execution_engine import TradeResult
 from .inefficiency_hunter import Signal
 from .maker_sniper import Attempt, MakerSniper, Order, QuoteHist, Variant
@@ -217,9 +218,23 @@ class HighConvictionSniper(MakerSniper):
         self.sleeves = sleeves
         self.n_floor_ok = 0
         self.n_signals_seen = 0
-        self.n_floor_fills = 0                                           # Polymarket floor-passed filled entries (sample-size counter for the Phase 8 stopping rule)
+        self.sig_tags: Dict[int, dict] = {}                              # per-signal regime tags (sigma_now, sigma_pre, gate_ok), merged into every row of that signal
+        self._sigma = RollingSigma60(keep=int(60 + self.bcfg.regime_lag_s + 10))
+        self.n_floor_fills = 0                                           # Polymarket floor-passed, regime-gated `fixed0.7` filled entries (count-only stopping rule of the Phase 10 collector)
         self._ph_t: List[float] = []                                     # Binance micro-price history for the oracle-guided exits
         self._ph_l: List[float] = []
+
+    # -------------------------------------------------------------- regime gate (Phase 10)
+    def on_btc_mid(self, t: float, mid: float) -> None:
+        self._sigma.update(t, mid)
+
+    def regime_tags(self, t: float) -> dict:
+        """sigma_now = sigma60 at the signal (includes the triggering impulse); sigma_pre = sigma60 on the window ending `regime_lag_s` earlier (the baseline the impulse broke out of)."""
+        now = self._sigma.value(t)
+        pre = self._sigma.value(t - self.bcfg.regime_lag_s)
+        thr = self.bcfg.max_sigma60
+        ok = True if thr <= 0 else (pre == pre and pre < thr)
+        return {"sigma_now": None if now != now else now, "sigma_pre": None if pre != pre else pre, "gate_ok": bool(ok)}
 
     # -------------------------------------------------------------- isolation
     def cfo_for(self, idx: int):
@@ -277,6 +292,10 @@ class HighConvictionSniper(MakerSniper):
         self.n_signals += 1
         meta = self.book.metas[sig.idx]
         b = self.bcfg
+        self.sig_tags[sig.sid] = self.regime_tags(sig.t)
+        if len(self.sig_tags) > 20000:
+            for k in list(self.sig_tags)[:10000]:
+                self.sig_tags.pop(k, None)
         notional = b.hl_notional if meta.venue == "hyperliquid" else b.pm_notional
         pred, floor, ratio = self.cfo.b_floor(sig, b.ref_floor_mult)       # shadows are tagged with the *fixed* reference floor
         ok = pred >= floor
@@ -300,12 +319,21 @@ class HighConvictionSniper(MakerSniper):
 
     # -------------------------------------------------------------- results
     def _on_result(self, at, r: dict) -> None:
+        tags = self.sig_tags.get(r.get("sid"))
+        if tags:
+            r.update(tags)
+        else:
+            r.setdefault("sigma_now", None)
+            r.setdefault("sigma_pre", None)
+            r.setdefault("gate_ok", self.bcfg.max_sigma60 <= 0)
         r.setdefault("floor_ok", getattr(at, "floor_ok", False))
         r.setdefault("ratio", getattr(at, "ratio", 0.0))
         r.setdefault("scratched", False)
         r.setdefault("arch", "taker/taker")
         self.results.append(r)
-        if r.get("variant") == "B/trail" and r.get("model") == "strict" and r.get("floor_ok") and r.get("outcome") == "filled" and r.get("venue") == "polymarket":
+        if self.bcfg.log_shadows and not at.account:
+            self.a._write("b_shadow", r)
+        if r.get("variant") == "B/fixed0.7" and r.get("model") == "strict" and r.get("floor_ok") and r.get("gate_ok") and r.get("outcome") == "filled" and r.get("venue") == "polymarket":
             self.n_floor_fills += 1
         if len(self.results) > 400_000:
             del self.results[:100_000]

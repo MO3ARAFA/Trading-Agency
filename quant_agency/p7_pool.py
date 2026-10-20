@@ -22,12 +22,12 @@ BPS = 1e4
 EXITS = ("fixed0.7", "fixed1.0", "wide1.5", "wide2.0", "adaptive", "trail")
 
 
-def replay(tape: str, hl_maker_bps: float = 1.5, hl_taker_bps: float = 4.5, b_exit: Optional[str] = None, b_floor: Optional[float] = None) -> dict:
+def replay(tape: str, hl_maker_bps: float = 1.5, hl_taker_bps: float = 4.5, b_exit: Optional[str] = None, b_floor: Optional[float] = None, max_sigma60: float = 0.0) -> dict:
     a = types.SimpleNamespace(replay=tape, phase7=True, phase6=False, phase5=True, phase4=True, hl_maker_bps=hl_maker_bps, hl_taker_bps=hl_taker_bps,
                               snipe_model=None, status_every=1e12, markets=60, duration=600, fee_bps=7.5, maker_fee_bps=None, no_cross_venue=True,
                               review_interval=30.0, ceo_window=600.0, z_thr=3.0, hurdle_bps=1.0, latency_ms=150.0, scalp_gate=0.5, no_polymarket=False,
                               hold_frac=None, hl_work_s=None, pm_work_s=None, calm_z=None, impulse_z=None, b_floor=b_floor, no_mm=True, no_b=False,
-                              b_exit=b_exit, sleeve_capital=None)
+                              b_exit=b_exit, sleeve_capital=None, max_sigma60=max_sigma60, shadow_log=False)
     cfg = rl.make_cfg(a)
     ag, _, t_end = rl.run_replay(a, cfg, tempfile.mkdtemp(prefix="p7_"))
     assert ag.mm is None, "Architecture A must not be instantiated in Phase 7"

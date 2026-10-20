@@ -553,7 +553,7 @@ class CFOAgent:
         floor = (c.b_floor_mult if mult is None else mult) * cost
         return pred, floor, (pred / floor if floor > 0 else 0.0)
 
-    def evaluate_sniper_b(self, sig: Signal, now: float, has_position: bool = False, n_open: int = 0) -> Decision:
+    def evaluate_sniper_b(self, sig: Signal, now: float, has_position: bool = False, n_open: int = 0, regime_ok: bool = True) -> Decision:
         """Taker-in / maker-out. Absolute floor first (the rule), then the usual net-edge / risk sizing on top."""
         c = self.cfg
         meta = self.book.metas[sig.idx]
@@ -585,6 +585,8 @@ class CFOAgent:
             return reject("short_disabled")
         if pred < floor:
             return reject("below_absolute_floor", "rejected_edge")
+        if not regime_ok:
+            return reject("regime_gate", "rejected_gate")                     # Phase 10: pre-impulse sigma60 too high (or unknown)
         if has_position or n_open >= c.max_b_open:
             return reject("in_position")
         if net <= 0.0 or net < c.b_min_ev_bps:

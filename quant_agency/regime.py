@@ -37,8 +37,9 @@ def sigma60_series(t: np.ndarray, mid: np.ndarray, at: Sequence[float], window: 
 class RollingSigma60:
     """Streaming version for the daemon: feed (t, mid) ticks; read sigma60 any time. Keeps one sample per second (the last tick of each second)."""
 
-    def __init__(self, window: int = WINDOW_S):
+    def __init__(self, window: int = WINDOW_S, keep: Optional[int] = None):
         self.window = window
+        self.keep = keep if keep is not None else window + 5          # seconds of history retained (the lagged gate needs window + lag)
         self.samples: Deque[Tuple[int, float]] = deque()          # (second, ln mid) — last tick of that second
         self.last_t = -1.0
 
@@ -52,7 +53,7 @@ class RollingSigma60:
             self.samples[-1] = (sec, lm)
         else:
             self.samples.append((sec, lm))
-        while self.samples and sec - self.samples[0][0] > self.window + 5:
+        while self.samples and sec - self.samples[0][0] > self.keep:
             self.samples.popleft()
 
     def value(self, now: Optional[float] = None) -> float:

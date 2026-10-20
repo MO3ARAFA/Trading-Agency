@@ -7,6 +7,12 @@ Standby cost: ONE Binance Vision websocket (btcusdt@bookTicker), a 60-sample rin
 fires it starts a recorded Pure-B session (`run_live --phase7 --b-exit fixed0.7`, sleeves active, Architecture A never built) and keeps watching; when the trigger releases it asks the
 session to stop gracefully (stop-file → tape saved, positions finalised) and goes back to standby. Every decision and a 60 s volatility trace are appended to the daemon log.
 
+`--continuous` (Phase 10): ONE long-lived `run_live --phase7` process that is never stopped for regime reasons — feeds, the Hunter's lead-lag calibration and the oracle variance stay warm 24/7; the event
+log is rotated into numbered tape parts every `--rotate-min` minutes; the pre-impulse sigma60 gate (`--max-sigma60`) is applied inside Architecture B, per signal, instead of by starting/stopping sessions;
+every finished shadow row is appended to `b_shadow.jsonl`. The daemon only supervises (restart on a crash with back-off, count-based stop, graceful stop on SIGINT/SIGTERM).
+LIMIT: the Polymarket market set is discovered once per process and the MarketBook is fixed-size, so a process is cycled every `--session-h` (default 1.5 h) and restarted immediately; that costs ≈ 1–2 min
+(oracle warm-up 20 s + discovery + the 75 s of BTC history the pre-impulse gate needs) per session ≈ 2 %, instead of a 24/7 warm process whose 5-minute markets would silently run out.
+
 The decision rules are pure functions of (clock, sigma60) — see `Decider` — and are unit-tested with an injected clock.
 """
 from __future__ import annotations
@@ -122,6 +128,11 @@ class Plan:
     validation: bool = False
     dry_run: bool = False
     extra: List[str] = field(default_factory=list)
+    continuous: bool = False
+    rotate_min: float = 30.0
+    max_sigma60: float = 0.50
+    max_restarts: int = 20
+    session_h: float = 1.5
 
 
 class Daemon:
@@ -193,6 +204,72 @@ class Daemon:
                 "--stop-fills", str(p.n_star), "--prior-fills", str(self.cum_fills), "--record", os.path.join(p.tape_dir, f"{tag}.npz"), "--tag", tag, "--out", p.out_dir,
                 "--status-every", "300", "--stop-file", self.stop_file, "--count-file", self.count_file] + p.extra
         return argv
+
+    def _argv_continuous(self) -> List[str]:
+        p = self.plan
+        tag = f"{'p10v' if p.validation else 'p10r'}{self.seg}"
+        self.stop_file = os.path.join(p.out_dir, f"{tag}.stop")
+        self.count_file = os.path.join(p.out_dir, f"{tag}.count.json")
+        for f in (self.stop_file, self.count_file):
+            if os.path.exists(f):
+                os.remove(f)
+        remaining = max(p.cap_capture_h * 3600.0 - self.capture_s, 60.0)
+        return [sys.executable, "-m", "quant_agency.run_live", "--phase7", "--b-exit", p.b_exit, "--max-sigma60", f"{p.max_sigma60}", "--shadow-log", "--rotate-min", f"{p.rotate_min}",
+                "--duration", f"{min(remaining, p.session_h * 3600.0):.0f}", "--stop-fills", str(p.n_star), "--prior-fills", str(self.cum_fills), "--record", os.path.join(p.tape_dir, tag), "--tag", tag,
+                "--out", p.out_dir, "--status-every", "600", "--stop-file", self.stop_file, "--count-file", self.count_file] + p.extra
+
+    async def run_continuous(self) -> None:
+        """Supervise one long-lived warm process. A crash restarts it (cold, logged) after a back-off; N* reached, the capture-hours cap, or a stop request ends the daemon."""
+        p = self.plan
+        self.log("daemon_start", mode="continuous", n_star=p.n_star, prior=p.prior_fills, max_sigma60=p.max_sigma60, rotate_min=p.rotate_min, cap_h=p.cap_capture_h, dry_run=p.dry_run)
+        restarts, backoff = 0, 10.0
+        try:
+            while not self.stop_requested:
+                self.seg += 1
+                argv = self._argv_continuous()
+                self.seg_t0 = time.time()
+                if p.dry_run:
+                    self.log("DRY_RUN_start", why="continuous", argv=" ".join(argv))
+                    return
+                os.makedirs(p.tape_dir, exist_ok=True)
+                os.makedirs(p.out_dir, exist_ok=True)
+                logf = open(os.path.join(p.out_dir, f"{'p10v' if p.validation else 'p10r'}{self.seg}.log"), "w")
+                self.proc = await asyncio.create_subprocess_exec(*argv, stdout=logf, stderr=asyncio.subprocess.STDOUT)
+                self.log("start", why="continuous", segment=self.seg, pid=self.proc.pid, cum_fills=self.cum_fills)
+                next_trace = 0.0
+                while self.proc.returncode is None and not self.stop_requested:
+                    await asyncio.sleep(self.tick_s)
+                    if time.time() >= next_trace:
+                        next_trace = time.time() + 300.0
+                        self.log("trace", live_fills=self.cum_fills + self.read_count(), elapsed_h=round((time.time() - self.seg_t0 + self.capture_s) / 3600, 2))
+                if self.stop_requested and self.proc.returncode is None:
+                    open(self.stop_file, "w").close()
+                    self.log("stop_requested", why="signal", segment=self.seg)
+                    await self._reap(timeout=300.0)
+                    break
+                self._account_segment()
+                if self.cum_fills >= p.n_star:
+                    self.log("done", reason="N* reached (live counter)", cum_fills=self.cum_fills)
+                    break
+                if self.capture_s >= p.cap_capture_h * 3600.0:
+                    self.log("done", reason="capture-hours cap", cum_fills=self.cum_fills)
+                    break
+                planned = min(p.session_h * 3600.0, max(p.cap_capture_h * 3600.0 - (self.capture_s - (time.time() - self.seg_t0)), 60.0))
+                if time.time() - self.seg_t0 >= 0.9 * planned and self.proc is None:       # a normal end of a session (its market set expires): start the next one immediately
+                    self.log("session_cycle", segment=self.seg, cum_fills=self.cum_fills)
+                    continue
+                restarts += 1                                           # the child ended early: a crash (feed library, OOM, …) — restart cold after a back-off
+                self.log("child_crash", restarts=restarts, backoff_s=backoff)
+                if restarts > p.max_restarts:
+                    self.log("done", reason="too many restarts")
+                    break
+                await asyncio.sleep(backoff)
+                backoff = min(backoff * 2, 300.0)
+        finally:
+            if self.proc is not None and self.proc.returncode is None:
+                open(self.stop_file, "w").close()
+                await self._reap(timeout=300.0)
+            self.log("daemon_end", cum_fills=self.cum_fills, capture_h=round(self.capture_s / 3600, 2))
 
     async def start_segment(self, why: str) -> None:
         self.seg += 1
@@ -286,6 +363,10 @@ def parse(argv: Optional[List[str]] = None):
     ap.add_argument("--prior-fills", type=int, default=0, help="fresh fills already collected under this protocol (NOT the Phase 4–8 sample)")
     ap.add_argument("--cap-hours", type=float, default=None, help="hard cap on total capture hours (default from the pre-registration)")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--continuous", action="store_true", help="Phase 10: one warm 24/7 process, tape rotation, regime gate inside Architecture B (N*, cap and gate from docs/PREREG_PHASE10.json)")
+    ap.add_argument("--rotate-min", type=float, default=None)
+    ap.add_argument("--session-h", type=float, default=None, help="continuous mode: hours per run_live process; Polymarket markets are discovered once per process, so the process is cycled before its market set runs dry")
+    ap.add_argument("--max-sigma60", type=float, default=None)
     ap.add_argument("--out", default="runs")
     ap.add_argument("--tapes", default="tapes")
     ap.add_argument("--log", default="runs/p9_daemon/daemon_log.jsonl")
@@ -303,7 +384,7 @@ def parse(argv: Optional[List[str]] = None):
 
 def build(a) -> Tuple[DaemonConfig, Plan]:
     prereg = {}
-    pj = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "PREREG_PHASE9.json")
+    pj = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "PREREG_PHASE10.json" if getattr(a, "continuous", False) else "PREREG_PHASE9.json")
     if os.path.exists(pj):
         prereg = json.load(open(pj))
     cfg = DaemonConfig()
@@ -316,13 +397,15 @@ def build(a) -> Tuple[DaemonConfig, Plan]:
         h2, m2 = map(int, hi.split(":"))
         cfg.windows = cfg.windows + (("extra", h1 * 60 + m1, h2 * 60 + m2),)
         cfg.weekdays_only = False
-    validation = bool(over) or bool(a.extra_window) or bool(a.prefix)
+    c_over = {k: v for k, v in (("max_sigma60", a.max_sigma60),) if v is not None}      # the rotation interval does not touch any result, the gate does
+    validation = bool(over) or bool(a.extra_window) or bool(a.prefix) or (bool(c_over) and not getattr(a, "continuous_ok", False)) or (a.n_star is not None and a.continuous and prereg.get("n_star") != a.n_star)
     n_star = a.n_star or prereg.get("n_star")
     if not n_star:
         raise SystemExit("no N*: pass --n-star or create docs/PREREG_PHASE9.json")
     plan = Plan(n_star=int(n_star), prior_fills=a.prior_fills, cap_capture_h=a.cap_hours or prereg.get("cap_capture_hours", 24.0), out_dir=a.out, tape_dir=a.tapes,
                 prefix=a.prefix or ("p9v_seg" if validation else "p9_seg"), log_path=a.log if not validation else a.log.replace("daemon_log", "validation_log"),
-                validation=validation, dry_run=a.dry_run)
+                validation=validation, dry_run=a.dry_run, continuous=a.continuous,
+                rotate_min=a.rotate_min if a.rotate_min is not None else prereg.get("rotate_min", 30.0), session_h=a.session_h if a.session_h is not None else prereg.get("session_h", 1.5), max_sigma60=a.max_sigma60 if a.max_sigma60 is not None else prereg.get("max_sigma60", 0.50))
     return cfg, plan
 
 
@@ -331,18 +414,20 @@ def main():
     cfg, plan = build(a)
     d = Daemon(cfg, plan)
     loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
     def _stop(*_):
         d.stop_requested = True
     for sg in (signal.SIGINT, signal.SIGTERM):
         loop.add_signal_handler(sg, _stop)
     try:
-        loop.run_until_complete(d.run())
+        loop.run_until_complete(d.run_continuous() if plan.continuous else d.run())
     finally:
         pending = asyncio.all_tasks(loop)                              # let the websocket keepalive tasks unwind before the loop closes
         for t in pending:
             t.cancel()
-        loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+        if pending:
+            loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
         loop.close()
 
 

@@ -125,3 +125,13 @@ See **[docs/PHASE9.md](docs/PHASE9.md)** and **[docs/PREREG_PHASE9.md](docs/PRER
 python -m quant_agency.regime_daemon --dry-run
 python -m quant_agency.regime_daemon
 ```
+
+## Phase 10 — final packaging: continuous collector + pre-impulse regime gate
+`python -m quant_agency.regime_daemon --continuous` supervises one warm `run_live --phase7` process (tape rotation, live shadow-row log, 1.5 h process cycling because Polymarket markets are discovered once per process),
+with an optional pre-impulse σ60 gate (`--max-sigma60`) in Architecture B. **Correction:** the Phase 9 "+248 bps quiet" bucket was largely an impulse-size artefact — with the baseline measured *before* the
+impulse the gated specification is **+128 ± 161 bps (t = 0.80, post hoc)**. Pre-registered test (`docs/PREREG_PHASE10.md`): N\* = 608 gated entries, ≈ 26 h of capture. See **[docs/PHASE10_FINAL.md](docs/PHASE10_FINAL.md)**.
+```bash
+git clone -b claude/kind-cori-5ei4hp https://github.com/MO3ARAFA/Trading-Agency.git && cd Trading-Agency
+python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+python -m quant_agency.regime_daemon --continuous
+```

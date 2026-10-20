@@ -16,6 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 from .agency import Agency
 from .config import AgencyConfig
 from .market_watchers import MarketMeta, cross_venue_metas, discover_binance_universe
+from .tape_tools import rotate_tape
 from .telemetry import build_report, build_report_p4, build_report_p5, build_report_p6, build_report_p7, summary_json
 
 
@@ -50,6 +51,9 @@ def parse():
     p.add_argument("--sleeve-capital", type=float, default=None)
     p.add_argument("--stop-fills", type=int, default=0, help="Phase 8 stopping rule: stop when prior-fills + live floor-passed Polymarket fills >= this")
     p.add_argument("--prior-fills", type=int, default=0)
+    p.add_argument("--max-sigma60", type=float, default=0.0, help="Phase 10 regime gate: the ACCOUNT fires only if the pre-impulse sigma60 (bps/sqrt(s)) is below this; 0 = off")
+    p.add_argument("--rotate-min", type=float, default=0.0, help="continuous mode: write the --record tape as numbered part files every N minutes without restarting any engine")
+    p.add_argument("--shadow-log", action="store_true", help="append every finished shadow row to <run>/b_shadow.jsonl (continuous mode analyses live rows)")
     p.add_argument("--stop-file", default=None, help="end the capture gracefully (tape saved, positions finalised) as soon as this file exists (used by regime_daemon)")
     p.add_argument("--count-file", default=None, help="write {floor_fills, elapsed_s} here every ~2 s (used by regime_daemon)")
     p.add_argument("--calm-z", type=float, default=None, help="A: quote only while every fast-horizon |BTC Z| is below this")
@@ -88,6 +92,8 @@ def make_cfg(a) -> AgencyConfig:
         if a.sleeve_capital:
             cfg.hc.sleeve_capital = a.sleeve_capital
         cfg.cfo.b_tp_mult = parse_exit(cfg.hc.account_exit)[1]
+        cfg.hc.max_sigma60 = float(getattr(a, "max_sigma60", 0.0) or 0.0)
+        cfg.hc.log_shadows = bool(getattr(a, "shadow_log", False))
     if getattr(a, "phase6", False):
         a.phase5 = True                                   # same universe (BTC oracle + Hyperliquid + Polymarket), different engines
         cfg.mm.enabled = not a.no_mm
@@ -248,6 +254,8 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
         next_status = ag.t0 + a.status_every
         next_chk = ag.t0 + 60.0
         next_aux = ag.t0
+        rot_s = a.rotate_min * 60.0 if (a.rotate_min and a.record) else 0.0
+        next_rot, part_k = ag.t0 + rot_s, 0
         while True:
             await asyncio.sleep(0.05)
             t = perf()
@@ -260,6 +268,11 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
                           f"          floor-passed Polymarket fills this session: {ag.hc.n_floor_fills}", flush=True)
             if t >= t_end:
                 break
+            if rot_s and t >= next_rot:
+                part_k += 1
+                pth = rotate_tape(ag, a.record, part_k, tape_extra)
+                next_rot += rot_s
+                print(f"[{t-ag.t0:6.0f}s] tape part saved: {pth}", flush=True)
             if (a.stop_file or a.count_file) and t >= next_aux:
                 next_aux = t + 2.0
                 if a.count_file and ag.hc is not None:
@@ -284,7 +297,10 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
         for tk in tasks:
             tk.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
-    if a.record:
+    if a.record and rot_s:
+        pth = rotate_tape(ag, a.record, part_k + 1, tape_extra)
+        print(f"tape saved: {pth}", flush=True)
+    elif a.record:
         ag.save_tape(a.record, extra=tape_extra)
         print(f"tape saved: {a.record} ({len(ag.tape[0])} events)", flush=True)
     return ag, fm, t_end

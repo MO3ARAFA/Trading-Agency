@@ -260,6 +260,9 @@ class BConfig:
     trail_target: float = 1.0            # trail: venue has done this fraction of the credited gap ...
     trail_stall_vel_bps: float = 0.2     # ... and Binance 1 s velocity in our direction has faded below this  => exit
     trail_retrace: float = 0.4           # or the venue gave back this fraction of its peak progress (peak >= 0.5)
+    max_sigma60: float = 0.0             # Phase 10 regime gate: fire (ACCOUNT) only if the PRE-impulse sigma60 < this (bps/sqrt(s)); 0 = off. Shadows are always spawned and tagged.
+    regime_lag_s: float = 15.0           # the gate's sigma60 is measured on the 60 s window ending this many seconds BEFORE the signal (the longest impulse horizon is 10 s)
+    log_shadows: bool = False            # append every finished shadow row to b_shadow.jsonl (continuous mode analyses live rows, not replays)
     sleeve_capital: float = 10_000.0     # each isolated risk sleeve is its own paper bankroll
     shadow_models: Tuple[str, ...] = ("strict", "depletion", "trades")
     account_model: str = "strict"

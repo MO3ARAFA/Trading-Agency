@@ -1,3 +1,5 @@
+> **SUPERSEDED by `docs/PREREG_PHASE10.md` before any confirmatory data existed.** The Phase 9 collector was never run in confirmatory mode; the code it pinned has since changed (regime gate, shadow log, tape rotation), so `p9_eval --check-frozen` now fails by design.
+
 # Phase 9 pre-registration (locked before any confirmatory data exists)
 
 Code hashes in `docs/PREREG_PHASE9.json` (checked by `python -m quant_agency.p9_eval --check-frozen`; the evaluation report prints the result). This file and the JSON are committed and pushed before the daemon is ever started in confirmatory mode. The confirmatory collection has **not** been started at the time of writing.

@@ -125,6 +125,8 @@ class Agency:
             self.oracle.on_book(t, bid, ask, bq, aq)
             self.hunter.dirty = True
             self.n_btc += 1
+            if self.hc is not None:
+                self.hc.on_btc_mid(t, 0.5 * (bid + ask))
         else:
             self.engine.on_quote(i, t)
             if self.sniper is not None:
@@ -232,7 +234,7 @@ class Agency:
             cfo_b = hc.cfo_for(s.idx)                                  # the venue's isolated sleeve (Phase 7) or the shared book (Phase 6)
             venue_b = meta.venue
             n_open_b = sum(1 for k in hc.account_open if self.book.metas[k].venue == venue_b) if hc.sleeves is not None else len(hc.account_open)
-            dec = cfo_b.evaluate_sniper_b(s, t, has_position=hc.has_position(s.idx), n_open=n_open_b)
+            dec = cfo_b.evaluate_sniper_b(s, t, has_position=hc.has_position(s.idx), n_open=n_open_b, regime_ok=hc.regime_tags(s.t)["gate_ok"])
             s.decision = dec
             hc.on_signal(s, S, dec)
             if self.mm is not None:

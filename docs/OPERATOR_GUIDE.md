@@ -65,7 +65,8 @@ What the governor does (per sleeve, every 30 s, ≥ 6 fresh round trips, cluster
 
 B is built for large, continuing BTC impulses; every recorded session was quiet. A quiet-regime result cannot confirm or refute B's design case, and Hyperliquid only clears the floor if moves are ≫ 10 bps. To collect the missing regime:
 
-0. **One command (Phase 9): let the regime daemon decide.** It sits in cheap standby (one Binance websocket, ≈ 1 % CPU, ≈ 43 MB) and launches/stops recorded Pure-B sessions (`--b-exit fixed0.7`, sleeves active, A never built) by pre-registered rules:
+0a. **Phase 10 (current): continuous collector.** `python -m quant_agency.regime_daemon --continuous` — one supervised warm process (feeds, hunter and oracle stay warm; tape parts every 30 min; shadow rows logged live to `runs/p10r*/b_shadow.jsonl`; process cycled every 1.5 h because Polymarket markets are discovered once per process), pre-impulse σ60 < 0.50 gate in Architecture B, count-based stop at N* = 608 or 72 capture-hours. Evaluate with `python -m quant_agency.p10_eval --runs 'runs/p10r*'`. See docs/PHASE10_FINAL.md and docs/PREREG_PHASE10.md. Everything below in this item describes the superseded Phase 9 triggered mode.
+0. **One command (Phase 9, superseded): let the regime daemon decide.** It sits in cheap standby (one Binance websocket, ≈ 1 % CPU, ≈ 43 MB) and launches/stops recorded Pure-B sessions (`--b-exit fixed0.7`, sleeves active, A never built) by pre-registered rules:
    ```bash
    python -m quant_agency.regime_daemon --dry-run      # watch the σ60 trace and the decisions it WOULD take; launches nothing
    python -m quant_agency.regime_daemon                 # confirmatory mode: N* and the 24 h cap come from docs/PREREG_PHASE9.json

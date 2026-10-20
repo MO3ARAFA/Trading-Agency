@@ -50,12 +50,12 @@ def test_thresholds_are_the_preregistered_ones():
 def test_stop_counter_counts_only_the_candidate_strict_floor_passed_polymarket_fills():
     from tests.test_sleeves_and_exits import _ag
     ag, hc, sl = _ag()
-    base = {"model": "strict", "floor_ok": True, "outcome": "filled", "venue": "polymarket", "variant": "B/trail", "imp": 1, "account": False, "t_end": 1.0}
+    base = {"model": "strict", "floor_ok": True, "gate_ok": True, "outcome": "filled", "venue": "polymarket", "variant": "B/fixed0.7", "imp": 1, "account": False, "t_end": 1.0, "sid": 1}
     class _At:  # minimal attempt stub: not an account attempt
         account = False
-    for r in (base, dict(base, model="trades"), dict(base, floor_ok=False), dict(base, venue="hyperliquid"), dict(base, outcome="no_fill"), dict(base, variant="B/fixed0.7"), dict(base)):
+    for r in (base, dict(base, model="trades"), dict(base, floor_ok=False), dict(base, venue="hyperliquid"), dict(base, outcome="no_fill"), dict(base, variant="B/trail"), dict(base, gate_ok=False), dict(base)):
         hc._on_result(_At(), dict(r))
-    assert hc.n_floor_fills == 2
+    assert hc.n_floor_fills == 2                                       # only fixed0.7 / strict / floor-passed / gate-passed / filled / Polymarket
 
 
 def test_regime_estimator_scales_and_classifies():
