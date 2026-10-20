@@ -5,3 +5,4 @@ uvloop
 orjson
 websockets
 pytest
+scipy

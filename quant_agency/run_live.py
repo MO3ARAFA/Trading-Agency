@@ -50,6 +50,8 @@ def parse():
     p.add_argument("--sleeve-capital", type=float, default=None)
     p.add_argument("--stop-fills", type=int, default=0, help="Phase 8 stopping rule: stop when prior-fills + live floor-passed Polymarket fills >= this")
     p.add_argument("--prior-fills", type=int, default=0)
+    p.add_argument("--stop-file", default=None, help="end the capture gracefully (tape saved, positions finalised) as soon as this file exists (used by regime_daemon)")
+    p.add_argument("--count-file", default=None, help="write {floor_fills, elapsed_s} here every ~2 s (used by regime_daemon)")
     p.add_argument("--calm-z", type=float, default=None, help="A: quote only while every fast-horizon |BTC Z| is below this")
     p.add_argument("--impulse-z", type=float, default=None, help="A: cancel the vulnerable side at this Z")
     p.add_argument("--b-floor", type=float, default=None, help="B: absolute floor multiple of (spread + taker-in + maker-out fee)")
@@ -245,6 +247,7 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
     try:
         next_status = ag.t0 + a.status_every
         next_chk = ag.t0 + 60.0
+        next_aux = ag.t0
         while True:
             await asyncio.sleep(0.05)
             t = perf()
@@ -257,6 +260,17 @@ async def live(a, cfg: AgencyConfig, run_dir: str):
                           f"          floor-passed Polymarket fills this session: {ag.hc.n_floor_fills}", flush=True)
             if t >= t_end:
                 break
+            if (a.stop_file or a.count_file) and t >= next_aux:
+                next_aux = t + 2.0
+                if a.count_file and ag.hc is not None:
+                    tmp = a.count_file + ".tmp"
+                    with open(tmp, "w") as cf:
+                        json.dump({"floor_fills": ag.hc.n_floor_fills, "elapsed_s": t - ag.t0, "wall": time.time()}, cf)
+                    os.replace(tmp, a.count_file)
+                if a.stop_file and os.path.exists(a.stop_file):
+                    print(f"[{t-ag.t0:6.0f}s] STOP: stop-file present", flush=True)
+                    t_end = t
+                    break
             if a.stop_fills and ag.hc is not None and t >= next_chk:
                 next_chk = t + 5.0
                 if a.prior_fills + ag.hc.n_floor_fills >= a.stop_fills:       # a count-only rule: it never looks at P&L
