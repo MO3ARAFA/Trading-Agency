@@ -66,6 +66,14 @@ python -m quant_agency.run_live --sim --duration 300 --fee-bps 0
 ```
 Each run writes `runs/<tag>_<ts>/` with `report.md`, `summary.json`, `signals.jsonl`, `payloads.jsonl`, `trades.jsonl`, `ceo_audit.jsonl`, `config.json`.
 
+## Phase 13 — complete-set arbitrage (start here)
+Why Phases 1–12 never made money, and the plan: **[docs/AUDIT_AND_PLAN.md](docs/AUDIT_AND_PLAN.md)**. The forecast-free strategy that
+replaced them (Polymarket NegRisk complete sets: payoff backtest on 48k closed events, on-chain fee audit, live paper sessions with a
+100 USD account): **[docs/PHASE13_COMPLETE_SET_ARB.md](docs/PHASE13_COMPLETE_SET_ARB.md)**. How to run it: `docs/OPERATOR_GUIDE.md` §6d.
+```bash
+python -m quant_agency.complete_set_arb --duration 3600 --bankroll 100 --out runs/p13      # paper only
+```
+
 ## Results
 See **[docs/LIVE_RESULTS.md](docs/LIVE_RESULTS.md)** (live telemetry, markout tables, fee×latency sweep, CEO→CFO audit trail) and `docs/live_runs/`.
 Short version: lead-lag gaps exist but are ≲1 bp gross vs ~2 bp spread and 15 bp fees — the agency detects them, refuses to trade them, and the CEO governs accordingly.

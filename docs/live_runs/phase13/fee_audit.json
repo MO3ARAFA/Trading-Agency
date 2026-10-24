@@ -1,0 +1,1443 @@
+[
+ {
+  "question": "Will the Swiss National Bank increase the SNB policy rate by 25 bps at the Decem",
+  "conditionId": "0x1490febefdc84d2dd9351727d8dfe9569c584735d0275ffd565eeae350ccafba",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 0.9416,
+    "shares": 1.1,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.28,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.73565,
+    "shares": 2.03,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.17275,
+    "shares": 8.13,
+    "fee": 0.0
+   },
+   {
+    "usdc": 24.7384,
+    "shares": 28.9,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.1616,
+    "shares": 28.9,
+    "fee": 0.0
+   }
+  ],
+  "event": "Swiss National Bank decision in December?"
+ },
+ {
+  "question": "Will the Swiss National Bank make no change to the SNB policy rate at the Decemb",
+  "conditionId": "0xd79ce698ee83c2d46b105bc511bf48de990bd3733096dadba3fa03be437ffcc8",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 1.43901,
+    "shares": 8.13,
+    "fee": 0.0
+   },
+   {
+    "usdc": 6.69099,
+    "shares": 8.13,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.1442,
+    "shares": 28.9,
+    "fee": 0.0
+   },
+   {
+    "usdc": 23.7558,
+    "shares": 28.9,
+    "fee": 0.0
+   }
+  ],
+  "event": "Swiss National Bank decision in December?"
+ },
+ {
+  "question": "Will Fl\u00e1vio Bolsonaro win the 2026 Brazilian presidential election?",
+  "conditionId": "0x1a01bf78f56a507fcb666d564d8c8b91b0750679163ed6e96746102c9b7d285d",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 4.3979,
+    "shares": 25.87,
+    "fee": 0.0
+   },
+   {
+    "usdc": 80.0,
+    "shares": 66.4,
+    "fee": 0.0
+   },
+   {
+    "usdc": 14.13,
+    "shares": 11.7279,
+    "fee": 0.0
+   },
+   {
+    "usdc": 99.6,
+    "shares": 120.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 21.39449,
+    "shares": 25.87,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.63602,
+    "shares": 0.77,
+    "fee": 0.0
+   },
+   {
+    "usdc": 43.10894,
+    "shares": 52.19,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.49182,
+    "shares": 9.07,
+    "fee": 0.0
+   },
+   {
+    "usdc": 66.08,
+    "shares": 80.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 66.08,
+    "shares": 80.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 137.54552,
+    "shares": 166.52,
+    "fee": 0.0
+   },
+   {
+    "usdc": 436.16925,
+    "shares": 528.69,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.125,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 412.5,
+    "shares": 500.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.12,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 823.0,
+    "shares": 1000.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.115,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.11,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 863.1,
+    "shares": 1050.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1642.0,
+    "shares": 2000.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.105,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.20572,
+    "shares": 8.77676,
+    "fee": 0.0
+   },
+   {
+    "usdc": 980.0,
+    "shares": 5526.88676,
+    "fee": 0.0
+   }
+  ],
+  "event": "Brazil Presidential Election"
+ },
+ {
+  "question": "Will Luiz In\u00e1cio Lula da Silva win the 2026 Brazilian presidential election?",
+  "conditionId": "0xdf8e2dc5860027decbe6164555c3c1c9645c3bd33e16b9dc57ca87125047d4a8",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 322.777778,
+    "shares": 58.1,
+    "fee": 0.0
+   },
+   {
+    "usdc": 58.1,
+    "shares": 322.777778,
+    "fee": 0.0
+   },
+   {
+    "usdc": 111.111112,
+    "shares": 20.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.0,
+    "shares": 111.111112,
+    "fee": 0.0
+   }
+  ],
+  "event": "Brazil Presidential Election"
+ },
+ {
+  "question": "Will the Fed increase interest rates by 25 bps after the October 2026 meeting?",
+  "conditionId": "0x12aa13b3da17ceae1b0a59b5d5b77121e91bb79b4bb0b52bf6543ed3f8d0953b",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 0.263157,
+    "shares": 5.26314,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.999983,
+    "shares": 5.26314,
+    "fee": 0.0
+   },
+   {
+    "usdc": 417.36,
+    "shares": 444.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 26.64,
+    "shares": 444.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "Fed Decision in October?"
+ },
+ {
+  "question": "Will there be no change in Fed interest rates after the October 2026 meeting?",
+  "conditionId": "0xdf9bf27ee5757c55b44b8b9826ddc9ec3a8809aa3278634c45edbb7fc8f1a3e3",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 13.0472,
+    "shares": 13.88,
+    "fee": 0.0
+   },
+   {
+    "usdc": 13.88,
+    "shares": 13.0472,
+    "fee": 0.0
+   },
+   {
+    "usdc": 60.16,
+    "shares": 64.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.84,
+    "shares": 64.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "Fed Decision in October?"
+ },
+ {
+  "question": "Will Fl\u00e1vio Bolsonaro win the second round of the 2026 Brazilian presidential el",
+  "conditionId": "0x833d4f5608143297cbf65f133ca2c12b2f77ae86fe6f023f65007eca2e322089",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 1.11562,
+    "shares": 101.42,
+    "fee": 0.0
+   },
+   {
+    "usdc": 100.30438,
+    "shares": 101.42,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.55,
+    "shares": 50.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 49.45,
+    "shares": 50.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "Brazil Presidential Election Second Round: Margin of Victory"
+ },
+ {
+  "question": "Will Fl\u00e1vio Bolsonaro win the second round of the 2026 Brazilian presidential el",
+  "conditionId": "0x5e01c77502f9ad47b81730498f0f42740743f2ae4d537cdedb5e990ce2bdfe69",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 23.44,
+    "shares": 1.31264,
+    "fee": 0.0
+   },
+   {
+    "usdc": 100.0,
+    "shares": 5.7,
+    "fee": 0.0
+   },
+   {
+    "usdc": 70.17,
+    "shares": 3.99969,
+    "fee": 0.0
+   },
+   {
+    "usdc": 28.11,
+    "shares": 30.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 9.35064,
+    "shares": 9.99,
+    "fee": 0.0
+   },
+   {
+    "usdc": 146.0,
+    "shares": 9.344,
+    "fee": 0.0
+   },
+   {
+    "usdc": 568.54,
+    "shares": 36.9551,
+    "fee": 0.0
+   },
+   {
+    "usdc": 510.0,
+    "shares": 33.66,
+    "fee": 0.0
+   },
+   {
+    "usdc": 253.776,
+    "shares": 272.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 111.72479,
+    "shares": 1730.14,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.16,
+    "shares": 6.75904,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.16,
+    "shares": 0.40096,
+    "fee": 0.0
+   }
+  ],
+  "event": "Brazil Presidential Election Second Round: Margin of Victory"
+ },
+ {
+  "question": "Will Aleksandar Vu\u010di\u0107 \u2013 United Serbia win the most seats in the 2026 Serbian par",
+  "conditionId": "0xda4a7d85a3c1abaf52bb4dd561d45c1cb33e7f76f76a21069a0d10d4668aefa6",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 4.487143,
+    "shares": 14.957143,
+    "fee": 0.0
+   },
+   {
+    "usdc": 10.47,
+    "shares": 14.957143,
+    "fee": 0.0
+   },
+   {
+    "usdc": 149.94,
+    "shares": 220.5,
+    "fee": 0.0
+   },
+   {
+    "usdc": 70.56,
+    "shares": 220.5,
+    "fee": 0.0
+   }
+  ],
+  "event": "Serbia Parliamentary Election Winner"
+ },
+ {
+  "question": "Will Student List \u2013 Students Win win the most seats in the 2026 Serbian parliame",
+  "conditionId": "0x258ff19b4baff0ed24bc28f58e83c8be6f2f91d9134700703e0aa51810c51a63",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 215.903226,
+    "shares": 312.903226,
+    "fee": 0.0
+   },
+   {
+    "usdc": 97.0,
+    "shares": 312.903226,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2225.806452,
+    "shares": 3225.806452,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1000.0,
+    "shares": 3225.806452,
+    "fee": 0.0
+   }
+  ],
+  "event": "Serbia Parliamentary Election Winner"
+ },
+ {
+  "question": "Will Bitcoin have 5 green days the week of October 19?",
+  "conditionId": "0x68171a236f9465320ab0da19ba01e23a1c232b003e482670542b6b2d825f74e4",
+  "feesEnabled": true,
+  "feeType": "crypto_fees_v2",
+  "schedule_rate": 0.07,
+  "trades": 1,
+  "max_rate": 0.0699919871212399,
+  "fills": [
+   {
+    "usdc": 0.9999,
+    "shares": 33.33,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.1,
+    "shares": 10.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 42.2301,
+    "shares": 43.33,
+    "fee": 0.07503
+   }
+  ],
+  "event": "Bitcoin green days week of October 19?"
+ },
+ {
+  "question": "Will Bitcoin have 0 green days the week of October 19?",
+  "conditionId": "0x24aae996e2a6e20433d0ebc4505601474e4539016b365e7ce31c0fdc4342e9c8",
+  "feesEnabled": true,
+  "feeType": "crypto_fees_v2",
+  "schedule_rate": 0.07,
+  "trades": 1,
+  "max_rate": 0.06999999999999994,
+  "fills": [
+   {
+    "usdc": 0.1,
+    "shares": 10.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 9.9,
+    "shares": 10.0,
+    "fee": 0.00693
+   }
+  ],
+  "event": "Bitcoin green days week of October 19?"
+ },
+ {
+  "question": "Will Bitcoin be the best performing coin the week of October 19?",
+  "conditionId": "0xc093d4abe43276ae2a3fe4163890917313accda11d90bcb419b4ac7750466753",
+  "feesEnabled": true,
+  "feeType": "crypto_fees_v2",
+  "schedule_rate": 0.07,
+  "trades": 0,
+  "max_rate": null,
+  "fills": [],
+  "event": "Best performing coin: week of October 19?"
+ },
+ {
+  "question": "Will Ethereum be the best performing coin the week of October 19?",
+  "conditionId": "0xbbda99b4f5f70d632f97780a33e7ffeed1df865e2249ebccb610ea2b4c5af9eb",
+  "feesEnabled": true,
+  "feeType": "crypto_fees_v2",
+  "schedule_rate": 0.07,
+  "trades": 0,
+  "max_rate": null,
+  "fills": [],
+  "event": "Best performing coin: week of October 19?"
+ },
+ {
+  "question": "Will Bitcoin have 0 green days the week of October 26?",
+  "conditionId": "0xb8c43b602f95d274c68d4b5b4bdacec16789da9043cb5b28c2aaf2c0c413d78f",
+  "feesEnabled": true,
+  "feeType": "crypto_fees_v2",
+  "schedule_rate": 0.07,
+  "trades": 0,
+  "max_rate": null,
+  "fills": [],
+  "event": "Bitcoin green days week of October 26?"
+ },
+ {
+  "question": "Will Bitcoin have 1 green days the week of October 26?",
+  "conditionId": "0xaa72871154af3af954781b8977e4a0d0f72432142f40275e95d8d71122c73c4e",
+  "feesEnabled": true,
+  "feeType": "crypto_fees_v2",
+  "schedule_rate": 0.07,
+  "trades": 0,
+  "max_rate": null,
+  "fills": [],
+  "event": "Bitcoin green days week of October 26?"
+ },
+ {
+  "question": "Will Inter Miami CF win on 2026-10-24?",
+  "conditionId": "0x8e98d858132f0665cedfdb874f97ac1b36ac887f890b87e25064c998a0b14eb1",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v3",
+  "schedule_rate": 0.05,
+  "trades": 2,
+  "max_rate": 0.12842352496982176,
+  "fills": [
+   {
+    "usdc": 2.602041,
+    "shares": 5.102041,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2.5,
+    "shares": 5.102041,
+    "fee": 0.16374
+   },
+   {
+    "usdc": 20.816327,
+    "shares": 40.816327,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.0,
+    "shares": 40.816327,
+    "fee": 0.51
+   }
+  ],
+  "event": "New York Red Bulls vs. Inter Miami CF"
+ },
+ {
+  "question": "Will New York Red Bulls win on 2026-10-24?",
+  "conditionId": "0xf83fa5c64ac9737f2d2d33fd50549c0a06308727684c2bd0d3c42bdf40b19ca5",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v3",
+  "schedule_rate": 0.05,
+  "trades": 2,
+  "max_rate": 0.05,
+  "fills": [
+   {
+    "usdc": 6.220704,
+    "shares": 21.450703,
+    "fee": 0.0
+   },
+   {
+    "usdc": 15.229999,
+    "shares": 21.450703,
+    "fee": 0.22083
+   },
+   {
+    "usdc": 4.06,
+    "shares": 14.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 9.94,
+    "shares": 14.0,
+    "fee": 0.14413
+   }
+  ],
+  "event": "New York Red Bulls vs. Inter Miami CF"
+ },
+ {
+  "question": "Will Portland Timbers win on 2026-10-24?",
+  "conditionId": "0xbc3f795382d414b5d22034265c1f5737f5c14c739dd84c2133845f72ef52f9b0",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v3",
+  "schedule_rate": 0.05,
+  "trades": 2,
+  "max_rate": 0.05,
+  "fills": [
+   {
+    "usdc": 19.2129,
+    "shares": 39.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 19.9971,
+    "shares": 39.21,
+    "fee": 0.48992
+   },
+   {
+    "usdc": 50.0,
+    "shares": 100.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 50.0,
+    "shares": 100.0,
+    "fee": 1.25
+   }
+  ],
+  "event": "Portland Timbers vs. Charlotte FC"
+ },
+ {
+  "question": "Will Charlotte FC win on 2026-10-24?",
+  "conditionId": "0xea46e68c9c41cadb658cbed88481e259450d54cd27a54f24ebda25e2b895b2d8",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v3",
+  "schedule_rate": 0.05,
+  "trades": 2,
+  "max_rate": 0.05000000000000002,
+  "fills": [
+   {
+    "usdc": 19.72,
+    "shares": 68.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 500.0,
+    "shares": 355.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 500.0,
+    "shares": 355.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 21.46,
+    "shares": 74.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 810.82,
+    "shares": 1142.0,
+    "fee": 11.75689
+   },
+   {
+    "usdc": 412.44,
+    "shares": 589.2,
+    "fee": 0.0
+   },
+   {
+    "usdc": 32.34,
+    "shares": 46.2,
+    "fee": 0.0
+   },
+   {
+    "usdc": 162.4,
+    "shares": 232.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 201.6,
+    "shares": 288.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.5,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 35.0,
+    "shares": 50.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 293.3,
+    "shares": 419.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 350.0,
+    "shares": 500.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 142.753334,
+    "shares": 203.933334,
+    "fee": 0.0
+   },
+   {
+    "usdc": 700.0,
+    "shares": 2333.333334,
+    "fee": 24.5
+   }
+  ],
+  "event": "Portland Timbers vs. Charlotte FC"
+ },
+ {
+  "question": "Will Charles Leclerc win the 2026 F1 United States Grand Prix?",
+  "conditionId": "0x8f3cd308a3a73110ec8a1df440082c2a1c3b502402ecd8cea44ea5ad26588801",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v3",
+  "schedule_rate": 0.05,
+  "trades": 2,
+  "max_rate": 0.04999895252759852,
+  "fills": [
+   {
+    "usdc": 7.9632,
+    "shares": 10.08,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.0106,
+    "shares": 10.14,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.9711,
+    "shares": 10.09,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.0185,
+    "shares": 10.15,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.0422,
+    "shares": 10.18,
+    "fee": 0.0
+   },
+   {
+    "usdc": 10.6344,
+    "shares": 50.64,
+    "fee": 0.42005
+   },
+   {
+    "usdc": 2.3256,
+    "shares": 12.24,
+    "fee": 0.0
+   },
+   {
+    "usdc": 9.9144,
+    "shares": 12.24,
+    "fee": 0.09418
+   }
+  ],
+  "event": "United States Grand Prix: Driver Winner"
+ },
+ {
+  "question": "Will George Russell win the 2026 F1 United States Grand Prix?",
+  "conditionId": "0x1771f15cee1ddc9e6441b2f209272430a1f09657c56aa0f3e2229a6fd75cddc9",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v3",
+  "schedule_rate": 0.05,
+  "trades": 2,
+  "max_rate": 0.04999482474321386,
+  "fills": [
+   {
+    "usdc": 1.06344,
+    "shares": 50.64,
+    "fee": 0.0
+   },
+   {
+    "usdc": 49.57656,
+    "shares": 50.64,
+    "fee": 0.05205
+   },
+   {
+    "usdc": 0.26928,
+    "shares": 12.24,
+    "fee": 0.0
+   },
+   {
+    "usdc": 11.97072,
+    "shares": 12.24,
+    "fee": 0.01316
+   }
+  ],
+  "event": "United States Grand Prix: Driver Winner"
+ },
+ {
+  "question": "Will Benjamin Netanyahu be the next Prime Minister of Israel?",
+  "conditionId": "0x7586a96520578acaaaa4ea84a2582f197f84255da1f3392a7aa300386c187b37",
+  "feesEnabled": false,
+  "feeType": null,
+  "schedule_rate": null,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 2571.428572,
+    "shares": 3571.428572,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1000.0,
+    "shares": 3571.428572,
+    "fee": 0.0
+   },
+   {
+    "usdc": 50.0,
+    "shares": 36.5,
+    "fee": 0.0
+   },
+   {
+    "usdc": 50.0,
+    "shares": 13.5,
+    "fee": 0.0
+   }
+  ],
+  "event": "Prime Minister of Israel after the next election?"
+ },
+ {
+  "question": "Will Gadi Eizenkot be the next Prime Minister of Israel?",
+  "conditionId": "0xdbe93b5a701f36076a560fa4b9ba59e365a6e8e2ea6a83764640010657277ca4",
+  "feesEnabled": false,
+  "feeType": null,
+  "schedule_rate": null,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 20.998044,
+    "shares": 10.73,
+    "fee": 0.0
+   },
+   {
+    "usdc": 10.73,
+    "shares": 20.998044,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.37248,
+    "shares": 8.96,
+    "fee": 0.0
+   },
+   {
+    "usdc": 412.33,
+    "shares": 211.52529,
+    "fee": 0.0
+   },
+   {
+    "usdc": 421.29,
+    "shares": 205.17719,
+    "fee": 0.0
+   }
+  ],
+  "event": "Prime Minister of Israel after the next election?"
+ },
+ {
+  "question": "Will there be between 30 and 34 average daily transits of the Bab el-Mandeb Stra",
+  "conditionId": "0x32f50adb8b946fc8203b3be484da59685b761539fdb47aa3d4d1bed4f1f5250e",
+  "feesEnabled": false,
+  "feeType": null,
+  "schedule_rate": null,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 1.176471,
+    "shares": 1.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.0,
+    "shares": 1.176471,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.15,
+    "shares": 7.009,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.15,
+    "shares": 1.141,
+    "fee": 0.0
+   }
+  ],
+  "event": "Avg. # of ships transiting Bab el-Mandeb Strait end of October?"
+ },
+ {
+  "question": "Will there be between 25 and 29 average daily transits of the Bab el-Mandeb Stra",
+  "conditionId": "0xf65f336f88d86c075decfd57fb7152f89ab6c72892bae4dee2ea464c02833630",
+  "feesEnabled": false,
+  "feeType": null,
+  "schedule_rate": null,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 0.2838,
+    "shares": 1.29,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.29,
+    "shares": 0.2838,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.298701,
+    "shares": 1.2987,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.999999,
+    "shares": 1.2987,
+    "fee": 0.0
+   }
+  ],
+  "event": "Avg. # of ships transiting Bab el-Mandeb Strait end of October?"
+ },
+ {
+  "question": "Will there be exactly 3 North Korea tests in October 2026?",
+  "conditionId": "0x850b914885579804aac69f37415391ba05d4f6bcea38373fdbe798e0318a44fa",
+  "feesEnabled": false,
+  "feeType": null,
+  "schedule_rate": null,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 20.0,
+    "shares": 5.2,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.2,
+    "shares": 20.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.5,
+    "shares": 30.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 22.5,
+    "shares": 30.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "Number of North Korea Missile Tests in October 2026?"
+ },
+ {
+  "question": "Will there be 4 or more North Korea tests in October 2026?",
+  "conditionId": "0x2db3c946de8f0ef731dbd78368d17ae8409f2ff5ec59233a7676981c7ab69595",
+  "feesEnabled": false,
+  "feeType": null,
+  "schedule_rate": null,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 7.48,
+    "shares": 5.7596,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.48,
+    "shares": 1.7204,
+    "fee": 0.0
+   },
+   {
+    "usdc": 22.8,
+    "shares": 30.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.2,
+    "shares": 30.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "Number of North Korea Missile Tests in October 2026?"
+ },
+ {
+  "question": "Will the Tampa Bay Rays win the 2026 World Series?",
+  "conditionId": "0x4d9567b9fa71a94b6e43ddb62ea6104cbb01926813938d241cce336bd72a8ba5",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v2",
+  "schedule_rate": 0.03,
+  "trades": 2,
+  "max_rate": 0.029999997808439757,
+  "fills": [
+   {
+    "usdc": 513.61574,
+    "shares": 1874.51,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1360.89426,
+    "shares": 1874.51,
+    "fee": 11.18655
+   },
+   {
+    "usdc": 101.51152,
+    "shares": 370.48,
+    "fee": 0.0
+   },
+   {
+    "usdc": 268.96848,
+    "shares": 370.48,
+    "fee": 2.21092
+   }
+  ],
+  "event": "MLB World Series Champion 2026"
+ },
+ {
+  "question": "Will the Milwaukee Brewers win the 2026 World Series?",
+  "conditionId": "0x3db74f14fa0c4d8acb19ff4ffa18d523597a8e553ec565d494290a908d99395a",
+  "feesEnabled": true,
+  "feeType": "sports_fees_v2",
+  "schedule_rate": 0.03,
+  "trades": 2,
+  "max_rate": 0.029999976883653884,
+  "fills": [
+   {
+    "usdc": 8.1571,
+    "shares": 30.1,
+    "fee": 0.0
+   },
+   {
+    "usdc": 99.65912,
+    "shares": 370.48,
+    "fee": 0.0
+   },
+   {
+    "usdc": 13.45,
+    "shares": 50.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 134.0,
+    "shares": 500.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 88.167687,
+    "shares": 328.983906,
+    "fee": 0.0
+   },
+   {
+    "usdc": 936.129999,
+    "shares": 1279.563906,
+    "fee": 7.53769
+   },
+   {
+    "usdc": 13.35,
+    "shares": 50.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 36.65,
+    "shares": 50.0,
+    "fee": 0.29356
+   }
+  ],
+  "event": "MLB World Series Champion 2026"
+ },
+ {
+  "question": "Will the Rhine River return to normal levels between October 1 and October 31, 2",
+  "conditionId": "0xa52beb533967265e4abce442e554e9d0b556c9ee4f2a3cb97d2bd915acc23652",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 7.135803,
+    "shares": 5.78,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.78,
+    "shares": 7.135803,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.8,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.2,
+    "shares": 5.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "When will the Rhine River return to normal levels?"
+ },
+ {
+  "question": "Will the Rhine River fail to return to normal levels before November 1, 2026?",
+  "conditionId": "0x93bea8cddd9c3df9019d6e3868aa86058377e8a274c6c1060c4a317110c88172",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 4.05,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 4.05,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.8736,
+    "shares": 6.24,
+    "fee": 0.0
+   },
+   {
+    "usdc": 6.24,
+    "shares": 0.8736,
+    "fee": 0.0
+   }
+  ],
+  "event": "When will the Rhine River return to normal levels?"
+ },
+ {
+  "question": "Will the Danube River fail to return to normal levels by November 1, 2026?",
+  "conditionId": "0xa553b580b636c27bc8eeb11064ecb21538dac9cae5fe5b1a117b368d0893db3c",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 9.6,
+    "shares": 10.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 10.0,
+    "shares": 9.6,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 0.245,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.75,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 10.0,
+    "shares": 9.505,
+    "fee": 0.0
+   }
+  ],
+  "event": "When will the Danube River return to normal levels?"
+ },
+ {
+  "question": "Will the Danube River return to normal levels between October 1 and October 31, ",
+  "conditionId": "0x242e95ad01b8317b1514da563a24b9f7b1187957820301508a86f5ce4a6155df",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 5.15464,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 5.15464,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.53,
+    "shares": 51.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 51.0,
+    "shares": 1.53,
+    "fee": 0.0
+   }
+  ],
+  "event": "When will the Danube River return to normal levels?"
+ },
+ {
+  "question": "Will there be no next Fable model (5.2+) release by October 31, 2026?",
+  "conditionId": "0xa8f5826a677b427c90c55585c784b1998fe24ba7a11f2ce51d5e0476dc73daab",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 10.29248,
+    "shares": 14.62,
+    "fee": 0.0
+   },
+   {
+    "usdc": 14.62,
+    "shares": 10.29248,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.82956,
+    "shares": 13.16,
+    "fee": 0.0
+   },
+   {
+    "usdc": 13.16,
+    "shares": 3.82956,
+    "fee": 0.0
+   }
+  ],
+  "event": "Next Fable Model (5.2+) released on...?"
+ },
+ {
+  "question": "Will the next Fable model (5.2+) be released on October 27, 2026?",
+  "conditionId": "0xa304a359426ada680d5fd6152e51ea3f5d7dda70fd024956d8b60bf9c93d79e4",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 1.4603,
+    "shares": 1.7,
+    "fee": 0.0
+   },
+   {
+    "usdc": 13.959419,
+    "shares": 16.269719,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2.55,
+    "shares": 17.969719,
+    "fee": 0.0
+   },
+   {
+    "usdc": 42.95,
+    "shares": 50.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 50.0,
+    "shares": 42.95,
+    "fee": 0.0
+   }
+  ],
+  "event": "Next Fable Model (5.2+) released on...?"
+ },
+ {
+  "question": "Will GitHub's longest critical incident in October 2026 be between 3 and 6 hours",
+  "conditionId": "0x229500acfd60e7ff7180e426e950092d7a971c7dd4f112eecc67818450978623",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 3.16,
+    "shares": 0.7584,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.16,
+    "shares": 2.4016,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2.7192,
+    "shares": 11.33,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.7858,
+    "shares": 16.46,
+    "fee": 0.0
+   },
+   {
+    "usdc": 21.285,
+    "shares": 27.79,
+    "fee": 0.0
+   }
+  ],
+  "event": "Longest GitHub critical incident in October?"
+ },
+ {
+  "question": "Will GitHub's longest critical incident in October 2026 be between 6 and 12 hour",
+  "conditionId": "0x784a11b37f4eb41528d905a4b4368e3a1219e8c5fe390ae9e35690c4c93e10d0",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 4.0,
+    "shares": 3.2,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.0,
+    "shares": 0.8,
+    "fee": 0.0
+   },
+   {
+    "usdc": 21.6762,
+    "shares": 27.79,
+    "fee": 0.0
+   },
+   {
+    "usdc": 6.1138,
+    "shares": 27.79,
+    "fee": 0.0
+   }
+  ],
+  "event": "Longest GitHub critical incident in October?"
+ },
+ {
+  "question": "Will there be no next Google Gemini Pro model release by November 1, 2026?",
+  "conditionId": "0xb3191751ba756172e31ca760cf4b2a9a4324b0993d61f84433f5da7e0f94d64b",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 20.0,
+    "shares": 19.66,
+    "fee": 0.0
+   },
+   {
+    "usdc": 19.66,
+    "shares": 20.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 60.0,
+    "shares": 1.5,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.5,
+    "shares": 60.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "When will the next Google Gemini Pro model be released?"
+ },
+ {
+  "question": "Will the next Google Gemini Pro model be released between October 19 and October",
+  "conditionId": "0x6e9e567f3254d3536a5a601f646e3e07da05b8c91cb6d91ad10686741781906d",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 0.028056,
+    "shares": 14.028,
+    "fee": 0.0
+   },
+   {
+    "usdc": 13.999944,
+    "shares": 14.028,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.036072,
+    "shares": 18.036,
+    "fee": 0.0
+   },
+   {
+    "usdc": 17.999928,
+    "shares": 18.036,
+    "fee": 0.0
+   }
+  ],
+  "event": "When will the next Google Gemini Pro model be released?"
+ }
+]

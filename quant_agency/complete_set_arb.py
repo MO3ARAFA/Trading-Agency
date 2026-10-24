@@ -608,9 +608,13 @@ class PaperArb:
                 self.log("seen", **op.row())
                 await self.try_fill(session, ev, op)
         self.stats["sweep_s"] = time.time() - t0
+        self.log("sweep", books=len(books), sweep_s=self.stats["sweep_s"])
 
     async def try_fill(self, session, ev: Event, op: Opportunity) -> None:
         c = self.cfg
+        if self.risk.room(ev.eid) < 1.0:                       # the event (or the account) is full: not an execution question
+            self.stats["refused_no_room"] += 1
+            return
         await asyncio.sleep(c.latency_s)
         fresh = deplete(await fetch_books(session, op.tokens, c.batch), self.taken)
         room = self.risk.room(ev.eid)

@@ -124,6 +124,37 @@ python -m quant_agency.midcap_report --runs 'runs/xvr_s*_2026*' --placebo 'runs/
 ```
 Naming matters: confirmatory stages are `xvr*`, validation/smoke runs `xvv*`, controls `xvp*`. Nothing in this mode prepares an order; the arb module and the CEO are idle.
 
+## 6d. Phase 13 — complete-set arbitrage on Polymarket (paper)
+
+Read `docs/AUDIT_AND_PLAN.md` and `docs/PHASE13_COMPLETE_SET_ARB.md` first. This is the only strategy in the repository whose payoff does
+not depend on a forecast. It is still paper only.
+
+```bash
+pip install -r requirements.txt && python -m pytest tests -q          # must be green
+# 1 h paper session over every live NegRisk event ending within ~60 days, 100 USD account
+python -m quant_agency.complete_set_arb --duration 3600 --bankroll 100 --max-per-event 25 --out runs/p13
+# the same, as if every fee-enabled leg paid at least a 0.05 taker rate (stress)
+python -m quant_agency.complete_set_arb --duration 3600 --fee-stress 0.05 --out runs/p13_stress
+# stop a session cleanly (writes csa_summary.json): kill -TERM <pid>; or block new fills at once: touch runs/p13/KILL
+# after the events resolve: mark every paper position to the venue's actual resolution (repeat until all are settled)
+python -m quant_agency.complete_set_arb --settle runs/p13/paper_YYYYMMDD_HHMMSS
+# payoff backtest on a JSON list of closed Gamma events; on-chain fee check for given event ids
+python -m quant_agency.complete_set_arb --backtest runs/p13/closed_negrisk_compact.json --out runs/p13
+python -m quant_agency.fee_audit --events 1075157 --trades 3 --markets 3
+# report
+python -m quant_agency.phase13_report --runs runs/p13/paper_* --head docs/PHASE13_HEAD.md --tail docs/PHASE13_TAIL.md
+```
+
+Outbound access needed (no keys): `gamma-api.polymarket.com`, `clob.polymarket.com` (`POST /books`), `data-api.polymarket.com` and a
+public Polygon RPC (fee audit only). Artifacts: `csa_log.jsonl` (every universe / sweep / seen / fill / recheck / refusal),
+`csa_summary.json`, `csa_settlement.json`.
+
+What has to be true before a real order, in addition to §6: every paper position of at least one full session has settled at its
+expected payout (`--settle`, zero shortfalls); a fee audit of the exact markets to be traded matches the schedule; and the owner approves
+in writing. The first real trade is one set of ≥ 5 shares on one event, bought leg by leg with fill-or-kill orders, starting with the
+thinnest leg; if any leg fails, the filled legs are sold back and the loss is recorded. Never buy a YES set on an augmented event
+(placeholders / "Other") or on a family listed in `CsaConfig.yes_set_exclude`.
+
 ## 7. Troubleshooting
 
 | symptom | likely cause / action |
