@@ -868,13 +868,20 @@ def replay(path: str, uni: PolyUniverse, control: Sequence[PmMarket], cfg: Optio
     last = None
     t = 0.0
     with gzip.open(path, "rt") as f:
-        for line in f:
-            ts, raw = line.split("\t", 1)
-            t = float(ts)
-            eng.on_message(t, json.loads(raw))
-            if last is None or t - last >= poll_every:
-                eng.poll(t)
-                last = t
+        try:
+            for line in f:
+                try:                                   # a session killed mid-write leaves a truncated last line
+                    ts, raw = line.split("\t", 1)
+                    msg = json.loads(raw)
+                except ValueError:
+                    continue
+                t = float(ts)
+                eng.on_message(t, msg)
+                if last is None or t - last >= poll_every:
+                    eng.poll(t)
+                    last = t
+        except EOFError:                               # ... and an unterminated gzip stream
+            pass
     return eng.finish(t)
 
 

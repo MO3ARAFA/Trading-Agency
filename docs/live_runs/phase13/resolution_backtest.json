@@ -1,0 +1,333 @@
+{
+ "events": 48443,
+ "augmented": {
+  "exactly_one": 1164,
+  "none": 61,
+  "unclean": 36
+ },
+ "plain": {
+  "exactly_one": 47164,
+  "none": 12,
+  "unclean": 6
+ },
+ "plain_examples": [
+  {
+   "slug": "nfl-dal-gb-2026-10-19-highest-scoring-quarter",
+   "outcome": "none",
+   "n": 4,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "nfl-bal-cle-2026-10-18-highest-scoring-quarter",
+   "outcome": "none",
+   "n": 4,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "how-many-gays-win-as-vice-governor-in-brazil-elections",
+   "outcome": "unclean",
+   "n": 3,
+   "prices": [
+    "[\"0.915\", \"0.085\"]",
+    "[\"0.075\", \"0.925\"]",
+    "[\"0.031\", \"0.969\"]"
+   ]
+  },
+  {
+   "slug": "nfl-jax-cin-2026-10-04-highest-scoring-quarter",
+   "outcome": "none",
+   "n": 4,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "nfl-dal-hou-2026-10-04-highest-scoring-quarter",
+   "outcome": "none",
+   "n": 4,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "nfl-phi-chi-2026-09-29-highest-scoring-quarter",
+   "outcome": "none",
+   "n": 4,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "nfl-lv-no-2026-09-27-highest-scoring-quarter",
+   "outcome": "none",
+   "n": 4,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "nfl-nyg-la-2026-09-22-highest-scoring-quarter",
+   "outcome": "none",
+   "n": 4,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "atp-khachan-blockx-2026-09-09-exact-score",
+   "outcome": "none",
+   "n": 6,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "crint-rwa-bwa-2026-09-08-toss-match-double",
+   "outcome": "unclean",
+   "n": 3,
+   "prices": [
+    "[\"0.5\", \"0.5\"]",
+    "[\"0.5\", \"0.5\"]",
+    "[\"0.5\", \"0.5\"]"
+   ]
+  },
+  {
+   "slug": "crint-ken-sle-2026-09-08-most-sixes",
+   "outcome": "unclean",
+   "n": 3,
+   "prices": [
+    "[\"0.5\", \"0.5\"]",
+    "[\"0.5\", \"0.5\"]",
+    "[\"0.5\", \"0.5\"]"
+   ]
+  },
+  {
+   "slug": "crint-ken-sle-2026-09-08-team-top-batter",
+   "outcome": "unclean",
+   "n": 3,
+   "prices": [
+    "[\"0.5\", \"0.5\"]",
+    "[\"0.5\", \"0.5\"]",
+    "[\"0.5\", \"0.5\"]"
+   ]
+  }
+ ],
+ "aug_examples": [
+  {
+   "slug": "nfl-sea-den-2026-10-16-first-td-scorer",
+   "outcome": "none",
+   "n": 11,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "presidents-cup-2026-us-team-points-leader",
+   "outcome": "none",
+   "n": 27,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "wnba-three-point-percentage-leader",
+   "outcome": "none",
+   "n": 30,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "2-free-app-in-the-us-apple-app-store-on-october-9-20261002t180000000z",
+   "outcome": "none",
+   "n": 11,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "lpga-2026-lotte-championship-second-round-leader",
+   "outcome": "none",
+   "n": 120,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "dpwt-2026-alfred-dunhill-links-championship-first-round-leader",
+   "outcome": "none",
+   "n": 120,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "jynxzi-fortnite-tournament-winner",
+   "outcome": "none",
+   "n": 36,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "nfl-dal-hou-2026-10-04-first-td-scorer",
+   "outcome": "none",
+   "n": 30,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "third-best-ai-agent-lab-end-of-september-20260812152722531",
+   "outcome": "none",
+   "n": 31,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "who-will-give-the-next-white-house-press-briefing",
+   "outcome": "none",
+   "n": 64,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "fantasy-football-2026-27-week-3-k-points-leader",
+   "outcome": "none",
+   "n": 37,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  },
+  {
+   "slug": "lpga-2026-nw-arkansas-championship-winner",
+   "outcome": "none",
+   "n": 120,
+   "prices": [
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]",
+    "[\"0\", \"1\"]"
+   ]
+  }
+ ],
+ "payout": {
+  "plain": {
+   "n": 47180,
+   "yes_lt1": 12,
+   "yes_shortfall": 12.0,
+   "no_lt": 4,
+   "no_shortfall": 1.521,
+   "yes_lt1_after_exclusion": 0,
+   "yes_shortfall_after_exclusion": 0.0,
+   "n_after_exclusion": 39390,
+   "yes_shortfall_per_set": 0.0002543450614667232,
+   "no_shortfall_per_set": 3.223823654090716e-05,
+   "yes_shortfall_after_exclusion_per_set": 0.0
+  },
+  "augmented": {
+   "n": 1225,
+   "yes_lt1": 61,
+   "yes_shortfall": 61.0,
+   "no_lt": 0,
+   "no_shortfall": 0.0,
+   "yes_lt1_after_exclusion": 61,
+   "yes_shortfall_after_exclusion": 61.0,
+   "n_after_exclusion": 1219,
+   "yes_shortfall_per_set": 0.04979591836734694,
+   "no_shortfall_per_set": 0.0,
+   "yes_shortfall_after_exclusion_per_set": 0.05004101722723544
+  }
+ },
+ "end_min": "2026-08-04T00:00:00Z",
+ "end_max": "2026-10-22T23:30:00Z"
+}

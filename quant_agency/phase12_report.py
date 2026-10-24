@@ -104,9 +104,9 @@ def track2(h: str, bank: Bankroll) -> List[str]:
 
 
 # ---------------------------------------------------------------------------------------------- Track 1
-def track1(pm: str, bank: Bankroll) -> List[str]:
+def track1(pm: str, bank: Bankroll, title: str = "## 2. Track 1 — Polymarket slow event markets", sub: str = "###") -> List[str]:
     r, u = _j(f"{pm}/pm_result.json"), _j(f"{pm}/pm_universe.json")
-    L: List[str] = ["## 2. Track 1 — Polymarket slow event markets", ""]
+    L: List[str] = [title, ""]
     if not r or not u:
         return L + ["*(no Polymarket run found)*", ""]
     c = r["universe_counts"]
@@ -114,7 +114,7 @@ def track1(pm: str, bank: Bankroll) -> List[str]:
           f"**{c['slow_candidates']} slow markets** pass the filter (> 24 h to expiry, 24 h volume ≥ 500 USD, cached spread 3–8 ¢, mid 5–95 ¢); the {r['n_slow']} most active are quoted; "
           f"{r['n_control']} BTC up/down markets are the control; {c['groups']} NegRisk groups exist, {r['scan']['groups']} are scanned live.", ""]
     # structural
-    L += ["### 2.1 Structural scan (live CLOB books, net of the fee schedule, ≥ 5 shares on the thinnest leg)", "",
+    L += [f"{sub} 2.1 Structural scan (live CLOB books, net of the fee schedule, ≥ 5 shares on the thinnest leg)", "",
           f"{r['scan']['evals']:,} group evaluations ({r['scan']['incomplete']:,} skipped while a leg had no book). Binary YES/NO mirror check: {r['mirror']['checks']:,} comparisons, "
           f"min ask(YES)+ask(NO) = {r['mirror']['min_ask_sum']:.3f}, max bid(YES)+bid(NO) = {r['mirror']['max_bid_sum']:.3f}, **{r['mirror']['crossed']} crossed** — the two books are mirrors, there is no binary free lunch.", ""]
     opps = r["opps"]
@@ -142,18 +142,20 @@ def track1(pm: str, bank: Bankroll) -> List[str]:
         L.append("")
     # maker
     m = r["maker"]
-    L += ["### 2.2 Passive quoting (virtual post-only orders, 5 shares = the Polymarket minimum, TTL 300 s)", "",
+    L += [f"{sub} 2.2 Passive quoting (virtual post-only orders, 5 shares = the Polymarket minimum, TTL 300 s)", "",
           "*trades* is the primary fill model (real trade prints consume the queue ahead of us); *strict* is a lower bound; *depletion* counts any displayed-size drop as a trade and is an **upper bound shown for completeness**. "
-          "Markout = (later mid − fill price) × side, in cents per share; dollars are at 5 shares.", "",
-          "| universe | policy | model | attempts | fills | fill rate | fills / market-hour | spread capture (¢) | markout 60 s (¢) | markout 300 s (¢) | USD per fill (300 s) |", "|---|---|---|---|---|---|---|---|---|---|---|"]
+          "Markout = (later mid − fill price) × side, in cents per share; dollars are at 5 shares. The ± after a per-fill markout treats every fill as independent and is **too small** (one print can fill several orders, a moving market fills them all); "
+          "the *market mean* column averages within a market first and takes the s.e. across markets — that is the honest one.", "",
+          "| universe | policy | model | attempts | fills | markets with fills | top market's share of fills | fill rate | spread capture (¢) | markout 300 s, per fill (¢) | markout 300 s, **market mean** (¢) | USD per fill (300 s) |", "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for kind in ("slow", "control"):
         for pol in ("join", "penny"):
             for mod in ("strict", "trades", "depletion"):
                 d = m.get(f"{kind}|{pol}|{mod}")
                 if not d:
                     continue
-                L.append(f"| {kind} | {pol} | {mod} | {d['attempts']} | {d['fills']} | {pct(d['fill_rate'])} | {f(d['fills_per_market_hour'], 2)} | {f(d.get('spread_capture_c'), 2)} | "
-                         f"{pmv(d.get('markout_60s_c'), d.get('markout_60s_se', float('nan')), 2)} | {pmv(d.get('markout_300s_c'), d.get('markout_300s_se', float('nan')), 2)} | {usd(d.get('usd_per_fill_300s'))} |")
+                mk = d.get("markout_300s_market_mean_c")
+                L.append(f"| {kind} | {pol} | {mod} | {d['attempts']} | {d['fills']} | {d.get('markets_with_fills', '–')} | {pct(d.get('top_market_fill_share'))} | {pct(d['fill_rate'])} | {f(d.get('spread_capture_c'), 2)} | "
+                         f"{pmv(d.get('markout_300s_c'), d.get('markout_300s_se', float('nan')), 2)} | {pmv(mk, d.get('markout_300s_market_se_c', float('nan')), 2) + ' (n = ' + str(d.get('markout_300s_markets')) + ')' if mk is not None else '–'} | {usd(d.get('usd_per_fill_300s'))} |")
     b = r["burst"]
     L += ["", "Trade-print arrival (per-minute counts, Fano factor: 1 = Poisson, ≫ 1 = bursty sweeps):", "",
           "| universe | markets with ≥ 5 prints | median trades / min | Fano median | Fano p90 |", "|---|---|---|---|---|"]
@@ -164,7 +166,7 @@ def track1(pm: str, bank: Bankroll) -> List[str]:
     sets = r.get("sets", [])
     if sets:
         comp = [s for s in sets if s["complete"]]
-        L += ["### 2.3 Maker lock across a whole exhaustive group (join-bids on every leg; legging risk)", "",
+        L += [f"{sub} 2.3 Maker lock across a whole exhaustive group (join-bids on every leg; legging risk)", "",
               f"{len(sets)} sets attempted, **{len(comp)} completed** ({100 * len(comp) / len(sets):.0f} %). Complete sets locked "
               + (f"{sum(s['locked_usd'] for s in comp) / len(comp):.3f} USD each on average (5 shares)" if comp else "nothing")
               + f"; incomplete sets left {sum(s['legs_filled'] for s in sets if not s['complete'])} filled legs marked at mid for a mean P&L of "
@@ -182,7 +184,8 @@ def comparison() -> List[str]:
             "| **12** | **Funding carry, basis reversion, premium drift (Hyperliquid); structural sets and passive quoting (Polymarket)** | minutes – days | maker / hold | see §1 |", ""]
 
 
-def build(pm: str, hist: str, notes: str, bank: Bankroll) -> str:
+def build(pm, hist: str, notes: str, bank: Bankroll) -> str:
+    """``pm``: one run directory, or a list of (label, directory) pairs (the first run of a track with a flawed universe is kept, labelled)."""
     L: List[str] = ["# Phase 12 — slow-horizon structural strategies for a 100 USD account", ""]
     if notes:
         L += [notes.strip(), ""]
@@ -191,7 +194,13 @@ def build(pm: str, hist: str, notes: str, bank: Bankroll) -> str:
           f"Polymarket minimum order {bank.pm_min_shares:.0f} shares (≈ 0.5–4.5 USD). Fees are public base-tier assumptions: Hyperliquid maker 1.5 / taker 4.5 bps, Binance spot 7.5 bps, Polymarket maker 0 and taker per the market's fee schedule. "
           f"**One basis point of {bank.notional_usd:.0f} USD is {bank.notional_usd / 1e4:.4f} USD**: a 30 bps edge is {30 * bank.notional_usd / 1e4:.2f} USD per trade; the per-trade noise of an unhedged perp position (≈ 90 bps s.d. over 15–30 minutes) is ≈ {90 * bank.notional_usd / 1e4:.2f} USD. "
           "This repository contains no code that sends an order and reads no credentials; everything here is measurement or paper simulation.", ""]
-    L += track1(pm, bank)
+    runs = [("", pm)] if isinstance(pm, str) else list(pm)
+    if len(runs) == 1:
+        L += track1(runs[0][1], bank)
+    else:
+        L += ["## 2. Track 1 — Polymarket slow event markets", ""]
+        for k, (label, d) in enumerate(runs):
+            L += track1(d, bank, f"### Run {chr(65 + k)} — {label}", "####")
     L += track2(hist, bank)
     L += comparison()
     return "\n".join(L)
@@ -199,12 +208,13 @@ def build(pm: str, hist: str, notes: str, bank: Bankroll) -> str:
 
 def main(argv=None):
     p = argparse.ArgumentParser()
-    p.add_argument("--pm", required=True)
+    p.add_argument("--pm", nargs="+", required=True, help="run directory, or label=directory pairs for several runs")
     p.add_argument("--hist", default="docs/live_runs/phase12")
     p.add_argument("--notes", default=None)
     p.add_argument("--out", default="docs/PHASE12_SLOW_STRUCTURAL.md")
     a = p.parse_args(argv)
-    md = build(a.pm, a.hist, open(a.notes).read() if a.notes else "", Bankroll())
+    runs = [tuple(x.split("=", 1)) if "=" in x else ("", x) for x in a.pm]
+    md = build(runs[0][1] if len(runs) == 1 else runs, a.hist, open(a.notes).read() if a.notes else "", Bankroll())
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
     open(a.out, "w").write(md)
     print(f"wrote {a.out} ({len(md)} chars)")
