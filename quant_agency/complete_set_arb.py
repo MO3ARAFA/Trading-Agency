@@ -448,6 +448,50 @@ def resolution_backtest(events: Iterable[dict], exclude: Sequence[str] = CsaConf
     return res
 
 
+_KEEP_M = ("id", "question", "outcomePrices", "negRiskOther", "closed", "clobTokenIds", "umaResolutionStatus", "volumeNum", "groupItemTitle",
+           "endDate", "closedTime", "feesEnabled")
+
+
+def fetch_closed(days: int, out_path: str, end: Optional[float] = None, workers: int = 6) -> int:
+    """Closed NegRisk events whose end date falls in the last ``days`` days (one-day Gamma windows, each capped at 2,100 events, so busy
+    days are a sample), written compactly (only the fields the backtest uses) to ``out_path``."""
+    import datetime as dt
+    import urllib.request
+    from concurrent.futures import ThreadPoolExecutor
+    hi0 = dt.datetime.fromtimestamp(end or time.time(), dt.timezone.utc)
+
+    def get(url):
+        for k in range(4):
+            try:
+                return json.loads(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=60).read())
+            except Exception:
+                if k == 3:
+                    return []
+                time.sleep(2 * (k + 1))
+
+    def day(d):
+        hi = hi0 - dt.timedelta(days=d)
+        lo = hi - dt.timedelta(days=1)
+        got = []
+        for off in range(0, 2100, 100):
+            part = get(f"{GAMMA}/events?closed=true&limit=100&offset={off}&end_date_min={lo:%Y-%m-%dT%H:%M:%SZ}&end_date_max={hi:%Y-%m-%dT%H:%M:%SZ}")
+            got += [{"id": e.get("id"), "slug": e.get("slug"), "title": e.get("title"), "negRisk": True, "negRiskAugmented": e.get("negRiskAugmented"),
+                     "endDate": e.get("endDate"), "closedTime": e.get("closedTime"), "tags": [t.get("slug") for t in (e.get("tags") or [])][:8],
+                     "markets": [{k: m.get(k) for k in _KEEP_M} for m in (e.get("markets") or [])]} for e in part if e.get("negRisk")]
+            if len(part) < 100:
+                break
+        return got
+
+    out: Dict[str, dict] = {}
+    with ThreadPoolExecutor(workers) as ex:
+        for got in ex.map(day, range(days)):
+            for e in got:
+                out[e["id"]] = e
+    with open(out_path, "w") as f:
+        json.dump(list(out.values()), f)
+    return len(out)
+
+
 def realised_payout(kind: str, sets: float, markets: Sequence[dict], tokens: Sequence[str]) -> Optional[float]:
     """Actual payout of ``sets`` complete sets once every leg's market has closed (None while any leg is unresolved).
 
@@ -712,8 +756,13 @@ def main(argv=None):
     p.add_argument("--max-per-event", type=float, default=25.0)
     p.add_argument("--fee-stress", type=float, default=0.0, help="trade as if every fee-enabled leg paid at least this taker rate")
     p.add_argument("--settle", metavar="RUN_DIR", help="mark a finished paper run to the actual resolutions and exit")
+    p.add_argument("--fetch-closed", type=int, metavar="DAYS", help="download closed NegRisk events of the last DAYS days to OUT/closed_negrisk_compact.json and exit")
     p.add_argument("--backtest", metavar="EVENTS_JSON", help="resolution backtest on a JSON list of closed Gamma events and exit")
     a = p.parse_args(argv)
+    if a.fetch_closed:
+        os.makedirs(a.out, exist_ok=True)
+        print(fetch_closed(a.fetch_closed, os.path.join(a.out, "closed_negrisk_compact.json")), "events")
+        return
     if a.backtest:
         import orjson
         r = resolution_backtest(orjson.loads(open(a.backtest, "rb").read()))
