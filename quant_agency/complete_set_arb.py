@@ -514,7 +514,10 @@ def realised_payout(kind: str, sets: float, markets: Sequence[dict], tokens: Seq
 def settle_run(run_dir: str) -> dict:
     """Mark a finished paper run to the venue's actual resolutions (re-run until every position is settled)."""
     import urllib.request
-    fills = [json.loads(l) for l in open(os.path.join(run_dir, "csa_log.jsonl")) if '"event": "fill"' in l]
+    log = os.path.join(run_dir, "csa_log.jsonl")
+    if not os.path.exists(log):                      # the committed copy (docs/live_runs/phase13/...) drops the per-sweep lines
+        log = os.path.join(run_dir, "csa_log_events.jsonl")
+    fills = [json.loads(l) for l in open(log) if '"event": "fill"' in l]
     cache: Dict[str, list] = {}
     rows = []
     for f in fills:

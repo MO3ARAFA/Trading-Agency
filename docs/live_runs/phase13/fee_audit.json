@@ -1439,5 +1439,930 @@
    }
   ],
   "event": "When will the next Google Gemini Pro model be released?"
+ },
+ {
+  "question": "Will the Swiss National Bank decrease the SNB policy rate by 50+ bps at the Dece",
+  "conditionId": "0x91f062d0e3e89c4364adc15d07dd68fa98477f3af76cd6f106c5003fd80ee212",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 7.38,
+    "shares": 0.02214,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.75,
+    "shares": 0.003,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.02514,
+    "shares": 8.13,
+    "fee": 0.0
+   },
+   {
+    "usdc": 19.03,
+    "shares": 0.05709,
+    "fee": 0.0
+   },
+   {
+    "usdc": 9.87,
+    "shares": 0.03948,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.09657,
+    "shares": 28.9,
+    "fee": 0.0
+   }
+  ],
+  "event": "Swiss National Bank decision in December?"
+ },
+ {
+  "question": "Will the Swiss National Bank increase the SNB policy rate by 50+ bps at the Dece",
+  "conditionId": "0x2a6ea10d1c2393546b091380fa6d4957284f1f3584d2fb2fd0a7e709844a0a08",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 8.13,
+    "shares": 0.02439,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.02439,
+    "shares": 8.13,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.0,
+    "shares": 0.06,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.9,
+    "shares": 0.0267,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.0867,
+    "shares": 28.9,
+    "fee": 0.0
+   }
+  ],
+  "event": "Swiss National Bank decision in December?"
+ },
+ {
+  "question": "Will the Swiss National Bank decrease the SNB policy rate by 25 bps at the Decem",
+  "conditionId": "0x92d933baf2cb585c59e27a9e6b32ad0fc3b73c7fc4b1d351f01544f4253dfd6a",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 5.03,
+    "shares": 0.01006,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.1,
+    "shares": 0.0062,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.01626,
+    "shares": 8.13,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.0,
+    "shares": 0.016,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.9,
+    "shares": 0.0418,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.0578,
+    "shares": 28.9,
+    "fee": 0.0
+   }
+  ],
+  "event": "Swiss National Bank decision in December?"
+ },
+ {
+  "question": "Will the Iowa Republican perform worst among these tossup Senate races?",
+  "conditionId": "0xab4c2bcb33edee8f1b47515fbd6288ee89401ba0b2dc62374de867584c329672",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 12.8,
+    "shares": 8.704,
+    "fee": 0.0
+   },
+   {
+    "usdc": 8.704,
+    "shares": 12.8,
+    "fee": 0.0
+   },
+   {
+    "usdc": 60.0,
+    "shares": 19.8,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.3692,
+    "shares": 6.62,
+    "fee": 0.0
+   },
+   {
+    "usdc": 22.0508,
+    "shares": 66.62,
+    "fee": 0.0
+   }
+  ],
+  "event": "GOP's worst Great Plains Senate Race (IA, NE, KS)?"
+ },
+ {
+  "question": "Will the Kansas Republican perform worst among these tossup Senate races?",
+  "conditionId": "0x36d78c5de53c42dc173ac4538036444bf619ff2da1c6b5e542f716a07962a44c",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 7.1168,
+    "shares": 12.8,
+    "fee": 0.0
+   },
+   {
+    "usdc": 12.8,
+    "shares": 7.1168,
+    "fee": 0.0
+   },
+   {
+    "usdc": 13.03498,
+    "shares": 23.03,
+    "fee": 0.0
+   },
+   {
+    "usdc": 23.03,
+    "shares": 13.03498,
+    "fee": 0.0
+   }
+  ],
+  "event": "GOP's worst Great Plains Senate Race (IA, NE, KS)?"
+ },
+ {
+  "question": "Will the Nebraska Republican perform worst among these tossup Senate races?",
+  "conditionId": "0x7ebb904e3a1315cecdc1aa20548369ad8107478f4c092c0501d321b8c63e7df8",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 12.8,
+    "shares": 9.728,
+    "fee": 0.0
+   },
+   {
+    "usdc": 9.728,
+    "shares": 12.8,
+    "fee": 0.0
+   },
+   {
+    "usdc": 12.465,
+    "shares": 16.62,
+    "fee": 0.0
+   },
+   {
+    "usdc": 16.62,
+    "shares": 12.465,
+    "fee": 0.0
+   }
+  ],
+  "event": "GOP's worst Great Plains Senate Race (IA, NE, KS)?"
+ },
+ {
+  "question": "No change in Reserve Bank of Australia's interest rates at the December 2026 mee",
+  "conditionId": "0xdf11c9f6624831317b7e7a5a71c16cdc46afccfe7b83f1036c344f38505e607e",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 16.0,
+    "shares": 9.12,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.0,
+    "shares": 11.4,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.2177,
+    "shares": 2.97,
+    "fee": 0.0
+   },
+   {
+    "usdc": 22.2723,
+    "shares": 38.97,
+    "fee": 0.0
+   },
+   {
+    "usdc": 11.0,
+    "shares": 20.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.266522,
+    "shares": 13.456522,
+    "fee": 0.0
+   },
+   {
+    "usdc": 15.19,
+    "shares": 33.456522,
+    "fee": 0.0
+   }
+  ],
+  "event": "Reserve Bank of Australia Decision in December"
+ },
+ {
+  "question": "Reserve Bank of Australia increases interest rates by 25 bps at the December 202",
+  "conditionId": "0xb336bf71dc4243083af9936305df7017f4d99b86b204fcd00b8bd660dfca9482",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 0.66,
+    "shares": 0.4686,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.66,
+    "shares": 0.1914,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.1914,
+    "shares": 0.66,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.66,
+    "shares": 0.1914,
+    "fee": 0.0
+   }
+  ],
+  "event": "Reserve Bank of Australia Decision in December"
+ },
+ {
+  "question": "Reserve Bank of Australia increases interest rates by 50+ bps at the December 20",
+  "conditionId": "0xeba760e0134d9014ab5d5c1782fe50d81793cd98a3b2a874aaaed57f1c76a956",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 5.0,
+    "shares": 0.315,
+    "fee": 0.0
+   },
+   {
+    "usdc": 33.97,
+    "shares": 2.17408,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2.48908,
+    "shares": 38.97,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.03,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 0.03,
+    "fee": 0.0
+   }
+  ],
+  "event": "Reserve Bank of Australia Decision in December"
+ },
+ {
+  "question": "Reserve Bank of Australia decreases interest rates by 50+ bps at the December 20",
+  "conditionId": "0xedd3486ac3c0dec2144463a3afb2d1a0d582c3c577349159d8fc6fcae32f939d",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 12.37,
+    "shares": 0.13607,
+    "fee": 0.0
+   },
+   {
+    "usdc": 6.0,
+    "shares": 0.072,
+    "fee": 0.0
+   },
+   {
+    "usdc": 16.3,
+    "shares": 0.1956,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.3,
+    "shares": 0.0516,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.45527,
+    "shares": 38.97,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.005,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 0.005,
+    "fee": 0.0
+   }
+  ],
+  "event": "Reserve Bank of Australia Decision in December"
+ },
+ {
+  "question": "Reserve Bank of Australia decreases interest rates by 25 bps at the December 202",
+  "conditionId": "0x5a0fd4a892fe4550dfba4a16469d1e5bc5ad9b9a9f85e5e1174ff4288fdf79a0",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 1.56,
+    "shares": 0.07644,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 0.245,
+    "fee": 0.0
+   },
+   {
+    "usdc": 21.33,
+    "shares": 1.0665,
+    "fee": 0.0
+   },
+   {
+    "usdc": 11.08,
+    "shares": 0.554,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.94194,
+    "shares": 38.97,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.02,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 0.02,
+    "fee": 0.0
+   }
+  ],
+  "event": "Reserve Bank of Australia Decision in December"
+ },
+ {
+  "question": "Will Alphabet\u2019s market capitalization be between $3.50T and $4.00T at the end of",
+  "conditionId": "0xb6ebaa6c54f944a3a5f0456ba651f93fb653d8bed601547c5a093b8dc6f9588f",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 6.44,
+    "shares": 3.71588,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.71588,
+    "shares": 6.44,
+    "fee": 0.0
+   },
+   {
+    "usdc": 3.21,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.0,
+    "shares": 3.21,
+    "fee": 0.0
+   }
+  ],
+  "event": "Alphabet\u2019s Market Cap end of October 2026?"
+ },
+ {
+  "question": "Will Alphabet\u2019s market capitalization be between $4.00T and $4.50T at the end of",
+  "conditionId": "0x6517568b5eb7a3fcf7a198445af3b1e8ddc736b6710529e2dd7d36b0cf770ddb",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 0.8768,
+    "shares": 1.37,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.37,
+    "shares": 0.8768,
+    "fee": 0.0
+   },
+   {
+    "usdc": 5.07,
+    "shares": 1.7745,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.8768,
+    "shares": 1.37,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2.2677,
+    "shares": 6.44,
+    "fee": 0.0
+   }
+  ],
+  "event": "Alphabet\u2019s Market Cap end of October 2026?"
+ },
+ {
+  "question": "Will Alphabet\u2019s market capitalization be between $4.50T and $5.00T at the end of",
+  "conditionId": "0xacc4380e7ae45474526fc407446bf921bb8dc4c8ecea3f21408b22033dd58f88",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 0.01968,
+    "shares": 4.92,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.92,
+    "shares": 0.01968,
+    "fee": 0.0
+   },
+   {
+    "usdc": 6.36,
+    "shares": 0.23532,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.08,
+    "shares": 0.00296,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.23828,
+    "shares": 6.44,
+    "fee": 0.0
+   }
+  ],
+  "event": "Alphabet\u2019s Market Cap end of October 2026?"
+ },
+ {
+  "question": "Will Alphabet\u2019s market capitalization be between $5.50T and $6.00T at the end of",
+  "conditionId": "0x6f419aa287338b47c92a1c5685f761dd5b2fa25de598f276234d94d8d39c340b",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 6.44,
+    "shares": 0.0644,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.0644,
+    "shares": 6.44,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.005005,
+    "shares": 5.005,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.999995,
+    "shares": 5.005,
+    "fee": 0.0
+   }
+  ],
+  "event": "Alphabet\u2019s Market Cap end of October 2026?"
+ },
+ {
+  "question": "Will Alphabet\u2019s market capitalization be between $5.00T and $5.50T at the end of",
+  "conditionId": "0xd0583538e477032a1e032c60b245b34a4fd51b378c89b91d05d57e9b12890030",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.00501002004008016,
+  "fills": [
+   {
+    "usdc": 6.44,
+    "shares": 0.07084,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.07084,
+    "shares": 6.44,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.01,
+    "shares": 5.0,
+    "fee": 5e-05
+   },
+   {
+    "usdc": 5.0,
+    "shares": 0.01,
+    "fee": 0.0
+   }
+  ],
+  "event": "Alphabet\u2019s Market Cap end of October 2026?"
+ },
+ {
+  "question": "Will Alphabet\u2019s market capitalization be less than $3.50T at the end of October ",
+  "conditionId": "0x3d10572f415679c055d2f609bfc169aa8844955a923a22fb749c3daaac9dbef0",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 6.44,
+    "shares": 0.05152,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.05152,
+    "shares": 6.44,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.02,
+    "shares": 5.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 4.98,
+    "shares": 5.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "Alphabet\u2019s Market Cap end of October 2026?"
+ },
+ {
+  "question": "Will Alphabet\u2019s market capitalization be at least $6.00T at the end of October 2",
+  "conditionId": "0x7802fb666937289f034802e3e396b84e779c6c9e47422803f297853d0f041b1a",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 6.44,
+    "shares": 0.00644,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.00644,
+    "shares": 6.44,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.0,
+    "shares": 0.02,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.02,
+    "shares": 20.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "Alphabet\u2019s Market Cap end of October 2026?"
+ },
+ {
+  "question": "Will Democrats win exactly 6 House seats in Ohio in the 2026 midterm elections?",
+  "conditionId": "0xd178c9873eaffe93cddae79bfaa63d7fc853cbe81562da216839a4e971367c5c",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 67.0,
+    "shares": 100.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2.8207,
+    "shares": 4.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 34.3893,
+    "shares": 104.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 30.0,
+    "shares": 20.4,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.4,
+    "shares": 30.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "How many House seats will the Democrats win in Ohio?"
+ },
+ {
+  "question": "Will Democrats win fewer than 2 House seats in Ohio in the 2026 midterm election",
+  "conditionId": "0xaf37b86a1ba7faf04b8cc09e3d0b3235909ce9080cc615c174176b2ce0832326",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 20.1,
+    "shares": 0.0402,
+    "fee": 0.0
+   },
+   {
+    "usdc": 12.78,
+    "shares": 0.02556,
+    "fee": 0.0
+   },
+   {
+    "usdc": 71.33,
+    "shares": 0.14266,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.20842,
+    "shares": 104.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.049,
+    "shares": 49.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 49.0,
+    "shares": 0.049,
+    "fee": 0.0
+   }
+  ],
+  "event": "How many House seats will the Democrats win in Ohio?"
+ },
+ {
+  "question": "Will Democrats win exactly 2 House seats in Ohio in the 2026 midterm elections?",
+  "conditionId": "0xe269ccc143831e23d8ad01fcf44644f7482494b9bfc5a27cce3844c648bdfdeb",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 104.21,
+    "shares": 1.14631,
+    "fee": 0.0
+   },
+   {
+    "usdc": 1.14631,
+    "shares": 104.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.049,
+    "shares": 49.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 49.0,
+    "shares": 0.049,
+    "fee": 0.0
+   }
+  ],
+  "event": "How many House seats will the Democrats win in Ohio?"
+ },
+ {
+  "question": "Will Democrats win exactly 3 House seats in Ohio in the 2026 midterm elections?",
+  "conditionId": "0x36607fe8b9e08348816930aae289e624e7e63aabbc7e68392507a26248433a19",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 104.21,
+    "shares": 2.60525,
+    "fee": 0.0
+   },
+   {
+    "usdc": 2.60525,
+    "shares": 104.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 0.72,
+    "shares": 30.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 30.0,
+    "shares": 0.72,
+    "fee": 0.0
+   }
+  ],
+  "event": "How many House seats will the Democrats win in Ohio?"
+ },
+ {
+  "question": "Will Democrats win exactly 4 House seats in Ohio in the 2026 midterm elections?",
+  "conditionId": "0xd5bf8b1d5cd968a8f9d8e352219b6a31e0ea0ec9c34bb0e04f4aab22ec43d5c8",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 2.191,
+    "shares": 21.91,
+    "fee": 0.0
+   },
+   {
+    "usdc": 19.719,
+    "shares": 21.91,
+    "fee": 0.0
+   },
+   {
+    "usdc": 10.68,
+    "shares": 12.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 82.0669,
+    "shares": 92.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 11.4631,
+    "shares": 104.21,
+    "fee": 0.0
+   }
+  ],
+  "event": "How many House seats will the Democrats win in Ohio?"
+ },
+ {
+  "question": "Will Democrats win exactly 5 House seats in Ohio in the 2026 midterm elections?",
+  "conditionId": "0x891a9657557a94b028fcdcc67016ecc9b5c3f09d8646dc8fd3ae13b1dea0943b",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 15.6,
+    "shares": 20.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.0,
+    "shares": 15.6,
+    "fee": 0.0
+   },
+   {
+    "usdc": 50.9,
+    "shares": 10.689,
+    "fee": 0.0
+   },
+   {
+    "usdc": 20.0,
+    "shares": 4.4,
+    "fee": 0.0
+   },
+   {
+    "usdc": 15.6,
+    "shares": 20.0,
+    "fee": 0.0
+   },
+   {
+    "usdc": 10.2487,
+    "shares": 13.31,
+    "fee": 0.0
+   },
+   {
+    "usdc": 22.5503,
+    "shares": 104.21,
+    "fee": 0.0
+   }
+  ],
+  "event": "How many House seats will the Democrats win in Ohio?"
+ },
+ {
+  "question": "Will Democrats win 7 or more House seats in Ohio in the 2026 midterm elections?",
+  "conditionId": "0xd0494c166b850c77dd91d1508d5297b303efad73d428cfe25d95776d52cd9367",
+  "feesEnabled": true,
+  "feeType": "zero_fees",
+  "schedule_rate": 0,
+  "trades": 2,
+  "max_rate": 0.0,
+  "fills": [
+   {
+    "usdc": 104.21,
+    "shares": 31.263,
+    "fee": 0.0
+   },
+   {
+    "usdc": 31.263,
+    "shares": 104.21,
+    "fee": 0.0
+   },
+   {
+    "usdc": 24.0,
+    "shares": 7.2,
+    "fee": 0.0
+   },
+   {
+    "usdc": 7.2,
+    "shares": 24.0,
+    "fee": 0.0
+   }
+  ],
+  "event": "How many House seats will the Democrats win in Ohio?"
  }
 ]

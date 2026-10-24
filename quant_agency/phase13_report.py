@@ -100,10 +100,13 @@ def fee_section(rows: Sequence[dict]) -> List[str]:
         L.append(f"| `{ft}` | {rate:.2f} | {b['markets']} | {b['decoded']} | {b['agree']} | {b['fills']} | {max(b['rates']) if b['rates'] else float('nan'):.4f} |")
     n = sum(b["decoded"] for b in by.values())
     a = sum(b["agree"] for b in by.values())
-    L += ["", f"**{a} of {n} markets were charged exactly their schedule's rate.** Every `zero_fees` market and every fees-disabled market "
-              "paid 0. The one exception is a sports market (schedule 0.05) where one 5-share fill paid 0.128 while its other fills paid 0.05; "
-              "it is unexplained, and does not concern zero-fee markets. The engine prices every leg with its own schedule; §3 still "
-              f"shows each fill re-priced at {STRESS_RATE:.2f} as a stress case.", ""]
+    zero = [f for r in rows if not float(r["schedule_rate"] or 0.0) for f in r["fills"]]
+    dust = max((f["fee"] for f in zero), default=0.0)
+    L += ["", f"**{a} of {n} markets were charged their schedule's rate** (within 0.002). The {len(zero)} fills read in zero-rate markets "
+              f"(`zero_fees` or fees disabled) paid {sum(f['fee'] for f in zero):.5f} USD in total, at most {dust:.5f} USD on one fill: rounding "
+              "(fees are rounded to 5 decimals), not a fee. The other exception is a sports market (schedule 0.05) where one 5-share fill paid "
+              "0.128 while its other fills paid 0.05. It is unexplained, and it is not a zero-fee market. The engine prices every leg with "
+              f"its own schedule. §3 also re-prices each fill at {STRESS_RATE:.2f} as a stress case.", ""]
     return L
 
 

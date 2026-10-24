@@ -1,0 +1,85 @@
+{
+ "stats": {
+  "sweeps": 117.0,
+  "books": 96400,
+  "seen": 64.0,
+  "fills": 5.0,
+  "still_fillable_after_recheck": 5.0,
+  "more_left_after_recheck": 3.0,
+  "sweep_s": 23.50278067588806,
+  "vanished": 2.0,
+  "refused_no_room": 57.0
+ },
+ "events": 7546,
+ "exhaustive": 5818,
+ "positions": [
+  {
+   "pid": 1,
+   "eid": "1075157",
+   "title": "Swiss National Bank decision in December?",
+   "kind": "yes_set",
+   "sets": 25.526911314984712,
+   "capital": 25.0,
+   "payout": 25.526911314984712,
+   "t_open": 1792875902.4354932,
+   "end_ts": 1797033600.0,
+   "status": "open",
+   "pnl": 0.0
+  },
+  {
+   "pid": 2,
+   "eid": "1038912",
+   "title": "GOP's worst Great Plains Senate Race (IA, NE, KS)?",
+   "kind": "yes_set",
+   "sets": 25.22704339051463,
+   "capital": 25.0,
+   "payout": 25.22704339051463,
+   "t_open": 1792876581.2511377,
+   "end_ts": 1793923140.0,
+   "status": "open",
+   "pnl": 0.0
+  },
+  {
+   "pid": 3,
+   "eid": "1140799",
+   "title": "Reserve Bank of Australia Decision in December",
+   "kind": "yes_set",
+   "sets": 25.36285714285714,
+   "capital": 25.0,
+   "payout": 25.36285714285714,
+   "t_open": 1792878056.5589626,
+   "end_ts": 1796947140.0,
+   "status": "open",
+   "pnl": 0.0
+  },
+  {
+   "pid": 4,
+   "eid": "907023",
+   "title": "Alphabet\u2019s Market Cap end of October 2026?",
+   "kind": "yes_set",
+   "sets": 5.07,
+   "capital": 5.04465,
+   "payout": 5.07,
+   "t_open": 1792878174.01234,
+   "end_ts": 1793663940.0,
+   "status": "open",
+   "pnl": 0.0
+  },
+  {
+   "pid": 5,
+   "eid": "833463",
+   "title": "How many House seats will the Democrats win in Ohio?",
+   "kind": "yes_set",
+   "sets": 20.197722672064774,
+   "capital": 19.955349999999996,
+   "payout": 20.197722672064774,
+   "t_open": 1792879295.0592923,
+   "end_ts": 1793941140.0,
+   "status": "open",
+   "pnl": 0.0
+  }
+ ],
+ "deployed": 100.0,
+ "locked_net": 1.384534520421263,
+ "halted": false
+}

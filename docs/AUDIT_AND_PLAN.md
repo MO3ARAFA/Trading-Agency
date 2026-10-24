@@ -63,9 +63,9 @@ pays exactly 1 USDC. The risks are not price direction. They are:
 | 1 | Backtest the payoff assumption on closed NegRisk events, plain vs augmented | realised payout of one YES set and one NO set at the venue's resolution prices | **done**: 48,443 events, see `PHASE13_COMPLETE_SET_ARB.md` §2 |
 | 2 | Engine `complete_set_arb.py`: whole-universe scan via the CLOB batch `/books`, exact depth walk, per-market fee schedule, YES-sets (exhaustive only) and NO-sets | 15 unit tests | done |
 | 3 | Risk manager: ≤ 25 USD per event, ≤ 100 USD deployed, ≤ 8 events, ≤ 60 days of lock-up, minimum annualised return, kill file, halt after repeated data errors | unit tests | done |
-| 4 | Paper executor: wait 0.5 s, re-read every leg, fill only what is still profitable at fresh prices, subtract its own takes, re-read 3 s later as a legging proxy | live paper session, 100 USD | done (1 h) |
+| 4 | Paper executor: wait 0.5 s, re-read every leg, fill only what is still profitable at fresh prices, subtract its own takes, re-read 3 s later as a legging proxy | live paper session, 100 USD | done (1 h): 5 fills, 100 USD deployed, +1.385 USD locked, 5 of 5 still fillable 3 s later |
 | 5 | Fee uncertainty: some fee-enabled markets carry `feeType: zero_fees` (rate 0) although the docs list category rates of 0.04–0.07 | every fill is also priced at a 0.05 stressed rate; `--fee-stress` trades under it | done |
-| 6 | Settlement: mark every paper position to the actual resolution | `--settle RUN_DIR`, re-run after the events resolve | **open**: the first positions resolve 10–50 days after entry |
+| 6 | Settlement: mark every paper position to the actual resolution | `--settle docs/live_runs/phase13/session1`, re-run after the events resolve (≈ 2 Nov – 11 Dec 2026) | **open**: 0 of 5 settled |
 | 7 | Live trading | requires the owner's explicit approval, a dedicated wallet, and steps 6 and 8 passing | **not started, not authorised** |
 | 8 | Before any real order: a measured round trip with ≥ 5 shares on one cheap leg, to confirm the fee charged and the fill latency | manual, with approval | not started |
 
