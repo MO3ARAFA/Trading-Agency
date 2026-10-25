@@ -1,0 +1,256 @@
+{
+ "rows": [
+  {
+   "s": 0.25,
+   "tp": null,
+   "H": 14,
+   "train": {
+    "n": 102,
+    "mean_bps": 201.1,
+    "median_bps": 619.0,
+    "se": 289.8,
+    "t": 0.694,
+    "clusters": 12,
+    "win": 0.569,
+    "stopped": 42,
+    "worst_bps": -4185.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 829.2,
+    "median_bps": 1512.3,
+    "se": 529.7,
+    "t": 1.565,
+    "clusters": 6,
+    "win": 0.592,
+    "stopped": 36,
+    "worst_bps": -4610.3
+   },
+   "qualifies": false
+  },
+  {
+   "s": 0.25,
+   "tp": null,
+   "H": 30,
+   "train": {
+    "n": 102,
+    "mean_bps": 740.6,
+    "median_bps": 1138.4,
+    "se": 339.6,
+    "t": 2.18,
+    "clusters": 12,
+    "win": 0.569,
+    "stopped": 49,
+    "worst_bps": -4185.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 1019.5,
+    "median_bps": 1387.6,
+    "se": 714.8,
+    "t": 1.426,
+    "clusters": 6,
+    "win": 0.551,
+    "stopped": 43,
+    "worst_bps": -4610.3
+   },
+   "qualifies": true
+  },
+  {
+   "s": 0.25,
+   "tp": 0.3,
+   "H": 14,
+   "train": {
+    "n": 102,
+    "mean_bps": 400.1,
+    "median_bps": 1117.2,
+    "se": 241.8,
+    "t": 1.654,
+    "clusters": 12,
+    "win": 0.608,
+    "stopped": 39,
+    "worst_bps": -4185.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 637.6,
+    "median_bps": 2116.0,
+    "se": 369.1,
+    "t": 1.727,
+    "clusters": 6,
+    "win": 0.633,
+    "stopped": 33,
+    "worst_bps": -4610.3
+   },
+   "qualifies": false
+  },
+  {
+   "s": 0.25,
+   "tp": 0.3,
+   "H": 30,
+   "train": {
+    "n": 102,
+    "mean_bps": 662.6,
+    "median_bps": 1776.1,
+    "se": 248.5,
+    "t": 2.667,
+    "clusters": 12,
+    "win": 0.618,
+    "stopped": 42,
+    "worst_bps": -4185.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 699.5,
+    "median_bps": 2338.4,
+    "se": 366.6,
+    "t": 1.908,
+    "clusters": 6,
+    "win": 0.633,
+    "stopped": 36,
+    "worst_bps": -4610.3
+   },
+   "qualifies": true
+  },
+  {
+   "s": 0.35,
+   "tp": null,
+   "H": 14,
+   "train": {
+    "n": 102,
+    "mean_bps": 469.5,
+    "median_bps": 1127.4,
+    "se": 339.8,
+    "t": 1.382,
+    "clusters": 12,
+    "win": 0.647,
+    "stopped": 29,
+    "worst_bps": -5205.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 1104.6,
+    "median_bps": 1944.4,
+    "se": 567.9,
+    "t": 1.945,
+    "clusters": 6,
+    "win": 0.673,
+    "stopped": 24,
+    "worst_bps": -5310.7
+   },
+   "qualifies": false
+  },
+  {
+   "s": 0.35,
+   "tp": null,
+   "H": 30,
+   "train": {
+    "n": 102,
+    "mean_bps": 1157.8,
+    "median_bps": 1945.3,
+    "se": 375.6,
+    "t": 3.082,
+    "clusters": 12,
+    "win": 0.667,
+    "stopped": 35,
+    "worst_bps": -5205.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 1247.7,
+    "median_bps": 1760.0,
+    "se": 805.5,
+    "t": 1.549,
+    "clusters": 6,
+    "win": 0.643,
+    "stopped": 34,
+    "worst_bps": -5849.5
+   },
+   "qualifies": true
+  },
+  {
+   "s": 0.35,
+   "tp": 0.3,
+   "H": 14,
+   "train": {
+    "n": 102,
+    "mean_bps": 698.9,
+    "median_bps": 1413.4,
+    "se": 318.4,
+    "t": 2.195,
+    "clusters": 12,
+    "win": 0.686,
+    "stopped": 27,
+    "worst_bps": -5205.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 908.1,
+    "median_bps": 2391.4,
+    "se": 392.3,
+    "t": 2.315,
+    "clusters": 6,
+    "win": 0.714,
+    "stopped": 21,
+    "worst_bps": -5310.7
+   },
+   "qualifies": true
+  },
+  {
+   "s": 0.35,
+   "tp": 0.3,
+   "H": 30,
+   "train": {
+    "n": 102,
+    "mean_bps": 1076.6,
+    "median_bps": 2190.2,
+    "se": 336.6,
+    "t": 3.198,
+    "clusters": 12,
+    "win": 0.725,
+    "stopped": 29,
+    "worst_bps": -5205.9
+   },
+   "val": {
+    "n": 98,
+    "mean_bps": 896.7,
+    "median_bps": 2492.7,
+    "se": 423.8,
+    "t": 2.116,
+    "clusters": 6,
+    "win": 0.724,
+    "stopped": 27,
+    "worst_bps": -5849.5
+   },
+   "qualifies": true
+  }
+ ],
+ "best": {
+  "s": 0.35,
+  "tp": 0.3,
+  "H": 14,
+  "train": {
+   "n": 102,
+   "mean_bps": 698.9,
+   "median_bps": 1413.4,
+   "se": 318.4,
+   "t": 2.195,
+   "clusters": 12,
+   "win": 0.686,
+   "stopped": 27,
+   "worst_bps": -5205.9
+  },
+  "val": {
+   "n": 98,
+   "mean_bps": 908.1,
+   "median_bps": 2391.4,
+   "se": 392.3,
+   "t": 2.315,
+   "clusters": 6,
+   "win": 0.714,
+   "stopped": 21,
+   "worst_bps": -5310.7
+  },
+  "qualifies": true
+ }
+}

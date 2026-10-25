@@ -1,0 +1,99 @@
+{
+ "kernel": "K1 listing_short_capped",
+ "frozen_utc": "2026-10-25T18:15:40Z",
+ "code_sha256": "f23e45c52ac22fdfcb78f15fb08169486a719e572cc84db42052fdfe9138a68e",
+ "s": 0.35,
+ "tp": 0.3,
+ "H": 14,
+ "train": {
+  "n": 102,
+  "mean_bps": 698.9,
+  "median_bps": 1413.4,
+  "se": 318.4,
+  "t": 2.195,
+  "clusters": 12,
+  "win": 0.686,
+  "stopped": 27,
+  "worst_bps": -5205.9
+ },
+ "val": {
+  "n": 98,
+  "mean_bps": 908.1,
+  "median_bps": 2391.4,
+  "se": 392.3,
+  "t": 2.315,
+  "clusters": 6,
+  "win": 0.714,
+  "stopped": 21,
+  "worst_bps": -5310.7
+ },
+ "screen": [
+  {
+   "s": 0.25,
+   "tp": null,
+   "H": 14,
+   "qualifies": false,
+   "train_t": 0.694,
+   "val_t": 1.565
+  },
+  {
+   "s": 0.25,
+   "tp": null,
+   "H": 30,
+   "qualifies": true,
+   "train_t": 2.18,
+   "val_t": 1.426
+  },
+  {
+   "s": 0.25,
+   "tp": 0.3,
+   "H": 14,
+   "qualifies": false,
+   "train_t": 1.654,
+   "val_t": 1.727
+  },
+  {
+   "s": 0.25,
+   "tp": 0.3,
+   "H": 30,
+   "qualifies": true,
+   "train_t": 2.667,
+   "val_t": 1.908
+  },
+  {
+   "s": 0.35,
+   "tp": null,
+   "H": 14,
+   "qualifies": false,
+   "train_t": 1.382,
+   "val_t": 1.945
+  },
+  {
+   "s": 0.35,
+   "tp": null,
+   "H": 30,
+   "qualifies": true,
+   "train_t": 3.082,
+   "val_t": 1.549
+  },
+  {
+   "s": 0.35,
+   "tp": 0.3,
+   "H": 14,
+   "qualifies": true,
+   "train_t": 2.195,
+   "val_t": 2.315
+  },
+  {
+   "s": 0.35,
+   "tp": 0.3,
+   "H": 30,
+   "qualifies": true,
+   "train_t": 3.198,
+   "val_t": 2.116
+  }
+ ],
+ "oos": "entries 2025-07-01..2026-09-30 (minus H days of data at the end)",
+ "pass_rule": "OOS mean net > 0 with month-clustered t > 2.5 AND 100 USD account (risk 1.5% of equity per trade at the stop) ends > 100",
+ "disclosure": "The OOS window was already used by F5 (uncapped, entry day+1) and Track 2 (stops, entry day+1). Only the exhaustion trigger is new; 8 configurations screened."
+}
