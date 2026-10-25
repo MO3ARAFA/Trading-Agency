@@ -1,0 +1,16 @@
+{
+ "kernel": "K3 fast_arb_scanner",
+ "frozen_utc": "2026-10-25T18:21:55Z",
+ "code_sha256": {
+  "quant_agency/fast_arb_scanner.py": "582a3c5d21a12509ec3847afa35ee474beb8f0405093b94b78e035ad7e409897",
+  "quant_agency/complete_set_arb.py": "d1e09f1f6fb22a09dc5ab8af3fac56e1896f89cc0d21812384a2821926b60ffa",
+  "quant_agency/bracket_arb.py": "ff76b12877646fb72acfa05aff859270040ff1d93f9cdddcdce0ceeb5f92a483"
+ },
+ "session": "one live paper session, 2700 s, 100 USD bankroll (complete_set_arb defaults)",
+ "measures": [
+  "sets bought and their locked net after fees",
+  "per set: first time selling back at the bids (conservative 5% fee factor) beats the capital paid",
+  "date-ladder pairs costing < 1.00 after fees, scan every 300 s"
+ ],
+ "pass_rule": "K3 is a sleeve only if locked net > 0 AND either >= 1 set becomes unwindable in-session or >= 1 monotonicity pair < 1.00 is found; its yield is reported as measured (no extrapolation)"
+}
