@@ -1,0 +1,116 @@
+{
+ "phase": "15T2",
+ "created": "2026-10-25",
+ "rule": "short new Binance perp at listing day+1 open, long equal BTC, hold 30 d, isolated stop at entry x (1+s) with 1% slippage, 20 bps/leg cost + funding",
+ "stop_s": 2.0,
+ "selection": "s chosen among [0.25,0.5,1.0,2.0] by pooled mean net on 2024-01..2025-06 entries (positive in both halves required)",
+ "selection_rows": [
+  {
+   "s": 0.25,
+   "a": {
+    "n": 131,
+    "mean_bps": 386.9,
+    "median_bps": -572.7,
+    "se": 286.3,
+    "t": 1.351,
+    "clusters": 12,
+    "win": 0.473,
+    "stopped": 73,
+    "worst_bps": -3774.8
+   },
+   "b": {
+    "n": 113,
+    "mean_bps": 887.9,
+    "median_bps": -31.0,
+    "se": 522.9,
+    "t": 1.698,
+    "clusters": 6,
+    "win": 0.496,
+    "stopped": 53,
+    "worst_bps": -4710.9
+   }
+  },
+  {
+   "s": 0.5,
+   "a": {
+    "n": 131,
+    "mean_bps": 540.4,
+    "median_bps": 1838.4,
+    "se": 306.4,
+    "t": 1.763,
+    "clusters": 12,
+    "win": 0.626,
+    "stopped": 46,
+    "worst_bps": -7124.9
+   },
+   "b": {
+    "n": 113,
+    "mean_bps": 1226.0,
+    "median_bps": 2346.8,
+    "se": 782.5,
+    "t": 1.567,
+    "clusters": 6,
+    "win": 0.637,
+    "stopped": 34,
+    "worst_bps": -8750.3
+   }
+  },
+  {
+   "s": 1.0,
+   "a": {
+    "n": 131,
+    "mean_bps": 414.4,
+    "median_bps": 2125.2,
+    "se": 369.5,
+    "t": 1.122,
+    "clusters": 12,
+    "win": 0.679,
+    "stopped": 20,
+    "worst_bps": -11857.9
+   },
+   "b": {
+    "n": 113,
+    "mean_bps": 1732.2,
+    "median_bps": 2725.0,
+    "se": 703.7,
+    "t": 2.462,
+    "clusters": 6,
+    "win": 0.743,
+    "stopped": 13,
+    "worst_bps": -11807.4
+   }
+  },
+  {
+   "s": 2.0,
+   "a": {
+    "n": 131,
+    "mean_bps": 507.7,
+    "median_bps": 2138.8,
+    "se": 405.1,
+    "t": 1.253,
+    "clusters": 12,
+    "win": 0.702,
+    "stopped": 7,
+    "worst_bps": -22976.0
+   },
+   "b": {
+    "n": 113,
+    "mean_bps": 2152.3,
+    "median_bps": 3108.9,
+    "se": 611.7,
+    "t": 3.519,
+    "clusters": 6,
+    "win": 0.77,
+    "stopped": 3,
+    "worst_bps": -21749.3
+   }
+  }
+ ],
+ "oos": {
+  "A": "entries 2023-03..2023-12 (never touched)",
+  "B": "2025-07..2026-09 (already used by uncapped F5: secondary)"
+ },
+ "pass_rule": "OOS-A mean net > 0 with month-clustered t > 2.5 AND the 100 USD account (1.5 % of equity risked to the stop per trade) ends above 100 in OOS-A",
+ "code_sha256": "ef9a898371e93cd1f7c04f0c5c207cba5e08d411c5088f42cb463b4397ad722c",
+ "sha256": "9c9be88d721a035957c55056d8022b922756019f3b3d5e141b4a8c4df4e8724b"
+}
