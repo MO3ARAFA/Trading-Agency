@@ -64,7 +64,7 @@ def run_section(r: dict, label: str) -> List[str]:
     if mp:
         L += ["| sleeve × fill model | n | net (USD) | mean (USD) |", "|---|---|---|---|"]
         for k, v in sorted(mp.items()):
-            L.append(f"| {k} | {v['n']} | {v['sum_usd']:+.4f} | {v['mean_usd']:+.4f} |")
+            L.append(f"| {k.replace('|', ' × ')} | {v['n']} | {v['sum_usd']:+.4f} | {v['mean_usd']:+.4f} |")
         L.append("")
     gov = s.get("gov_events") or []
     L += ["Governance: " + ("; ".join(f"{g['sleeve']} {g['kind']} ({g['reason'][:70]})" for g in gov[:8]) if gov else "no breaker fired."), ""]

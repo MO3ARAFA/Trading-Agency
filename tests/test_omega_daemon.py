@@ -80,3 +80,15 @@ def test_engine_state_is_bounded_over_synthetic_hours():
         assert second <= max(1.3 * first, first + 50), f"{k}: peak {first} in hour 1-2 -> {second} in hour 2-3"
     assert max(s["audit"] for s in samples) < eng.cfg.audit_cap and max(s["seen"] for s in samples) <= eng.social.dedup
     assert max(s["tweets_held"] for s in samples) <= eng.social.max_symbols * 1000
+
+
+def test_signal_study_scores_signals_on_a_tape(tmp_path):
+    from quant_agency.omega_signal_study import study
+    from quant_agency.omega_synth import write_tape
+    mk = SynthMarket(seed=5, create_rate=1.0, n_pairs=0)
+    p = str(tmp_path / "t.jsonl.gz")
+    write_tape(p, mk.events(900))
+    r = study([p])
+    assert r["signals"] > 0 and r["round_trip_cost"] == pytest.approx(2 * 0.0125 + 2 * 0.000105 * 180.0 / 5.0)
+    h = r["horizons"]["30"]
+    assert h["n"] > 0 and h["net_mean"] == pytest.approx(h["gross_mean"] - r["round_trip_cost"], abs=1e-5)

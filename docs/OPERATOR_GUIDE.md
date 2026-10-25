@@ -155,6 +155,35 @@ in writing. The first real trade is one set of ≥ 5 shares on one event, bought
 thinnest leg; if any leg fails, the filled legs are sold back and the loss is recorded. Never buy a YES set on an augmented event
 (placeholders / "Other") or on a family listed in `CsaConfig.yes_set_exclude`.
 
+## 6e. Omega meme / micro-cap engine (paper, 24/7)
+
+Read `docs/OMEGA_MEME_ENGINE.md` first: it has the cost table and the live result. Paper only: there is no signing code and no key.
+
+```bash
+python -m pytest tests -q                                                          # must be green
+python -m quant_agency.omega_daemon --continuous --out runs/omega                  # live, runs until SIGTERM
+python -m quant_agency.omega_daemon --continuous --duration 3600 --record          # one hour, tape recorded
+python -m quant_agency.omega_daemon --continuous --resume runs/omega/<run>/omega_state.json   # restart from the warm state
+python -m quant_agency.omega_daemon --synthetic --duration 900 --speed 1 --density 4 --record # 15-min smoke test (~550 fills/h)
+python -m quant_agency.omega_daemon --replay runs/omega/<run>/tape.jsonl.gz --speed 0          # exact re-run of a recorded session
+python -m quant_agency.omega_report --runs runs/omega/<run> --out report.md
+touch runs/omega/KILL                                                              # halts every sleeve at the next review (5 s)
+export X_BEARER_TOKEN=...                                                          # optional: official X API v2; enables social_sentiment
+```
+
+Outbound access (no keys): `wss://api.mainnet-beta.solana.com` (pump.fun program logs), `api.mainnet-beta.solana.com` /
+`solana-rpc.publicnode.com` (mint accounts), `api.rugcheck.xyz` (holders, risk flags), `api.gateio.ws` (REST + websocket),
+`api.dexscreener.com`. Not usable from here: Binance (HTTP 451), PumpPortal trades (needs a funded key), X without a token.
+
+Per run directory: `omega_audit.jsonl` (orders, fills, closes, failed transactions, governance, errors; appended every 5 min),
+`omega_state.json` (warm state, every 60 s), `omega_status.jsonl` (every 30 s: equity, fills/h, sleeves, RSS, feed counters),
+`omega_summary.json` (at exit), `tape.jsonl.gz` (with `--record`; rotated at 500 MB compressed).
+
+Breakers: a sleeve whose equity falls 5 USD below its peak within a rolling hour is quarantined. Its positions are closed and it stays
+flat for 30 min, then resumes on probation at half size (a 2.5 USD breach then quarantines it again, for twice as long). The account
+halts at −20 USD. Fills are capped at 1,000 per rolling hour. Run it under a supervisor (systemd `Restart=always`) with `--resume`: the
+daemon exits when a feed task dies instead of hanging.
+
 ## 7. Troubleshooting
 
 | symptom | likely cause / action |

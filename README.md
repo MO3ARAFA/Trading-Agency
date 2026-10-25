@@ -66,6 +66,15 @@ python -m quant_agency.run_live --sim --duration 300 --fee-bps 0
 ```
 Each run writes `runs/<tag>_<ts>/` with `report.md`, `summary.json`, `signals.jsonl`, `payloads.jsonl`, `trades.jsonl`, `ceo_audit.jsonl`, `config.json`.
 
+## Omega — 24/7 meme / micro-cap paper engine
+Live pump.fun trade prints decoded from the public Solana RPC, Gate meme pairs, a safety gate (mint/freeze authority, holder
+concentration, RugCheck flags), X sentiment (official API only), a 100 USD account in three isolated sleeves with an hourly-drawdown
+quarantine, up to 1,000 paper fills an hour. Design, costs and the live result: **[docs/OMEGA_MEME_ENGINE.md](docs/OMEGA_MEME_ENGINE.md)**;
+operation: `docs/OPERATOR_GUIDE.md` §6e.
+```bash
+python -m quant_agency.omega_daemon --continuous --out runs/omega        # paper only
+```
+
 ## Phase 13 — complete-set arbitrage (start here)
 Why Phases 1–12 never made money, and the plan: **[docs/AUDIT_AND_PLAN.md](docs/AUDIT_AND_PLAN.md)**. The forecast-free strategy that
 replaced them (Polymarket NegRisk complete sets: payoff backtest on 48k closed events, on-chain fee audit, live paper sessions with a

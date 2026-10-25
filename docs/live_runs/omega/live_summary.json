@@ -1,0 +1,882 @@
+{
+ "status": {
+  "elapsed_s": 3600.1,
+  "equity": 93.8293,
+  "halted": false,
+  "fills": 74,
+  "fills_per_hour": 74.0,
+  "open": 0,
+  "pending": 0,
+  "tokens": 1998,
+  "prints": 177577,
+  "sleeves": {
+   "meme_momentum": [
+    "PROBATION",
+    34.758,
+    13
+   ],
+   "social_sentiment": [
+    "NORMAL",
+    30.0,
+    0
+   ],
+   "breakout_scalp": [
+    "NORMAL",
+    29.0713,
+    24
+   ]
+  }
+ },
+ "ceo": {
+  "equity": 93.8293,
+  "halted": false,
+  "halt_reason": "",
+  "sleeves": [
+   {
+    "sleeve": "meme_momentum",
+    "state": "PROBATION",
+    "capital": 40.0,
+    "equity": 34.758,
+    "cash": 34.758,
+    "realised": -5.242,
+    "fees": 1.3375,
+    "fills": 26,
+    "round_trips": 13,
+    "win_rate": 0.154,
+    "open": 0,
+    "quarantines": 1,
+    "hourly_dd": 0.3629
+   },
+   {
+    "sleeve": "social_sentiment",
+    "state": "NORMAL",
+    "capital": 30.0,
+    "equity": 30.0,
+    "cash": 30.0,
+    "realised": 0.0,
+    "fees": 0.0,
+    "fills": 0,
+    "round_trips": 0,
+    "win_rate": null,
+    "open": 0,
+    "quarantines": 0,
+    "hourly_dd": 0.0
+   },
+   {
+    "sleeve": "breakout_scalp",
+    "state": "NORMAL",
+    "capital": 30.0,
+    "equity": 29.0713,
+    "cash": 29.0713,
+    "realised": -0.9287,
+    "fees": 0.4754,
+    "fills": 48,
+    "round_trips": 24,
+    "win_rate": 0.208,
+    "open": 0,
+    "quarantines": 0,
+    "hourly_dd": 0.6009
+   }
+  ],
+  "events": 2
+ },
+ "stats": {
+  "creates": 1722,
+  "prints": 177577,
+  "quotes": 396906,
+  "signal_momentum": 178,
+  "safety_requested": 62,
+  "safety_rejected_eval": 64,
+  "signal_breakout": 32,
+  "orders": 45,
+  "passive_expired": 8,
+  "fills": 74,
+  "opens": 37,
+  "closes": 37,
+  "audit_rows_flushed": 188,
+  "skip_meme_momentum_state": 36,
+  "shadow_fill_only_depletion": 4
+ },
+ "model_pnl": {
+  "meme_momentum|primary": {
+   "sum_usd": -5.24204,
+   "n": 13,
+   "mean_usd": -0.40323
+  },
+  "meme_momentum|adverse": {
+   "sum_usd": -5.24204,
+   "n": 13,
+   "mean_usd": -0.40323
+  },
+  "meme_momentum|adverse_exit": {
+   "sum_usd": -4.14759,
+   "n": 5,
+   "mean_usd": -0.82952
+  },
+  "breakout_scalp|primary": {
+   "sum_usd": -0.92868,
+   "n": 24,
+   "mean_usd": -0.03869
+  },
+  "breakout_scalp|depletion": {
+   "sum_usd": -0.74538,
+   "n": 16,
+   "mean_usd": -0.04659
+  },
+  "breakout_scalp|strict": {
+   "sum_usd": -0.17732,
+   "n": 6,
+   "mean_usd": -0.02955
+  }
+ },
+ "recent_round_trips": [
+  {
+   "pid": 4,
+   "sleeve": "meme_momentum",
+   "key": "pF2uA5GuPJVVKHX9H1wMJzQ9hKmoncPF3usTEkTpump",
+   "venue": "pump",
+   "reason_in": "burst 14 prints / 12 traders, net 3.97 SOL, ret +5.8%, accel 2.1x",
+   "reason_out": "sell_pressure",
+   "hold_s": 10.5,
+   "cost_usd": 5.0,
+   "got_usd": 4.84676,
+   "pnl_usd": -0.15324,
+   "ret": -0.03065,
+   "fees_usd": 0.14441,
+   "models": {
+    "primary": -0.15324,
+    "adverse": -0.15324,
+    "adverse_exit": -0.15324
+   }
+  },
+  {
+   "pid": 7,
+   "sleeve": "meme_momentum",
+   "key": "GPieo9s4rz6ungQnsqyiUrznqDypMgrNXmFSDM2vpump",
+   "venue": "pump",
+   "reason_in": "burst 9 prints / 7 traders, net 4.80 SOL, ret +17.0%, accel 3.6x",
+   "reason_out": "stop",
+   "hold_s": 62.08,
+   "cost_usd": 5.0,
+   "got_usd": 4.44167,
+   "pnl_usd": -0.55833,
+   "ret": -0.11167,
+   "fees_usd": 0.13929,
+   "models": {
+    "primary": -0.55833,
+    "adverse": -0.55833
+   }
+  },
+  {
+   "pid": 10,
+   "sleeve": "meme_momentum",
+   "key": "pF2uA5GuPJVVKHX9H1wMJzQ9hKmoncPF3usTEkTpump",
+   "venue": "pump",
+   "reason_in": "burst 9 prints / 9 traders, net 4.16 SOL, ret +16.4%, accel 2.0x",
+   "reason_out": "sell_pressure",
+   "hold_s": 26.51,
+   "cost_usd": 5.0,
+   "got_usd": 1.28546,
+   "pnl_usd": -3.71454,
+   "ret": -0.74291,
+   "fees_usd": 0.09933,
+   "models": {
+    "primary": -3.71454,
+    "adverse": -3.71454,
+    "adverse_exit": -3.71454
+   }
+  },
+  {
+   "pid": 13,
+   "sleeve": "meme_momentum",
+   "key": "GPieo9s4rz6ungQnsqyiUrznqDypMgrNXmFSDM2vpump",
+   "venue": "pump",
+   "reason_in": "burst 9 prints / 9 traders, net 6.74 SOL, ret +5.5%, accel 2.3x",
+   "reason_out": "sell_pressure",
+   "hold_s": 7.0,
+   "cost_usd": 5.0,
+   "got_usd": 4.48688,
+   "pnl_usd": -0.51312,
+   "ret": -0.10262,
+   "fees_usd": 0.13986,
+   "models": {
+    "primary": -0.51312,
+    "adverse": -0.51312,
+    "adverse_exit": -0.51312
+   }
+  },
+  {
+   "pid": 16,
+   "sleeve": "meme_momentum",
+   "key": "33WLuy4pMFbKdDVP6aRMi4jjvJzau3PknKAMf3hGpump",
+   "venue": "pump",
+   "reason_in": "burst 15 prints / 13 traders, net 4.41 SOL, ret +19.8%, accel 2.6x",
+   "reason_out": "governance_flatten",
+   "hold_s": 4.0,
+   "cost_usd": 5.0,
+   "got_usd": 4.8847,
+   "pnl_usd": -0.1153,
+   "ret": -0.02306,
+   "fees_usd": 0.14489,
+   "models": {
+    "primary": -0.1153,
+    "adverse": -0.1153
+   }
+  },
+  {
+   "pid": 19,
+   "sleeve": "breakout_scalp",
+   "key": "ORDER_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.42% over 120s high, buy share 60%",
+   "reason_out": "stop",
+   "hold_s": 32.81,
+   "cost_usd": 4.99973,
+   "got_usd": 4.95137,
+   "pnl_usd": -0.04837,
+   "ret": -0.00967,
+   "fees_usd": 0.0199,
+   "models": {
+    "primary": -0.04837,
+    "strict": null,
+    "depletion": -0.04837
+   }
+  },
+  {
+   "pid": 25,
+   "sleeve": "breakout_scalp",
+   "key": "ORDER_USDT",
+   "venue": "gate",
+   "reason_in": "break +1.24% over 120s high, buy share 82%",
+   "reason_out": "stop",
+   "hold_s": 18.62,
+   "cost_usd": 4.99999,
+   "got_usd": 4.92702,
+   "pnl_usd": -0.07297,
+   "ret": -0.01459,
+   "fees_usd": 0.01985,
+   "models": {
+    "primary": -0.07297,
+    "strict": null,
+    "depletion": -0.07297
+   }
+  },
+  {
+   "pid": 28,
+   "sleeve": "breakout_scalp",
+   "key": "ORDER_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.77% over 120s high, buy share 61%",
+   "reason_out": "stop",
+   "hold_s": 9.13,
+   "cost_usd": 4.99984,
+   "got_usd": 4.94126,
+   "pnl_usd": -0.05857,
+   "ret": -0.01172,
+   "fees_usd": 0.01988,
+   "models": {
+    "primary": -0.05857,
+    "strict": null,
+    "depletion": -0.05857
+   }
+  },
+  {
+   "pid": 33,
+   "sleeve": "breakout_scalp",
+   "key": "BMT_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.42% over 120s high, buy share 70%",
+   "reason_out": "stop",
+   "hold_s": 10.09,
+   "cost_usd": 4.99969,
+   "got_usd": 4.94849,
+   "pnl_usd": -0.0512,
+   "ret": -0.01024,
+   "fees_usd": 0.0199,
+   "models": {
+    "primary": -0.0512,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 31,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.38% over 120s high, buy share 87%",
+   "reason_out": "stop",
+   "hold_s": 91.0,
+   "cost_usd": 4.99192,
+   "got_usd": 4.94138,
+   "pnl_usd": -0.05055,
+   "ret": -0.01013,
+   "fees_usd": 0.01987,
+   "models": {
+    "primary": -0.05055,
+    "strict": -0.05055,
+    "depletion": -0.05055
+   }
+  },
+  {
+   "pid": 37,
+   "sleeve": "breakout_scalp",
+   "key": "ORDER_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.53% over 120s high, buy share 76%",
+   "reason_out": "stop",
+   "hold_s": 1.38,
+   "cost_usd": 4.99991,
+   "got_usd": 4.95375,
+   "pnl_usd": -0.04615,
+   "ret": -0.00923,
+   "fees_usd": 0.01991,
+   "models": {
+    "primary": -0.04615,
+    "strict": -0.04615,
+    "depletion": -0.04615
+   }
+  },
+  {
+   "pid": 42,
+   "sleeve": "breakout_scalp",
+   "key": "BMT_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.46% over 120s high, buy share 89%",
+   "reason_out": "stop",
+   "hold_s": 27.9,
+   "cost_usd": 4.99989,
+   "got_usd": 4.95124,
+   "pnl_usd": -0.04865,
+   "ret": -0.00973,
+   "fees_usd": 0.0199,
+   "models": {
+    "primary": -0.04865,
+    "strict": -0.04865,
+    "depletion": -0.04865
+   }
+  },
+  {
+   "pid": 45,
+   "sleeve": "breakout_scalp",
+   "key": "ORDER_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.30% over 120s high, buy share 85%",
+   "reason_out": "stop",
+   "hold_s": 3.52,
+   "cost_usd": 4.99954,
+   "got_usd": 4.94955,
+   "pnl_usd": -0.04999,
+   "ret": -0.01,
+   "fees_usd": 0.0199,
+   "models": {
+    "primary": -0.04999,
+    "strict": null,
+    "depletion": -0.04999
+   }
+  },
+  {
+   "pid": 48,
+   "sleeve": "meme_momentum",
+   "key": "AszTBh6mxDnJPGUB3Nnf8Tcsd57arCjbVLeqGxoEpump",
+   "venue": "pump",
+   "reason_in": "burst 9 prints / 7 traders, net 2.72 SOL, ret +9.5%, accel 3.2x",
+   "reason_out": "trail",
+   "hold_s": 56.6,
+   "cost_usd": 2.5,
+   "got_usd": 2.43859,
+   "pnl_usd": -0.06141,
+   "ret": -0.02456,
+   "fees_usd": 0.08323,
+   "models": {
+    "primary": -0.06141,
+    "adverse": -0.06141,
+    "adverse_exit": -0.06141
+   }
+  },
+  {
+   "pid": 51,
+   "sleeve": "meme_momentum",
+   "key": "EqRZn9nH4UPb36AVLuigzRfufa1z8b744vWpt5tjpump",
+   "venue": "pump",
+   "reason_in": "burst 11 prints / 11 traders, net 3.62 SOL, ret +11.6%, accel 3.9x",
+   "reason_out": "time_stop",
+   "hold_s": 91.09,
+   "cost_usd": 2.5,
+   "got_usd": 2.40453,
+   "pnl_usd": -0.09547,
+   "ret": -0.03819,
+   "fees_usd": 0.08281,
+   "models": {
+    "primary": -0.09547,
+    "adverse": -0.09547
+   }
+  },
+  {
+   "pid": 54,
+   "sleeve": "meme_momentum",
+   "key": "33WLuy4pMFbKdDVP6aRMi4jjvJzau3PknKAMf3hGpump",
+   "venue": "pump",
+   "reason_in": "burst 8 prints / 7 traders, net 3.01 SOL, ret +11.2%, accel 3.3x",
+   "reason_out": "sell_pressure",
+   "hold_s": 23.52,
+   "cost_usd": 2.5,
+   "got_usd": 2.33874,
+   "pnl_usd": -0.16126,
+   "ret": -0.0645,
+   "fees_usd": 0.08198,
+   "models": {
+    "primary": -0.16126,
+    "adverse": -0.16126
+   }
+  },
+  {
+   "pid": 59,
+   "sleeve": "meme_momentum",
+   "key": "Eez2VqN8FqLq5LPmW4DzBAk6FgkGGxGPFkV9q1nKpump",
+   "venue": "pump",
+   "reason_in": "burst 8 prints / 8 traders, net 5.18 SOL, ret +12.5%, accel 3.0x",
+   "reason_out": "take_profit",
+   "hold_s": 21.52,
+   "cost_usd": 2.5,
+   "got_usd": 2.79472,
+   "pnl_usd": 0.29472,
+   "ret": 0.11789,
+   "fees_usd": 0.08775,
+   "models": {
+    "primary": 0.29472,
+    "adverse": 0.29472,
+    "adverse_exit": 0.29472
+   }
+  },
+  {
+   "pid": 62,
+   "sleeve": "meme_momentum",
+   "key": "Eez2VqN8FqLq5LPmW4DzBAk6FgkGGxGPFkV9q1nKpump",
+   "venue": "pump",
+   "reason_in": "burst 31 prints / 24 traders, net 11.89 SOL, ret +12.8%, accel 3.8x",
+   "reason_out": "sell_pressure",
+   "hold_s": 18.87,
+   "cost_usd": 2.5,
+   "got_usd": 2.26289,
+   "pnl_usd": -0.23711,
+   "ret": -0.09484,
+   "fees_usd": 0.08102,
+   "models": {
+    "primary": -0.23711,
+    "adverse": -0.23711
+   }
+  },
+  {
+   "pid": 57,
+   "sleeve": "meme_momentum",
+   "key": "B4dJMry4HngDVvoCFX38xjMDMGc97w31YpqEvzqhfdqj",
+   "venue": "pump",
+   "reason_in": "burst 9 prints / 7 traders, net 3.44 SOL, ret +14.6%, accel 2.9x",
+   "reason_out": "time_stop",
+   "hold_s": 91.07,
+   "cost_usd": 2.5,
+   "got_usd": 2.25916,
+   "pnl_usd": -0.24084,
+   "ret": -0.09634,
+   "fees_usd": 0.08097,
+   "models": {
+    "primary": -0.24084,
+    "adverse": -0.24084
+   }
+  },
+  {
+   "pid": 66,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.60% over 120s high, buy share 77%",
+   "reason_out": "trail",
+   "hold_s": 6.98,
+   "cost_usd": 4.99396,
+   "got_usd": 4.99817,
+   "pnl_usd": 0.00422,
+   "ret": 0.00084,
+   "fees_usd": 0.01998,
+   "models": {
+    "primary": 0.00422,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 69,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.73% over 120s high, buy share 65%",
+   "reason_out": "trail",
+   "hold_s": 3.81,
+   "cost_usd": 4.98773,
+   "got_usd": 5.00226,
+   "pnl_usd": 0.01453,
+   "ret": 0.00291,
+   "fees_usd": 0.01998,
+   "models": {
+    "primary": 0.01453,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 72,
+   "sleeve": "breakout_scalp",
+   "key": "ORDER_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.56% over 120s high, buy share 89%",
+   "reason_out": "take_profit",
+   "hold_s": 0.95,
+   "cost_usd": 4.99964,
+   "got_usd": 4.98599,
+   "pnl_usd": -0.01365,
+   "ret": -0.00273,
+   "fees_usd": 0.01997,
+   "models": {
+    "primary": -0.01365,
+    "strict": -0.01365,
+    "depletion": -0.01365
+   }
+  },
+  {
+   "pid": 79,
+   "sleeve": "breakout_scalp",
+   "key": "LIGHT_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.45% over 120s high, buy share 84%",
+   "reason_out": "take_profit",
+   "hold_s": 14.2,
+   "cost_usd": 4.73941,
+   "got_usd": 4.74893,
+   "pnl_usd": 0.00952,
+   "ret": 0.00201,
+   "fees_usd": 0.01898,
+   "models": {
+    "primary": 0.00952,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 81,
+   "sleeve": "breakout_scalp",
+   "key": "ORDER_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.49% over 120s high, buy share 69%",
+   "reason_out": "stop",
+   "hold_s": 2.41,
+   "cost_usd": 4.99946,
+   "got_usd": 4.93764,
+   "pnl_usd": -0.06182,
+   "ret": -0.01237,
+   "fees_usd": 0.01987,
+   "models": {
+    "primary": -0.06182,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 75,
+   "sleeve": "meme_momentum",
+   "key": "AszTBh6mxDnJPGUB3Nnf8Tcsd57arCjbVLeqGxoEpump",
+   "venue": "pump",
+   "reason_in": "burst 10 prints / 10 traders, net 2.49 SOL, ret +12.9%, accel 3.6x",
+   "reason_out": "take_profit",
+   "hold_s": 73.09,
+   "cost_usd": 2.5,
+   "got_usd": 2.99166,
+   "pnl_usd": 0.49166,
+   "ret": 0.19666,
+   "fees_usd": 0.09022,
+   "models": {
+    "primary": 0.49166,
+    "adverse": 0.49166
+   }
+  },
+  {
+   "pid": 77,
+   "sleeve": "meme_momentum",
+   "key": "Eez2VqN8FqLq5LPmW4DzBAk6FgkGGxGPFkV9q1nKpump",
+   "venue": "pump",
+   "reason_in": "burst 9 prints / 9 traders, net 4.49 SOL, ret +8.9%, accel 3.1x",
+   "reason_out": "sell_pressure",
+   "hold_s": 42.55,
+   "cost_usd": 2.5,
+   "got_usd": 2.32219,
+   "pnl_usd": -0.17781,
+   "ret": -0.07112,
+   "fees_usd": 0.08174,
+   "models": {
+    "primary": -0.17781,
+    "adverse": -0.17781
+   }
+  },
+  {
+   "pid": 87,
+   "sleeve": "breakout_scalp",
+   "key": "BMT_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.84% over 120s high, buy share 62%",
+   "reason_out": "stop",
+   "hold_s": 2.0,
+   "cost_usd": 4.99994,
+   "got_usd": 4.94694,
+   "pnl_usd": -0.05301,
+   "ret": -0.0106,
+   "fees_usd": 0.01989,
+   "models": {
+    "primary": -0.05301,
+    "strict": null,
+    "depletion": -0.05301
+   }
+  },
+  {
+   "pid": 89,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.33% over 120s high, buy share 64%",
+   "reason_out": "stop",
+   "hold_s": 17.89,
+   "cost_usd": 4.98365,
+   "got_usd": 4.90958,
+   "pnl_usd": -0.07407,
+   "ret": -0.01486,
+   "fees_usd": 0.01979,
+   "models": {
+    "primary": -0.07407,
+    "strict": null,
+    "depletion": -0.07407
+   }
+  },
+  {
+   "pid": 96,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.54% over 120s high, buy share 62%",
+   "reason_out": "stop",
+   "hold_s": 0.17,
+   "cost_usd": 4.96892,
+   "got_usd": 4.90812,
+   "pnl_usd": -0.06079,
+   "ret": -0.01223,
+   "fees_usd": 0.01975,
+   "models": {
+    "primary": -0.06079,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 94,
+   "sleeve": "breakout_scalp",
+   "key": "LIGHT_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.59% over 120s high, buy share 66%",
+   "reason_out": "stop",
+   "hold_s": 17.14,
+   "cost_usd": 4.78721,
+   "got_usd": 4.73546,
+   "pnl_usd": -0.05175,
+   "ret": -0.01081,
+   "fees_usd": 0.01905,
+   "models": {
+    "primary": -0.05175,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 100,
+   "sleeve": "breakout_scalp",
+   "key": "MEZO_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.43% over 120s high, buy share 67%",
+   "reason_out": "stop",
+   "hold_s": 0.28,
+   "cost_usd": 4.99763,
+   "got_usd": 4.94358,
+   "pnl_usd": -0.05404,
+   "ret": -0.01081,
+   "fees_usd": 0.01988,
+   "models": {
+    "primary": -0.05404,
+    "strict": null,
+    "depletion": -0.05404
+   }
+  },
+  {
+   "pid": 104,
+   "sleeve": "breakout_scalp",
+   "key": "MEZO_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.56% over 120s high, buy share 86%",
+   "reason_out": "stop",
+   "hold_s": 0.18,
+   "cost_usd": 4.99844,
+   "got_usd": 5.01244,
+   "pnl_usd": 0.014,
+   "ret": 0.0028,
+   "fees_usd": 0.02002,
+   "models": {
+    "primary": 0.014,
+    "strict": null,
+    "depletion": null
+   }
+  },
+  {
+   "pid": 107,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +1.00% over 120s high, buy share 73%",
+   "reason_out": "take_profit",
+   "hold_s": 5.2,
+   "cost_usd": 4.98831,
+   "got_usd": 5.02004,
+   "pnl_usd": 0.03173,
+   "ret": 0.00636,
+   "fees_usd": 0.02002,
+   "models": {
+    "primary": 0.03173,
+    "strict": 0.03173,
+    "depletion": 0.03173
+   }
+  },
+  {
+   "pid": 110,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.50% over 120s high, buy share 73%",
+   "reason_out": "stop",
+   "hold_s": 4.24,
+   "cost_usd": 4.97826,
+   "got_usd": 4.9282,
+   "pnl_usd": -0.05005,
+   "ret": -0.01005,
+   "fees_usd": 0.01981,
+   "models": {
+    "primary": -0.05005,
+    "strict": -0.05005,
+    "depletion": -0.05005
+   }
+  },
+  {
+   "pid": 113,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.43% over 120s high, buy share 77%",
+   "reason_out": "stop",
+   "hold_s": 0.82,
+   "cost_usd": 4.96942,
+   "got_usd": 4.93109,
+   "pnl_usd": -0.03833,
+   "ret": -0.00771,
+   "fees_usd": 0.0198,
+   "models": {
+    "primary": -0.03833,
+    "strict": null,
+    "depletion": -0.03833
+   }
+  },
+  {
+   "pid": 116,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.46% over 120s high, buy share 80%",
+   "reason_out": "stop",
+   "hold_s": 3.66,
+   "cost_usd": 4.97685,
+   "got_usd": 4.92465,
+   "pnl_usd": -0.0522,
+   "ret": -0.01049,
+   "fees_usd": 0.0198,
+   "models": {
+    "primary": -0.0522,
+    "strict": null,
+    "depletion": -0.0522
+   }
+  },
+  {
+   "pid": 119,
+   "sleeve": "breakout_scalp",
+   "key": "IRYS_USDT",
+   "venue": "gate",
+   "reason_in": "break +1.96% over 120s high, buy share 69%",
+   "reason_out": "stop",
+   "hold_s": 0.15,
+   "cost_usd": 4.96343,
+   "got_usd": 4.89691,
+   "pnl_usd": -0.06652,
+   "ret": -0.0134,
+   "fees_usd": 0.01972,
+   "models": {
+    "primary": -0.06652,
+    "strict": null,
+    "depletion": -0.06652
+   }
+  }
+ ],
+ "gov_events": [
+  {
+   "t": 1792884011.9163654,
+   "sleeve": "meme_momentum",
+   "kind": "QUARANTINE",
+   "frm": "NORMAL",
+   "to": "QUARANTINED",
+   "reason": "hourly drawdown 5.05 USD >= 5.00; flat until +1800s",
+   "evidence": {
+    "equity": 34.9455,
+    "dd": 5.0545
+   }
+  },
+  {
+   "t": 1792885813.688636,
+   "sleeve": "meme_momentum",
+   "kind": "PROBATION",
+   "frm": "QUARANTINED",
+   "to": "PROBATION",
+   "reason": "cool-down over: resume at 0.5x size",
+   "evidence": {
+    "equity": 34.9455
+   }
+  }
+ ],
+ "mode": "live",
+ "pump_feed": {
+  "msgs": 768610,
+  "prints": 99648,
+  "creates": 1722,
+  "reconnects": 54,
+  "errors": 54,
+  "last_t": 1792887285.0928288
+ },
+ "gate_feed": {
+  "msgs": 474837,
+  "prints": 77929,
+  "creates": 0,
+  "reconnects": 0,
+  "errors": 0,
+  "last_t": 1792887285.4130251
+ },
+ "x": {
+  "available": false,
+  "reason": "X_BEARER_TOKEN not set: social scores are unknown (None)",
+  "requests": 0,
+  "tweets": 0,
+  "rate_limited": 0,
+  "errors": 0
+ },
+ "safety_calls": 124,
+ "safety_errors": 0,
+ "rss_mb_end": 322.93359375
+}

@@ -1,0 +1,1202 @@
+{
+ "status": {
+  "elapsed_s": 900.0,
+  "equity": 123.3018,
+  "halted": false,
+  "fills": 137,
+  "fills_per_hour": 548.0,
+  "open": 1,
+  "pending": 0,
+  "tokens": 2240,
+  "prints": 515111,
+  "sleeves": {
+   "meme_momentum": [
+    "NORMAL",
+    63.4897,
+    62
+   ],
+   "social_sentiment": [
+    "NORMAL",
+    30.0,
+    0
+   ],
+   "breakout_scalp": [
+    "NORMAL",
+    29.8122,
+    6
+   ]
+  }
+ },
+ "ceo": {
+  "equity": 123.3018,
+  "halted": false,
+  "halt_reason": "",
+  "sleeves": [
+   {
+    "sleeve": "meme_momentum",
+    "state": "NORMAL",
+    "capital": 40.0,
+    "equity": 63.4897,
+    "cash": 63.4897,
+    "realised": 23.4897,
+    "fees": 10.3925,
+    "fills": 124,
+    "round_trips": 62,
+    "win_rate": 0.758,
+    "open": 0,
+    "quarantines": 0,
+    "hourly_dd": 0.0
+   },
+   {
+    "sleeve": "social_sentiment",
+    "state": "NORMAL",
+    "capital": 30.0,
+    "equity": 30.0,
+    "cash": 30.0,
+    "realised": 0.0,
+    "fees": 0.0,
+    "fills": 0,
+    "round_trips": 0,
+    "win_rate": null,
+    "open": 0,
+    "quarantines": 0,
+    "hourly_dd": 0.0
+   },
+   {
+    "sleeve": "breakout_scalp",
+    "state": "NORMAL",
+    "capital": 30.0,
+    "equity": 29.8122,
+    "cash": 24.8367,
+    "realised": -0.1644,
+    "fees": 0.1296,
+    "fills": 13,
+    "round_trips": 6,
+    "win_rate": 0.167,
+    "open": 1,
+    "quarantines": 0,
+    "hourly_dd": 0.1878
+   }
+  ],
+  "events": 0
+ },
+ "stats": {
+  "quotes": 57455,
+  "prints": 515111,
+  "creates": 2208,
+  "tweets": 197845,
+  "signal_momentum": 792,
+  "safety_requested": 267,
+  "safety_rejected_eval": 455,
+  "orders": 72,
+  "fills": 137,
+  "opens": 69,
+  "closes": 68,
+  "signal_breakout": 10,
+  "shadow_fill_only_depletion": 2,
+  "passive_expired": 3,
+  "audit_rows_flushed": 226,
+  "skip_meme_momentum_max_open": 12,
+  "signal_social": 4
+ },
+ "model_pnl": {
+  "meme_momentum|primary": {
+   "sum_usd": 23.48969,
+   "n": 62,
+   "mean_usd": 0.37887
+  },
+  "meme_momentum|adverse": {
+   "sum_usd": 22.48924,
+   "n": 62,
+   "mean_usd": 0.36273
+  },
+  "meme_momentum|adverse_exit": {
+   "sum_usd": 17.98597,
+   "n": 50,
+   "mean_usd": 0.35972
+  },
+  "breakout_scalp|primary": {
+   "sum_usd": -0.16438,
+   "n": 6,
+   "mean_usd": -0.0274
+  },
+  "breakout_scalp|strict": {
+   "sum_usd": -0.14531,
+   "n": 3,
+   "mean_usd": -0.04844
+  },
+  "breakout_scalp|depletion": {
+   "sum_usd": -0.16158,
+   "n": 5,
+   "mean_usd": -0.03232
+  }
+ },
+ "recent_round_trips": [
+  {
+   "pid": 53,
+   "sleeve": "meme_momentum",
+   "key": "wXBCygnAhqV2oemwQb8pidzDsP2ibT3j67e2dxcEpump",
+   "venue": "pump",
+   "reason_in": "burst 36 prints / 36 traders, net 3.73 SOL, ret +24.4%, accel 2.1x",
+   "reason_out": "take_profit",
+   "hold_s": 20.0,
+   "cost_usd": 5.0,
+   "got_usd": 5.59022,
+   "pnl_usd": 0.59022,
+   "ret": 0.11804,
+   "fees_usd": 0.1703,
+   "models": {
+    "primary": 0.59022,
+    "adverse": 0.59022
+   }
+  },
+  {
+   "pid": 64,
+   "sleeve": "meme_momentum",
+   "key": "wXBCygnAhqV2oemwQb8pidzDsP2ibT3j67e2dxcEpump",
+   "venue": "pump",
+   "reason_in": "burst 56 prints / 56 traders, net 3.79 SOL, ret +22.9%, accel 2.1x",
+   "reason_out": "trail",
+   "hold_s": 23.5,
+   "cost_usd": 5.0,
+   "got_usd": 5.30428,
+   "pnl_usd": 0.30428,
+   "ret": 0.06086,
+   "fees_usd": 0.16668,
+   "models": {
+    "primary": 0.30428,
+    "adverse": 0.17346,
+    "adverse_exit": 0.30428
+   }
+  },
+  {
+   "pid": 72,
+   "sleeve": "meme_momentum",
+   "key": "LXLrJ9rrax1ACGaf89TcRvmPrsDdMqprA8t2Xeebpump",
+   "venue": "pump",
+   "reason_in": "burst 53 prints / 53 traders, net 3.40 SOL, ret +18.7%, accel 2.1x",
+   "reason_out": "take_profit",
+   "hold_s": 9.0,
+   "cost_usd": 5.0,
+   "got_usd": 5.84054,
+   "pnl_usd": 0.84054,
+   "ret": 0.16811,
+   "fees_usd": 0.17347,
+   "models": {
+    "primary": 0.84054,
+    "adverse": 0.84054,
+    "adverse_exit": 0.71427
+   }
+  },
+  {
+   "pid": 70,
+   "sleeve": "meme_momentum",
+   "key": "SNYbBfT43TtZqv6fzvX2yPymkqY7kzoTkLhjRs7opump",
+   "venue": "pump",
+   "reason_in": "burst 44 prints / 43 traders, net 3.28 SOL, ret +19.3%, accel 2.0x",
+   "reason_out": "trail",
+   "hold_s": 13.59,
+   "cost_usd": 5.0,
+   "got_usd": 5.44701,
+   "pnl_usd": 0.44701,
+   "ret": 0.0894,
+   "fees_usd": 0.16848,
+   "models": {
+    "primary": 0.44701,
+    "adverse": 0.44701,
+    "adverse_exit": 0.41682
+   }
+  },
+  {
+   "pid": 68,
+   "sleeve": "meme_momentum",
+   "key": "ShwEGguyQBQv85kGmHqmc4itQc7ySZK3H1EUurd9pump",
+   "venue": "pump",
+   "reason_in": "burst 27 prints / 27 traders, net 2.83 SOL, ret +15.4%, accel 2.1x",
+   "reason_out": "take_profit",
+   "hold_s": 18.27,
+   "cost_usd": 5.0,
+   "got_usd": 5.56956,
+   "pnl_usd": 0.56956,
+   "ret": 0.11391,
+   "fees_usd": 0.17004,
+   "models": {
+    "primary": 0.56956,
+    "adverse": 0.56956,
+    "adverse_exit": 0.56956
+   }
+  },
+  {
+   "pid": 60,
+   "sleeve": "meme_momentum",
+   "key": "WnBxFRNLmBQ6b3aDAETGbZyBNupApAWJyMcV4Rnbpump",
+   "venue": "pump",
+   "reason_in": "burst 50 prints / 50 traders, net 3.36 SOL, ret +19.7%, accel 2.7x",
+   "reason_out": "stop",
+   "hold_s": 41.5,
+   "cost_usd": 5.0,
+   "got_usd": 4.50084,
+   "pnl_usd": -0.49916,
+   "ret": -0.09983,
+   "fees_usd": 0.15651,
+   "models": {
+    "primary": -0.49916,
+    "adverse": -0.49916,
+    "adverse_exit": -0.52256
+   }
+  },
+  {
+   "pid": 66,
+   "sleeve": "meme_momentum",
+   "key": "ydfDhVWKdq8WxuPQUF2PQJcR3K8CSuGxtHD5D4eypump",
+   "venue": "pump",
+   "reason_in": "burst 44 prints / 44 traders, net 2.92 SOL, ret +19.4%, accel 2.2x",
+   "reason_out": "take_profit",
+   "hold_s": 32.23,
+   "cost_usd": 5.0,
+   "got_usd": 5.53989,
+   "pnl_usd": 0.53989,
+   "ret": 0.10798,
+   "fees_usd": 0.16966,
+   "models": {
+    "primary": 0.53989,
+    "adverse": 0.43662,
+    "adverse_exit": 0.53989
+   }
+  },
+  {
+   "pid": 86,
+   "sleeve": "meme_momentum",
+   "key": "ShwEGguyQBQv85kGmHqmc4itQc7ySZK3H1EUurd9pump",
+   "venue": "pump",
+   "reason_in": "burst 63 prints / 63 traders, net 3.67 SOL, ret +19.9%, accel 2.0x",
+   "reason_out": "trail",
+   "hold_s": 11.34,
+   "cost_usd": 5.0,
+   "got_usd": 4.96323,
+   "pnl_usd": -0.03677,
+   "ret": -0.00735,
+   "fees_usd": 0.16236,
+   "models": {
+    "primary": -0.03677,
+    "adverse": -0.03677,
+    "adverse_exit": -0.03677
+   }
+  },
+  {
+   "pid": 78,
+   "sleeve": "meme_momentum",
+   "key": "N5NxUJp1QM831RMsyVCKNhg5mvgyR5wWwoxTEMHDpump",
+   "venue": "pump",
+   "reason_in": "burst 23 prints / 23 traders, net 3.47 SOL, ret +19.9%, accel 2.3x",
+   "reason_out": "take_profit",
+   "hold_s": 25.65,
+   "cost_usd": 5.0,
+   "got_usd": 5.57516,
+   "pnl_usd": 0.57516,
+   "ret": 0.11503,
+   "fees_usd": 0.17011,
+   "models": {
+    "primary": 0.57516,
+    "adverse": 0.52727,
+    "adverse_exit": 0.57516
+   }
+  },
+  {
+   "pid": 81,
+   "sleeve": "meme_momentum",
+   "key": "B73HU11a6H3etYTyK6xVat8C7rLXcLt9CSoHdfbkpump",
+   "venue": "pump",
+   "reason_in": "burst 48 prints / 46 traders, net 3.85 SOL, ret +23.1%, accel 2.2x",
+   "reason_out": "take_profit",
+   "hold_s": 34.26,
+   "cost_usd": 5.0,
+   "got_usd": 5.59421,
+   "pnl_usd": 0.59421,
+   "ret": 0.11884,
+   "fees_usd": 0.17035,
+   "models": {
+    "primary": 0.59421,
+    "adverse": 0.59421,
+    "adverse_exit": 0.59421
+   }
+  },
+  {
+   "pid": 83,
+   "sleeve": "meme_momentum",
+   "key": "iCk5qTJUhRgRpAzqyDj1wF8kvEYGBkg9fWwezkDapump",
+   "venue": "pump",
+   "reason_in": "burst 49 prints / 49 traders, net 4.32 SOL, ret +24.3%, accel 2.3x",
+   "reason_out": "take_profit",
+   "hold_s": 39.0,
+   "cost_usd": 5.0,
+   "got_usd": 5.586,
+   "pnl_usd": 0.586,
+   "ret": 0.1172,
+   "fees_usd": 0.17024,
+   "models": {
+    "primary": 0.586,
+    "adverse": 0.586
+   }
+  },
+  {
+   "pid": 93,
+   "sleeve": "meme_momentum",
+   "key": "rGNJAiEKwY1Lk4CFpYeYVX2LhZcBNp1GbNNi5GQRpump",
+   "venue": "pump",
+   "reason_in": "burst 26 prints / 8 traders, net 3.49 SOL, ret +19.5%, accel 2.5x",
+   "reason_out": "take_profit",
+   "hold_s": 7.03,
+   "cost_usd": 5.0,
+   "got_usd": 6.00924,
+   "pnl_usd": 1.00924,
+   "ret": 0.20185,
+   "fees_usd": 0.1756,
+   "models": {
+    "primary": 1.00924,
+    "adverse": 1.00924,
+    "adverse_exit": 0.88507
+   }
+  },
+  {
+   "pid": 91,
+   "sleeve": "meme_momentum",
+   "key": "gCa9mC1BFHHFrLiY9Fg2PxbjC3tjznvmHMVsfZQNpump",
+   "venue": "pump",
+   "reason_in": "burst 35 prints / 35 traders, net 4.03 SOL, ret +23.6%, accel 2.2x",
+   "reason_out": "trail",
+   "hold_s": 17.77,
+   "cost_usd": 5.0,
+   "got_usd": 4.98715,
+   "pnl_usd": -0.01285,
+   "ret": -0.00257,
+   "fees_usd": 0.16266,
+   "models": {
+    "primary": -0.01285,
+    "adverse": -0.01285
+   }
+  },
+  {
+   "pid": 98,
+   "sleeve": "meme_momentum",
+   "key": "ZvSEmA95HYHENgQmjgUChsPhpGCtCbRDfQkWVnBFpump",
+   "venue": "pump",
+   "reason_in": "burst 37 prints / 37 traders, net 3.67 SOL, ret +22.9%, accel 2.2x",
+   "reason_out": "take_profit",
+   "hold_s": 22.0,
+   "cost_usd": 5.0,
+   "got_usd": 5.59238,
+   "pnl_usd": 0.59238,
+   "ret": 0.11848,
+   "fees_usd": 0.17032,
+   "models": {
+    "primary": 0.59238,
+    "adverse": 0.59238,
+    "adverse_exit": 0.59238
+   }
+  },
+  {
+   "pid": 105,
+   "sleeve": "meme_momentum",
+   "key": "jR8vwH7sjh64gJnMx3oNaRUfPukmgVErCm839Mikpump",
+   "venue": "pump",
+   "reason_in": "burst 28 prints / 8 traders, net 4.06 SOL, ret +23.9%, accel 2.2x",
+   "reason_out": "take_profit",
+   "hold_s": 4.97,
+   "cost_usd": 5.0,
+   "got_usd": 5.68527,
+   "pnl_usd": 0.68527,
+   "ret": 0.13705,
+   "fees_usd": 0.1715,
+   "models": {
+    "primary": 0.68527,
+    "adverse": 0.68527,
+    "adverse_exit": 0.58982
+   }
+  },
+  {
+   "pid": 100,
+   "sleeve": "meme_momentum",
+   "key": "gCa9mC1BFHHFrLiY9Fg2PxbjC3tjznvmHMVsfZQNpump",
+   "venue": "pump",
+   "reason_in": "burst 64 prints / 64 traders, net 3.82 SOL, ret +21.5%, accel 2.0x",
+   "reason_out": "take_profit",
+   "hold_s": 42.04,
+   "cost_usd": 5.0,
+   "got_usd": 5.63701,
+   "pnl_usd": 0.63701,
+   "ret": 0.1274,
+   "fees_usd": 0.17089,
+   "models": {
+    "primary": 0.63701,
+    "adverse": 0.63701,
+    "adverse_exit": 0.63701
+   }
+  },
+  {
+   "pid": 103,
+   "sleeve": "meme_momentum",
+   "key": "BL18dtKarRgMKbQQ9ZQaS6t2B9hqwdy1mj7kukZApump",
+   "venue": "pump",
+   "reason_in": "burst 65 prints / 64 traders, net 3.73 SOL, ret +23.2%, accel 2.0x",
+   "reason_out": "take_profit",
+   "hold_s": 28.16,
+   "cost_usd": 5.0,
+   "got_usd": 5.62521,
+   "pnl_usd": 0.62521,
+   "ret": 0.12504,
+   "fees_usd": 0.17074,
+   "models": {
+    "primary": 0.62521,
+    "adverse": 0.62521
+   }
+  },
+  {
+   "pid": 110,
+   "sleeve": "meme_momentum",
+   "key": "zkHU8Ja5TFiRCwPkpmAgpvVAT5Cwx6EHYDX4kHFopump",
+   "venue": "pump",
+   "reason_in": "burst 68 prints / 66 traders, net 3.78 SOL, ret +23.1%, accel 2.2x",
+   "reason_out": "stop",
+   "hold_s": 14.35,
+   "cost_usd": 5.0,
+   "got_usd": 4.46179,
+   "pnl_usd": -0.53821,
+   "ret": -0.10764,
+   "fees_usd": 0.15601,
+   "models": {
+    "primary": -0.53821,
+    "adverse": -0.53821,
+    "adverse_exit": -0.57352
+   }
+  },
+  {
+   "pid": 112,
+   "sleeve": "meme_momentum",
+   "key": "f19zWU48TgAvy9des2bHe2KFainNLz14c7WJDTg5pump",
+   "venue": "pump",
+   "reason_in": "burst 22 prints / 7 traders, net 3.50 SOL, ret +16.5%, accel 2.1x",
+   "reason_out": "take_profit",
+   "hold_s": 7.5,
+   "cost_usd": 5.0,
+   "got_usd": 5.64267,
+   "pnl_usd": 0.64267,
+   "ret": 0.12853,
+   "fees_usd": 0.17096,
+   "models": {
+    "primary": 0.64267,
+    "adverse": 0.53671,
+    "adverse_exit": 0.64267
+   }
+  },
+  {
+   "pid": 116,
+   "sleeve": "meme_momentum",
+   "key": "uPbSr3zdtsMbyN6EnkRsTKaVFxxPofjx57vP39i7pump",
+   "venue": "pump",
+   "reason_in": "burst 26 prints / 26 traders, net 2.70 SOL, ret +18.2%, accel 2.2x",
+   "reason_out": "trail",
+   "hold_s": 19.0,
+   "cost_usd": 5.0,
+   "got_usd": 4.98668,
+   "pnl_usd": -0.01332,
+   "ret": -0.00266,
+   "fees_usd": 0.16266,
+   "models": {
+    "primary": -0.01332,
+    "adverse": -0.01332
+   }
+  },
+  {
+   "pid": 118,
+   "sleeve": "meme_momentum",
+   "key": "k4MP1ahuH9uPgjrru8UiFXH7H8JYbn8V24vMZHo4pump",
+   "venue": "pump",
+   "reason_in": "burst 44 prints / 43 traders, net 3.39 SOL, ret +20.8%, accel 2.0x",
+   "reason_out": "take_profit",
+   "hold_s": 15.35,
+   "cost_usd": 5.0,
+   "got_usd": 5.58122,
+   "pnl_usd": 0.58122,
+   "ret": 0.11624,
+   "fees_usd": 0.17018,
+   "models": {
+    "primary": 0.58122,
+    "adverse": 0.58122
+   }
+  },
+  {
+   "pid": 122,
+   "sleeve": "meme_momentum",
+   "key": "uPbSr3zdtsMbyN6EnkRsTKaVFxxPofjx57vP39i7pump",
+   "venue": "pump",
+   "reason_in": "burst 55 prints / 55 traders, net 2.81 SOL, ret +18.1%, accel 2.3x",
+   "reason_out": "take_profit",
+   "hold_s": 24.05,
+   "cost_usd": 5.0,
+   "got_usd": 5.44577,
+   "pnl_usd": 0.44577,
+   "ret": 0.08915,
+   "fees_usd": 0.16847,
+   "models": {
+    "primary": 0.44577,
+    "adverse": 0.44577,
+    "adverse_exit": 0.44577
+   }
+  },
+  {
+   "pid": 126,
+   "sleeve": "meme_momentum",
+   "key": "E16b3BBtGYxDz9AnRbbQVNmYrLJJxfH4gPKJvSCVpump",
+   "venue": "pump",
+   "reason_in": "burst 24 prints / 8 traders, net 3.11 SOL, ret +13.4%, accel 2.6x",
+   "reason_out": "take_profit",
+   "hold_s": 22.56,
+   "cost_usd": 5.0,
+   "got_usd": 5.59133,
+   "pnl_usd": 0.59133,
+   "ret": 0.11827,
+   "fees_usd": 0.17031,
+   "models": {
+    "primary": 0.59133,
+    "adverse": 0.59133,
+    "adverse_exit": 0.59133
+   }
+  },
+  {
+   "pid": 134,
+   "sleeve": "meme_momentum",
+   "key": "LwydJKdj57VpQEiW4zrxX96EhnQMsex7vk9cd1Uipump",
+   "venue": "pump",
+   "reason_in": "burst 47 prints / 8 traders, net 3.37 SOL, ret +21.2%, accel 2.8x",
+   "reason_out": "take_profit",
+   "hold_s": 6.15,
+   "cost_usd": 5.0,
+   "got_usd": 5.60746,
+   "pnl_usd": 0.60746,
+   "ret": 0.12149,
+   "fees_usd": 0.17051,
+   "models": {
+    "primary": 0.60746,
+    "adverse": 0.60746,
+    "adverse_exit": 0.60746
+   }
+  },
+  {
+   "pid": 124,
+   "sleeve": "breakout_scalp",
+   "key": "MEME21_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.37% over 120s high, buy share 66%",
+   "reason_out": "stop",
+   "hold_s": 80.91,
+   "cost_usd": 4.99655,
+   "got_usd": 4.94506,
+   "pnl_usd": -0.05149,
+   "ret": -0.0103,
+   "fees_usd": 0.01988,
+   "models": {
+    "primary": -0.05149,
+    "strict": -0.05149,
+    "depletion": -0.05149
+   }
+  },
+  {
+   "pid": 130,
+   "sleeve": "meme_momentum",
+   "key": "wgwbaD4Jrh9VV32L8QGCFjbCcjNa3bsQnu2BNvs9pump",
+   "venue": "pump",
+   "reason_in": "burst 40 prints / 40 traders, net 3.92 SOL, ret +13.0%, accel 2.8x",
+   "reason_out": "take_profit",
+   "hold_s": 48.04,
+   "cost_usd": 5.0,
+   "got_usd": 5.54323,
+   "pnl_usd": 0.54323,
+   "ret": 0.10865,
+   "fees_usd": 0.1697,
+   "models": {
+    "primary": 0.54323,
+    "adverse": 0.54323,
+    "adverse_exit": 0.54323
+   }
+  },
+  {
+   "pid": 140,
+   "sleeve": "meme_momentum",
+   "key": "w9ecazc5SyTXRpfgxGfXMxsPvjQaRknZqnLBiinapump",
+   "venue": "pump",
+   "reason_in": "burst 31 prints / 8 traders, net 4.11 SOL, ret +23.6%, accel 2.6x",
+   "reason_out": "take_profit",
+   "hold_s": 20.93,
+   "cost_usd": 5.0,
+   "got_usd": 5.8855,
+   "pnl_usd": 0.8855,
+   "ret": 0.1771,
+   "fees_usd": 0.17403,
+   "models": {
+    "primary": 0.8855,
+    "adverse": 0.8855,
+    "adverse_exit": 0.81876
+   }
+  },
+  {
+   "pid": 143,
+   "sleeve": "meme_momentum",
+   "key": "tVSFtWR8YFo2y9WE9tb29GPxUd43d2WE8EF2CY2cpump",
+   "venue": "pump",
+   "reason_in": "burst 42 prints / 42 traders, net 3.86 SOL, ret +21.8%, accel 2.5x",
+   "reason_out": "take_profit",
+   "hold_s": 11.5,
+   "cost_usd": 5.0,
+   "got_usd": 5.54346,
+   "pnl_usd": 0.54346,
+   "ret": 0.10869,
+   "fees_usd": 0.1697,
+   "models": {
+    "primary": 0.54346,
+    "adverse": 0.54346,
+    "adverse_exit": 0.54346
+   }
+  },
+  {
+   "pid": 149,
+   "sleeve": "meme_momentum",
+   "key": "2YQwGktDy1YkMPw79izXx8NVkFpoEJQA8ekmJddapump",
+   "venue": "pump",
+   "reason_in": "burst 60 prints / 8 traders, net 3.56 SOL, ret +22.9%, accel 2.2x",
+   "reason_out": "take_profit",
+   "hold_s": 9.32,
+   "cost_usd": 5.0,
+   "got_usd": 5.83365,
+   "pnl_usd": 0.83365,
+   "ret": 0.16673,
+   "fees_usd": 0.17338,
+   "models": {
+    "primary": 0.83365,
+    "adverse": 0.83365,
+    "adverse_exit": 0.56701
+   }
+  },
+  {
+   "pid": 152,
+   "sleeve": "meme_momentum",
+   "key": "AT22M2dkQg2vcEpxCDDvhziRRCDpE7dfHDYSqPbppump",
+   "venue": "pump",
+   "reason_in": "burst 53 prints / 53 traders, net 3.52 SOL, ret +23.1%, accel 2.2x",
+   "reason_out": "trail",
+   "hold_s": 6.5,
+   "cost_usd": 5.0,
+   "got_usd": 5.06367,
+   "pnl_usd": 0.06367,
+   "ret": 0.01273,
+   "fees_usd": 0.16363,
+   "models": {
+    "primary": 0.06367,
+    "adverse": 0.06367
+   }
+  },
+  {
+   "pid": 147,
+   "sleeve": "meme_momentum",
+   "key": "G49Riof6wJT8q2GEv2U8xhWGUvwczLuAePFUNv5apump",
+   "venue": "pump",
+   "reason_in": "burst 54 prints / 54 traders, net 3.54 SOL, ret +22.9%, accel 2.3x",
+   "reason_out": "take_profit",
+   "hold_s": 37.0,
+   "cost_usd": 5.0,
+   "got_usd": 5.57195,
+   "pnl_usd": 0.57195,
+   "ret": 0.11439,
+   "fees_usd": 0.17007,
+   "models": {
+    "primary": 0.57195,
+    "adverse": 0.57195
+   }
+  },
+  {
+   "pid": 132,
+   "sleeve": "breakout_scalp",
+   "key": "MEME15_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.43% over 120s high, buy share 66%",
+   "reason_out": "stop",
+   "hold_s": 107.35,
+   "cost_usd": 4.99762,
+   "got_usd": 4.94537,
+   "pnl_usd": -0.05225,
+   "ret": -0.01045,
+   "fees_usd": 0.01989,
+   "models": {
+    "primary": -0.05225,
+    "strict": null,
+    "depletion": -0.05225
+   }
+  },
+  {
+   "pid": 159,
+   "sleeve": "meme_momentum",
+   "key": "c9BdvN3hFbkKPJJF2UxQpQdhLpxrQDbEjLc5WXVxpump",
+   "venue": "pump",
+   "reason_in": "burst 27 prints / 27 traders, net 2.85 SOL, ret +18.2%, accel 2.3x",
+   "reason_out": "trail",
+   "hold_s": 32.36,
+   "cost_usd": 5.0,
+   "got_usd": 5.13108,
+   "pnl_usd": 0.13108,
+   "ret": 0.02622,
+   "fees_usd": 0.16448,
+   "models": {
+    "primary": 0.13108,
+    "adverse": -0.0094,
+    "adverse_exit": 0.09154
+   }
+  },
+  {
+   "pid": 157,
+   "sleeve": "breakout_scalp",
+   "key": "MEME31_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.53% over 120s high, buy share 68%",
+   "reason_out": "take_profit",
+   "hold_s": 60.38,
+   "cost_usd": 4.99982,
+   "got_usd": 5.0358,
+   "pnl_usd": 0.03598,
+   "ret": 0.0072,
+   "fees_usd": 0.02007,
+   "models": {
+    "primary": 0.03598,
+    "strict": null,
+    "depletion": 0.03598
+   }
+  },
+  {
+   "pid": 161,
+   "sleeve": "meme_momentum",
+   "key": "XRZYoZGnM3Dnch3g476pTyDzARdJ7B3CMi12Mz1vpump",
+   "venue": "pump",
+   "reason_in": "burst 33 prints / 33 traders, net 3.83 SOL, ret +22.6%, accel 2.5x",
+   "reason_out": "take_profit",
+   "hold_s": 40.4,
+   "cost_usd": 5.0,
+   "got_usd": 5.62246,
+   "pnl_usd": 0.62246,
+   "ret": 0.12449,
+   "fees_usd": 0.1707,
+   "models": {
+    "primary": 0.62246,
+    "adverse": 0.62246,
+    "adverse_exit": 0.62246
+   }
+  },
+  {
+   "pid": 164,
+   "sleeve": "meme_momentum",
+   "key": "56hxynAg7YL2gGWp4hTub2Eyb3nVWs9ciBakSEQGpump",
+   "venue": "pump",
+   "reason_in": "burst 57 prints / 56 traders, net 2.84 SOL, ret +17.4%, accel 2.1x",
+   "reason_out": "take_profit",
+   "hold_s": 22.19,
+   "cost_usd": 5.0,
+   "got_usd": 5.67462,
+   "pnl_usd": 0.67462,
+   "ret": 0.13492,
+   "fees_usd": 0.17136,
+   "models": {
+    "primary": 0.67462,
+    "adverse": 0.67462,
+    "adverse_exit": 0.67462
+   }
+  },
+  {
+   "pid": 171,
+   "sleeve": "meme_momentum",
+   "key": "TwgZuYPFY5hz1jNUjz6eR66m78xJYuux7Hvguwf5pump",
+   "venue": "pump",
+   "reason_in": "burst 53 prints / 53 traders, net 3.24 SOL, ret +20.8%, accel 2.2x",
+   "reason_out": "trail",
+   "hold_s": 17.67,
+   "cost_usd": 5.0,
+   "got_usd": 5.01367,
+   "pnl_usd": 0.01367,
+   "ret": 0.00273,
+   "fees_usd": 0.163,
+   "models": {
+    "primary": 0.01367,
+    "adverse": 0.01367,
+    "adverse_exit": 0.01367
+   }
+  },
+  {
+   "pid": 173,
+   "sleeve": "meme_momentum",
+   "key": "djRMaybWokA1bFG5yJ5dUPefnbqtWkdgq82PF17epump",
+   "venue": "pump",
+   "reason_in": "burst 23 prints / 23 traders, net 2.64 SOL, ret +18.3%, accel 2.7x",
+   "reason_out": "take_profit",
+   "hold_s": 24.48,
+   "cost_usd": 5.0,
+   "got_usd": 5.7077,
+   "pnl_usd": 0.7077,
+   "ret": 0.14154,
+   "fees_usd": 0.17178,
+   "models": {
+    "primary": 0.7077,
+    "adverse": 0.7077,
+    "adverse_exit": 0.47176
+   }
+  },
+  {
+   "pid": 141,
+   "sleeve": "breakout_scalp",
+   "key": "MEME10_USDT",
+   "venue": "gate",
+   "reason_in": "break +0.64% over 120s high, buy share 72%",
+   "reason_out": "time_stop",
+   "hold_s": 180.48,
+   "cost_usd": 4.99704,
+   "got_usd": 4.97431,
+   "pnl_usd": -0.02273,
+   "ret": -0.00455,
+   "fees_usd": 0.01994,
+   "models": {
+    "primary": -0.02273,
+    "strict": -0.02273,
+    "depletion": -0.02273
+   }
+  },
+  {
+   "pid": 169,
+   "sleeve": "meme_momentum",
+   "key": "NQa7NT33pghjC5wBsqHTHeWjwRuEjRRfEnugvK2gpump",
+   "venue": "pump",
+   "reason_in": "burst 42 prints / 42 traders, net 2.33 SOL, ret +10.0%, accel 2.1x",
+   "reason_out": "trail",
+   "hold_s": 33.63,
+   "cost_usd": 5.0,
+   "got_usd": 5.14926,
+   "pnl_usd": 0.14926,
+   "ret": 0.02985,
+   "fees_usd": 0.16471,
+   "models": {
+    "primary": 0.14926,
+    "adverse": 0.14926,
+    "adverse_exit": 0.14926
+   }
+  },
+  {
+   "pid": 179,
+   "sleeve": "meme_momentum",
+   "key": "ecjQHNdmsPpareVe8jF6hNXH37oHB8syH8oZeSXUpump",
+   "venue": "pump",
+   "reason_in": "burst 36 prints / 36 traders, net 2.32 SOL, ret +14.7%, accel 2.4x",
+   "reason_out": "trail",
+   "hold_s": 27.0,
+   "cost_usd": 5.0,
+   "got_usd": 4.8619,
+   "pnl_usd": -0.1381,
+   "ret": -0.02762,
+   "fees_usd": 0.16108,
+   "models": {
+    "primary": -0.1381,
+    "adverse": -0.16272,
+    "adverse_exit": -0.1381
+   }
+  },
+  {
+   "pid": 167,
+   "sleeve": "meme_momentum",
+   "key": "2yGLEDBS4ry8nVfUrFLEtKYp5tDzLCuqMuEKNnY2pump",
+   "venue": "pump",
+   "reason_in": "burst 44 prints / 44 traders, net 2.66 SOL, ret +14.4%, accel 2.0x",
+   "reason_out": "trail",
+   "hold_s": 51.85,
+   "cost_usd": 5.0,
+   "got_usd": 4.94958,
+   "pnl_usd": -0.05042,
+   "ret": -0.01008,
+   "fees_usd": 0.16219,
+   "models": {
+    "primary": -0.05042,
+    "adverse": -0.07675,
+    "adverse_exit": -0.10672
+   }
+  },
+  {
+   "pid": 182,
+   "sleeve": "meme_momentum",
+   "key": "BpCEKWiccaVH1HEnHbHdj2sGgFYPNTihdpoDhoippump",
+   "venue": "pump",
+   "reason_in": "burst 42 prints / 42 traders, net 2.89 SOL, ret +17.0%, accel 2.5x",
+   "reason_out": "take_profit",
+   "hold_s": 24.22,
+   "cost_usd": 5.0,
+   "got_usd": 5.49642,
+   "pnl_usd": 0.49642,
+   "ret": 0.09928,
+   "fees_usd": 0.16911,
+   "models": {
+    "primary": 0.49642,
+    "adverse": 0.49642,
+    "adverse_exit": 0.46201
+   }
+  },
+  {
+   "pid": 187,
+   "sleeve": "meme_momentum",
+   "key": "djRMaybWokA1bFG5yJ5dUPefnbqtWkdgq82PF17epump",
+   "venue": "pump",
+   "reason_in": "burst 73 prints / 71 traders, net 3.94 SOL, ret +21.4%, accel 2.2x",
+   "reason_out": "sell_pressure",
+   "hold_s": 17.28,
+   "cost_usd": 5.0,
+   "got_usd": 4.56136,
+   "pnl_usd": -0.43864,
+   "ret": -0.08773,
+   "fees_usd": 0.15727,
+   "models": {
+    "primary": -0.43864,
+    "adverse": -0.43864
+   }
+  },
+  {
+   "pid": 177,
+   "sleeve": "meme_momentum",
+   "key": "CXhvb8tPXJayFNQJ8MJcZ1ii62i9ZFNySFZ7S4oqpump",
+   "venue": "pump",
+   "reason_in": "burst 53 prints / 53 traders, net 3.31 SOL, ret +19.9%, accel 2.3x",
+   "reason_out": "take_profit",
+   "hold_s": 60.28,
+   "cost_usd": 5.0,
+   "got_usd": 5.5813,
+   "pnl_usd": 0.5813,
+   "ret": 0.11626,
+   "fees_usd": 0.17018,
+   "models": {
+    "primary": 0.5813,
+    "adverse": 0.5813
+   }
+  },
+  {
+   "pid": 193,
+   "sleeve": "meme_momentum",
+   "key": "BpCEKWiccaVH1HEnHbHdj2sGgFYPNTihdpoDhoippump",
+   "venue": "pump",
+   "reason_in": "burst 73 prints / 71 traders, net 4.04 SOL, ret +22.0%, accel 2.1x",
+   "reason_out": "trail",
+   "hold_s": 25.55,
+   "cost_usd": 5.0,
+   "got_usd": 4.89631,
+   "pnl_usd": -0.10369,
+   "ret": -0.02074,
+   "fees_usd": 0.16151,
+   "models": {
+    "primary": -0.10369,
+    "adverse": -0.22175,
+    "adverse_exit": -0.12909
+   }
+  },
+  {
+   "pid": 197,
+   "sleeve": "meme_momentum",
+   "key": "wo4rDTZN8akNVPhTJCTL7cvUMwJ58jJaFupov8Ugpump",
+   "venue": "pump",
+   "reason_in": "burst 55 prints / 55 traders, net 3.99 SOL, ret +22.3%, accel 2.1x",
+   "reason_out": "take_profit",
+   "hold_s": 32.88,
+   "cost_usd": 5.0,
+   "got_usd": 5.58861,
+   "pnl_usd": 0.58861,
+   "ret": 0.11772,
+   "fees_usd": 0.17028,
+   "models": {
+    "primary": 0.58861,
+    "adverse": 0.58861,
+    "adverse_exit": 0.54678
+   }
+  },
+  {
+   "pid": 202,
+   "sleeve": "meme_momentum",
+   "key": "qNVcVoQjTokxkB4Tz38jbtYdWDTpu3NnoxQxWKPdpump",
+   "venue": "pump",
+   "reason_in": "burst 51 prints / 51 traders, net 3.58 SOL, ret +23.0%, accel 2.8x",
+   "reason_out": "take_profit",
+   "hold_s": 25.53,
+   "cost_usd": 5.0,
+   "got_usd": 5.65547,
+   "pnl_usd": 0.65547,
+   "ret": 0.13109,
+   "fees_usd": 0.17112,
+   "models": {
+    "primary": 0.65547,
+    "adverse": 0.61602,
+    "adverse_exit": 0.65547
+   }
+  },
+  {
+   "pid": 201,
+   "sleeve": "meme_momentum",
+   "key": "ejHCqPAyhFoK8HkeNdomWsFnRFpQ7k9VAprNvKnJpump",
+   "venue": "pump",
+   "reason_in": "burst 77 prints / 76 traders, net 4.07 SOL, ret +24.8%, accel 2.4x",
+   "reason_out": "trail",
+   "hold_s": 33.99,
+   "cost_usd": 5.0,
+   "got_usd": 4.98538,
+   "pnl_usd": -0.01462,
+   "ret": -0.00292,
+   "fees_usd": 0.16264,
+   "models": {
+    "primary": -0.01462,
+    "adverse": -0.03177
+   }
+  },
+  {
+   "pid": 209,
+   "sleeve": "meme_momentum",
+   "key": "vnrYobYZqYDyu7oKTxS1PBbzAcU1gcTdTH4x81V2pump",
+   "venue": "pump",
+   "reason_in": "burst 37 prints / 8 traders, net 3.28 SOL, ret +20.7%, accel 2.4x",
+   "reason_out": "take_profit",
+   "hold_s": 4.5,
+   "cost_usd": 5.0,
+   "got_usd": 5.84956,
+   "pnl_usd": 0.84956,
+   "ret": 0.16991,
+   "fees_usd": 0.17358,
+   "models": {
+    "primary": 0.84956,
+    "adverse": 0.84956,
+    "adverse_exit": 0.66146
+   }
+  }
+ ],
+ "gov_events": [],
+ "mode": "offline",
+ "events": 772621,
+ "wall_s": 900.0,
+ "rss_series": [
+  [
+   0.0,
+   95.0
+  ],
+  [
+   30.0,
+   156.1
+  ],
+  [
+   60.0,
+   158.4
+  ],
+  [
+   90.0,
+   161.4
+  ],
+  [
+   120.0,
+   164.3
+  ],
+  [
+   150.0,
+   168.2
+  ],
+  [
+   180.0,
+   172.7
+  ],
+  [
+   210.0,
+   177.1
+  ],
+  [
+   240.0,
+   181.8
+  ],
+  [
+   270.0,
+   187.6
+  ],
+  [
+   300.0,
+   193.0
+  ],
+  [
+   330.0,
+   198.1
+  ],
+  [
+   360.0,
+   205.7
+  ],
+  [
+   390.0,
+   210.3
+  ],
+  [
+   420.0,
+   215.6
+  ],
+  [
+   450.0,
+   220.8
+  ],
+  [
+   480.0,
+   225.7
+  ],
+  [
+   510.0,
+   233.7
+  ],
+  [
+   540.0,
+   238.8
+  ],
+  [
+   570.0,
+   243.6
+  ],
+  [
+   600.0,
+   248.6
+  ],
+  [
+   630.0,
+   253.5
+  ],
+  [
+   660.0,
+   258.6
+  ],
+  [
+   690.0,
+   263.9
+  ],
+  [
+   720.0,
+   268.9
+  ],
+  [
+   750.0,
+   274.5
+  ],
+  [
+   780.0,
+   280.0
+  ],
+  [
+   810.0,
+   285.5
+  ],
+  [
+   840.0,
+   290.9
+  ],
+  [
+   870.0,
+   296.1
+  ]
+ ],
+ "rss_mb_end": 300.91015625
+}

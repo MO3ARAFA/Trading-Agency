@@ -1,0 +1,68 @@
+{
+ "signals": 192,
+ "tokens": 135,
+ "sol_usd": 101.98,
+ "round_trip_cost": 0.02928,
+ "horizons": {
+  "10": {
+   "n": 191,
+   "clusters": 135,
+   "gross_mean": -0.03139,
+   "gross_se": 0.0114,
+   "net_mean": -0.06067,
+   "t_net": -5.32,
+   "median": 0.0,
+   "share_gt_cost": 0.2356,
+   "p10": -0.21124,
+   "p90": 0.08744
+  },
+  "30": {
+   "n": 187,
+   "clusters": 131,
+   "gross_mean": -0.05298,
+   "gross_se": 0.02052,
+   "net_mean": -0.08227,
+   "t_net": -4.01,
+   "median": -0.01547,
+   "share_gt_cost": 0.2781,
+   "p10": -0.35477,
+   "p90": 0.15507
+  },
+  "60": {
+   "n": 184,
+   "clusters": 129,
+   "gross_mean": -0.07721,
+   "gross_se": 0.02179,
+   "net_mean": -0.1065,
+   "t_net": -4.89,
+   "median": -0.04806,
+   "share_gt_cost": 0.2446,
+   "p10": -0.38999,
+   "p90": 0.15611
+  },
+  "120": {
+   "n": 176,
+   "clusters": 121,
+   "gross_mean": -0.08341,
+   "gross_se": 0.03232,
+   "net_mean": -0.1127,
+   "t_net": -3.49,
+   "median": -0.10986,
+   "share_gt_cost": 0.2273,
+   "p10": -0.42538,
+   "p90": 0.19803
+  },
+  "300": {
+   "n": 149,
+   "clusters": 97,
+   "gross_mean": -0.01683,
+   "gross_se": 0.06344,
+   "net_mean": -0.04612,
+   "t_net": -0.73,
+   "median": -0.13101,
+   "share_gt_cost": 0.2819,
+   "p10": -0.4461,
+   "p90": 0.26783
+  }
+ }
+}
