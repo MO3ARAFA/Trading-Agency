@@ -1,0 +1,13 @@
+{
+ "phase": "16",
+ "created": "2026-10-25",
+ "hypothesis": "Polymarket wallets that were skilled in a past window keep an edge afterwards that survives copying latency and fees.",
+ "universe": "top 1000 wallets by traded VOLUME (data-api v1 leaderboard, timePeriod=all and month, orderBy=VOL): selected on activity, not on profit",
+ "D": "2026-08-26T00:00:00Z",
+ "selection": "for each wallet, BUY trades with timestamp in [D-60d, D) on markets resolved before D: edge = (resolved payout of the bought outcome - price) per USD; wallets with >= 30 such buys and >= 2000 USD bought; rank by the clustered (per market) t-stat of their edge; take the top K=25",
+ "copy": "every BUY of a selected wallet with timestamp in [D, now - 1d) on a market resolved by now: we buy the same outcome at their price + max(1 cent, 2 %) (latency slippage), capped at 0.99, plus the market taker fee rate x p(1-p) (Gamma feeSchedule, 0.05 if unknown); hold to resolution",
+ "metric": "return per USD copied; equal USD per copied trade; t-stat clustered by market (conditionId)",
+ "pass_rule": "mean > 0 with t > 2.5; and a 100 USD account copying each trade with 2 USD (min 1 USD / 5 shares) ends above 100. Then a live paper copy session.",
+ "notes": "no parameter is tuned on the copy window; any variant is reported as exploratory",
+ "sha256": "d2e9d153e0c2dc1d0aed8591c72ab2fc366d178657684e7dcb28a8d5d195476e"
+}
