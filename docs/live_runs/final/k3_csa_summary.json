@@ -1,0 +1,16 @@
+{
+ "stats": {
+  "sweeps": 88.0,
+  "books": 89574,
+  "sweep_s": 27.28032350540161,
+  "seen": 0.0,
+  "fills": 0.0,
+  "vanished": 0.0
+ },
+ "events": 7268,
+ "exhaustive": 5604,
+ "positions": [],
+ "deployed": 0,
+ "locked_net": 0,
+ "halted": false
+}

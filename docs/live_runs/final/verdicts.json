@@ -1,0 +1,14 @@
+{
+ "K1_listing_short": {
+  "passed": false,
+  "why": "OOS 181 trades, mean -74.6 bps, t=-0.30, account 93.63 (pre-registered t>2.5)"
+ },
+ "K2_specialist_consensus": {
+  "passed": false,
+  "why": "failed validation: 31 triggers, mean -23.3%, t=-3.68, account 71.08; not taken to OOS"
+ },
+ "K3_fast_arb": {
+  "passed": false,
+  "why": "46-min live: 0 complete sets in 88 sweeps of 7,268 events, 0 of 920 ladder pairs < 1.00"
+ }
+}
