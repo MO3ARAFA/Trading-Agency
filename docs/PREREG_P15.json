@@ -1,0 +1,49 @@
+{
+ "phase": "15",
+ "created": "2026-10-25",
+ "candidates": [
+  {
+   "id": "blowoff_fade|5m|k=3,look=288,side=-1,stall=True,vr=3.0,z=5.0|H=6",
+   "family": "blowoff_fade",
+   "interval": "5m",
+   "params": {
+    "k": 3,
+    "look": 288,
+    "side": -1,
+    "stall": true,
+    "vr": 3.0,
+    "z": 5.0
+   },
+   "H": 6
+  }
+ ],
+ "selection_evidence": {
+  "train": {
+   "n": 88,
+   "mean": 51.352,
+   "se": 41.429,
+   "t": 1.24,
+   "clusters": 36,
+   "gross": 68.459,
+   "win": 0.614
+  },
+  "val": {
+   "n": 58,
+   "mean": 57.928,
+   "se": 23.703,
+   "t": 2.444,
+   "clusters": 17,
+   "gross": 74.866,
+   "win": 0.759
+  }
+ },
+ "amendment": "The pre-declared screen rule (train t>2 and val>0) admitted no configuration across 504 tested (4 families x 2 intervals). Amended once, before any OOS evaluation: the single family positive in both splits (blowoff_fade, 5m) contributes its configuration with the highest validation t. This is disclosed; the OOS splits below have not been evaluated by any code before this file was committed.",
+ "oos_tests": {
+  "OOS-1": "Hyperliquid 5m, last 25 % of bars (\u22484.4 days), costs: taker 4.5 bps x2 + 1.5 x measured half-spread x2 + 2 bps x2 slippage + funding",
+  "OOS-2": "Binance USD-M perpetual 5m klines from data.binance.vision, 2026-01-01..2026-09-30, the HL coins listed on Binance; taker 5.0 bps x2 + same spread/slip proxy (HL measured half-spread x1.5) + Binance funding"
+ },
+ "pass_rule": "Candidate passes if net mean > 0 with clustered t > 2.0 in OOS-2 AND net mean > 0 in OOS-1; then it goes to live paper on Hyperliquid with these exact parameters.",
+ "code_sha256": "fbb3b9e83fa6fd78a91ba8ba4ea4d4a947e129b458a54c3733a94775d4e62c81",
+ "data_sha256": "e193c5cd8891b7e620d082167d2948105130ae485b8e4d2a20ba328928599f6c",
+ "sha256": "df4e41bd8c075dc8ffd2e0586c7ef75e4b33b1a738b1af5a63c810664ae8ecb8"
+}
