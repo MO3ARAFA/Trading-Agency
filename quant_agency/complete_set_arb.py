@@ -757,6 +757,7 @@ def main(argv=None):
     p.add_argument("--out", default="runs/p13")
     p.add_argument("--bankroll", type=float, default=100.0)
     p.add_argument("--max-per-event", type=float, default=25.0)
+    p.add_argument("--max-days", type=float, default=60.0, help="skip events resolving later than this (end date + resolution buffer)")
     p.add_argument("--fee-stress", type=float, default=0.0, help="trade as if every fee-enabled leg paid at least this taker rate")
     p.add_argument("--settle", metavar="RUN_DIR", help="mark a finished paper run to the actual resolutions and exit")
     p.add_argument("--fetch-closed", type=int, metavar="DAYS", help="download closed NegRisk events of the last DAYS days to OUT/closed_negrisk_compact.json and exit")
@@ -780,7 +781,7 @@ def main(argv=None):
         print(json.dumps({k: r[k] for k in ("positions", "settled", "pnl_settled", "capital_settled")}), "shortfalls:", len(r["shortfalls"]))
         return
     out = os.path.join(a.out, "paper_" + time.strftime("%Y%m%d_%H%M%S"))
-    res = asyncio.run(run(a.duration, out, cfg=CsaConfig(fee_stress_rate=a.fee_stress), lim=RiskLimits(bankroll=a.bankroll, max_per_event=a.max_per_event, max_deployed=a.bankroll)))
+    res = asyncio.run(run(a.duration, out, cfg=CsaConfig(fee_stress_rate=a.fee_stress, max_days=a.max_days), lim=RiskLimits(bankroll=a.bankroll, max_per_event=a.max_per_event, max_deployed=a.bankroll, max_days=a.max_days)))
     print(json.dumps({k: res[k] for k in ("stats", "events", "exhaustive", "deployed", "locked_net", "halted")}, default=float))
     print("artifacts:", out)
 

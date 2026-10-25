@@ -1,0 +1,43 @@
+{
+ "phase": "15B",
+ "created": "2026-10-25",
+ "candidates": [
+  {
+   "id": "F5_listing_short|H=30,L=1,hedge=True",
+   "family": "F5_listing_short",
+   "params": {
+    "H": 30,
+    "L": 1,
+    "hedge": true
+   }
+  }
+ ],
+ "selection_evidence": {
+  "train": {
+   "n": 131,
+   "mean": 710.32,
+   "se": 335.43,
+   "t": 2.118,
+   "clusters": 12,
+   "gross": 762.54,
+   "fund": -12.21,
+   "win": 0.702
+  },
+  "val": {
+   "n": 113,
+   "mean": 2398.13,
+   "se": 789.74,
+   "t": 3.037,
+   "clusters": 6,
+   "gross": 2956.01,
+   "fund": -517.87,
+   "win": 0.779
+  }
+ },
+ "screened_configs": 38,
+ "rule": "Qualified under the pre-declared rule (train net>0, t>2, n>=30; validation net>0; best validation t in the family). No amendment.",
+ "oos": "Binance USD-M daily, entries 2025-07-01..2026-09-30 (listing day + 1 in that window, exit 30 days later within the data); costs 20 bps per leg per round trip (2 legs) + actual funding of both legs.",
+ "pass_rule": "OOS net mean > 0 with t > 2.0 clustered by entry month; also reported: the 100 USD account simulation and the result clustered by listing week.",
+ "code_sha256": "4c2205d63d365d0c3b6e54ce914176f93de551503232d982d7b478e3f569e56f",
+ "sha256": "3b9d32396ddb4242e0e04290800aef4e8df82c37cb9eea1dab2c17740b62b0ab"
+}
