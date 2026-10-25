@@ -21,6 +21,7 @@ import math
 import os
 import random
 import time
+import urllib.request
 from dataclasses import asdict, dataclass, field
 from typing import Dict, List, Optional
 
@@ -58,6 +59,8 @@ class Farm:
     scored: int = 0
     stopped: bool = False
     fills: List[dict] = field(default_factory=list)
+    fee_rate: float = 0.0         # taker fee rate of the market (Gamma feeSchedule; 0 when fees are disabled)
+    hedge_cost: float = 0.0       # R2: USDC paid (incl. taker fee) buying back sold outcomes
 
     def equity(self, books: PmBooks, mark: str = "bid") -> float:
         """``bid``: held outcome at its best bid (what selling now fetches; primary); ``mid``: at its midpoint (for reference)."""
@@ -84,7 +87,9 @@ def target_price(books: PmBooks, tok: str) -> Optional[float]:
 
 
 class RewardFarm:
-    def __init__(self, farms: List[Farm], out_dir: str, latency_s: float = 1.0, seed: int = 1):
+    def __init__(self, farms: List[Farm], out_dir: str, latency_s: float = 1.0, seed: int = 1, hedge: bool = False, max_fills: int = 5):
+        self.hedge, self.max_fills = hedge, max_fills
+        self.buybacks: List[dict] = []
         self.farms = {f.cid: f for f in farms}
         self.by_tok = {}
         for f in farms:
@@ -105,6 +110,7 @@ class RewardFarm:
 
     # ------------------------------------------------------------------ quoting
     def requote(self, now: float) -> None:
+        self._do_buybacks(now)
         for f in self.farms.values():
             if f.stopped:
                 continue
@@ -171,8 +177,44 @@ class RewardFarm:
             f.pairs += k
         f.fills.append({"t": now, "token": a.token, "px": px, "q": q, "how": how})
         self.log("fill", cid=f.cid, q=f.question, token=a.token, px=px, size=q, how=how)
-        f.stopped = True                                                     # stand down after the first fill (pre-registered)
         f.asks.clear()
+        if self.hedge and len(f.fills) <= self.max_fills:                   # R2: buy the sold outcome back after the latency, then requote
+            f.stopped = True
+            self.buybacks.append({"cid": f.cid, "token": a.token, "q": q, "due": now + self.lat, "sold_px": px})
+        else:
+            f.stopped = True                                                 # R: stand down after the first fill
+
+    def _do_buybacks(self, now: float) -> None:
+        """Taker buy of q shares of the sold outcome, walking the real ask book, at the market's taker fee (R2)."""
+        keep = []
+        for b in self.buybacks:
+            if now < b["due"]:
+                keep.append(b)
+                continue
+            f = self.farms[b["cid"]]
+            levels = sorted(self.books.a.get(b["token"], {}).items())
+            need, cost, fee = b["q"], 0.0, 0.0
+            for px, sz in levels:
+                take = min(need, sz)
+                cost += take * px
+                fee += take * f.fee_rate * px * (1 - px)
+                need -= take
+                if need <= 1e-9:
+                    break
+            if need > 1e-9:                                                 # not enough displayed: try again later
+                b["due"] = now + 5.0
+                keep.append(b)
+                continue
+            other = f.no if b["token"] == f.yes else f.yes
+            f.cash -= cost + fee
+            f.hedge_cost += cost + fee
+            f.held[other] = f.held.get(other, 0.0) - b["q"]
+            if f.held[other] <= 1e-9:
+                f.held.pop(other)
+            f.pairs += b["q"]
+            self.log("buyback", cid=f.cid, token=b["token"], q=b["q"], vwap=cost / b["q"], fee=fee, sold_px=b["sold_px"])
+            f.stopped = len(f.fills) >= self.max_fills
+        self.buybacks = keep
 
     # ------------------------------------------------------------------ reward sampling
     def sample(self, now: float) -> None:
@@ -202,7 +244,7 @@ class RewardFarm:
         rows = []
         for f in self.farms.values():
             rows.append({"cid": f.cid, "question": f.question, "n": f.n, "rate": f.rate, "rewards": round(f.rewards, 4), "equity": round(f.equity(self.books), 4),
-                         "markout": round(f.equity(self.books) - f.rewards, 4), "equity_mid": round(f.equity(self.books, "mid"), 4), "fills": f.fills, "samples": f.samples, "scored": f.scored, "end_date": f.end_date})
+                         "markout": round(f.equity(self.books) - f.rewards, 4), "hedge_cost": round(f.hedge_cost, 4), "fee_rate": f.fee_rate, "equity_mid": round(f.equity(self.books, "mid"), 4), "fills": f.fills, "samples": f.samples, "scored": f.scored, "end_date": f.end_date})
         return {"t0": self.t0, "t1": time.time(), "trades_seen": self.trades, "markets": rows,
                 "total_equity": round(sum(r["equity"] for r in rows), 4), "total_rewards": round(sum(r["rewards"] for r in rows), 4),
                 "capital": sum(r["n"] for r in rows)}
@@ -239,13 +281,28 @@ def select(markets: List[dict], books: Dict[str, dict], max_min_size: float, min
     return out
 
 
-async def run(duration_s: float, out_dir: str, k: int, max_min_size: float, min_hours: float) -> dict:
+def market_fee_rates(cids: List[str]) -> Dict[str, float]:
+    """Taker fee rate per condition id from Gamma (feesEnabled + feeSchedule.rate; on-chain verified in Phase 13)."""
+    out = {}
+    for i in range(0, len(cids), 20):
+        q = "&".join(f"condition_ids={c}" for c in cids[i:i + 20])
+        req = urllib.request.Request(f"https://gamma-api.polymarket.com/markets?{q}&limit=50", headers={"User-Agent": "Mozilla/5.0"})
+        for m in json.loads(urllib.request.urlopen(req, timeout=30).read()):
+            fs = m.get("feeSchedule") or {}
+            out[m.get("conditionId")] = float(fs.get("rate") or 0.0) if m.get("feesEnabled") else 0.0
+    return out
+
+
+async def run(duration_s: float, out_dir: str, k: int, max_min_size: float, min_hours: float, hedge: bool = False) -> dict:
     import aiohttp
     import orjson
     markets = await asyncio.to_thread(rs.reward_markets, 4)
     books0 = await asyncio.to_thread(rs.fetch_books, [t["token_id"] for m in markets for t in m["tokens"]])
     farms = select(markets, books0, max_min_size, min_hours, k)
-    eng = RewardFarm(farms, out_dir)
+    fees = await asyncio.to_thread(market_fee_rates, [f.cid for f in farms])
+    for f in farms:
+        f.fee_rate = fees.get(f.cid, 0.05)                                  # unknown -> a conservative 0.05
+    eng = RewardFarm(farms, out_dir, hedge=hedge)
     eng.t0 = time.time()
     eng.log("start", markets=[asdict(f) for f in farms])
     print(f"farming {len(farms)} markets, capital {sum(f.n for f in farms):.0f} USD", flush=True)
@@ -296,9 +353,10 @@ def main(argv=None):
     p.add_argument("--max-min-size", type=float, default=50.0)
     p.add_argument("--min-hours", type=float, default=48.0)
     p.add_argument("--out", default="runs/p15/farm")
+    p.add_argument("--hedge", action="store_true", help="R2: buy back a sold outcome after the latency and keep quoting (max 5 fills per market)")
     a = p.parse_args(argv)
     out = os.path.join(a.out, time.strftime("%Y%m%d_%H%M%S"))
-    sm = asyncio.run(run(a.duration, out, a.k, a.max_min_size, a.min_hours))
+    sm = asyncio.run(run(a.duration, out, a.k, a.max_min_size, a.min_hours, a.hedge))
     print(json.dumps({k: sm[k] for k in ("total_rewards", "total_equity", "capital")}))
     print("artifacts:", out)
 

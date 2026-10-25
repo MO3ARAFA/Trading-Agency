@@ -1,0 +1,21 @@
+{
+ "hours": 2.42,
+ "markets": 30,
+ "capital_all": 690.0,
+ "mean_ret": 0.005777533333333333,
+ "sd_ret": 0.06552529101133044,
+ "t": 0.48294105750060495,
+ "total_rewards": 6.6976,
+ "total_equity_bid": 4.2479,
+ "total_equity_mid": 13.1211,
+ "fills": 18,
+ "markout_bid": -2.4497,
+ "account": {
+  "markets": 5,
+  "capital": 100.0,
+  "net_usd": -3.0738,
+  "rewards": 1.1262,
+  "per_day_pct": -30.489
+ },
+ "pass": false
+}

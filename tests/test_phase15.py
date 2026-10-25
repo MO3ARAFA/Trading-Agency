@@ -127,3 +127,23 @@ def test_governed_farm_quarantine_withdraws_quotes(tmp_path):
     e.books.snapshot("N", [{"price": "0.10", "size": "50"}], [{"price": "0.12", "size": "40"}])
     g.review(10.0)
     assert g.book.state == OState.QUARANTINED and not f.asks and not g.quoting_allowed()
+
+
+def test_r2_buys_back_the_sold_outcome_and_requotes(tmp_path):
+    f = _farm()
+    f.fee_rate = 0.04
+    e = rf.RewardFarm([f], str(tmp_path), hedge=True)
+    e.books.snapshot("Y", [{"price": "0.48", "size": "50"}], [{"price": "0.52", "size": "30"}])
+    e.books.snapshot("N", [{"price": "0.48", "size": "50"}], [{"price": "0.52", "size": "40"}])
+    e.requote(0.0)
+    f.asks["Y"].t_live = 0.0
+    e.on_trade("Y", 0.53, 5.0, "BUY")                                     # trades through: all 20 YES sold at 0.52
+    assert f.held == {"N": 20.0} and e.buybacks
+    e.books.snapshot("Y", [{"price": "0.50", "size": "50"}], [{"price": "0.54", "size": "10"}, {"price": "0.55", "size": "50"}])
+    import time as _time
+    e.requote(_time.time() + 5.0)                                         # buy back 10 @ 0.54 + 10 @ 0.55 + fee
+    cost = 10 * 0.54 + 10 * 0.55
+    fee = 10 * 0.04 * 0.54 * 0.46 + 10 * 0.04 * 0.55 * 0.45
+    assert f.pairs == pytest.approx(20.0) and not f.held and f.hedge_cost == pytest.approx(cost + fee)
+    assert f.equity(e.books) == pytest.approx(20 * 0.52 - cost - fee)
+    assert not f.stopped and f.asks                                        # quoting resumed

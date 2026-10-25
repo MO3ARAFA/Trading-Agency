@@ -1,0 +1,574 @@
+{
+ "t0": 1792915802.4647427,
+ "t1": 1792924513.093665,
+ "trades_seen": 121,
+ "markets": [
+  {
+   "cid": "0xc09bfb46be098b0e879405331ca476c5fb8d6092a00baef0dc9321ea961ddd1b",
+   "question": "Will \"Housewife - Tate McRae\" be the Billboard Hot 100 #1 song for the week of November 7?",
+   "n": 20.0,
+   "rate": 51.0,
+   "rewards": 0.1374,
+   "equity": 0.1374,
+   "markout": -0.0,
+   "equity_mid": 0.1374,
+   "fills": [],
+   "samples": 144,
+   "scored": 144,
+   "end_date": "2026-11-04 04:59:00+00"
+  },
+  {
+   "cid": "0xd5fd2fe77be5ebaa4cf596d4c0cc7ee7f485d53ac1591d89c0ce18cf9bf20b9a",
+   "question": "Will Zelenskyy post 80-99 posts from October 20 to October 27, 2026?",
+   "n": 20.0,
+   "rate": 22.0,
+   "rewards": 0.0611,
+   "equity": 0.0611,
+   "markout": -0.0,
+   "equity_mid": 0.0611,
+   "fills": [],
+   "samples": 144,
+   "scored": 4,
+   "end_date": "2026-10-27 16:00:00+00"
+  },
+  {
+   "cid": "0x9e6071988bd1390813f43f1033dd274bc1bcbe2ce12215a3f75f6ecc63729a23",
+   "question": "Walmart (WMT) Q3 US comp sales (ex-fuel) growth 2.5% to 4%?",
+   "n": 20.0,
+   "rate": 50.0,
+   "rewards": 0.0707,
+   "equity": -0.3293,
+   "markout": -0.4,
+   "equity_mid": -0.0293,
+   "fills": [
+    {
+     "t": 1792919747.540891,
+     "token": "64418175187236527833464422623477923112343727265971378845752569092000167702303",
+     "px": 0.5,
+     "q": 20.0,
+     "how": "through"
+    }
+   ],
+   "samples": 144,
+   "scored": 65,
+   "end_date": "2026-11-19 14:30:00+00"
+  },
+  {
+   "cid": "0x0e879eea921765b7131cee137785352fcc680b5f704e26441976246d2d0f3e2d",
+   "question": "Will the highest temperature in Paris be 19\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 41.0,
+   "rewards": 0.1632,
+   "equity": 0.1632,
+   "markout": 0.0,
+   "equity_mid": 0.1632,
+   "fills": [],
+   "samples": 144,
+   "scored": 144,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0xcf45a318ab6f4169a60b16817f35ee167d3323f523723cbcb6b44ee428fa56e2",
+   "question": "Will Ukraine target Moscow on October 27, 2026?",
+   "n": 20.0,
+   "rate": 50.0,
+   "rewards": 0.6938,
+   "equity": -3.1062,
+   "markout": -3.8,
+   "equity_mid": -0.5062,
+   "fills": [
+    {
+     "t": 1792920049.7709873,
+     "token": "107944496154127014529092920029099318238686610877187536901624930587693594214456",
+     "px": 0.57,
+     "q": 20.0,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 52,
+   "end_date": "2026-11-01 03:59:00+00"
+  },
+  {
+   "cid": "0x6cbf01fa963e6bf8dfcc6aaa3308049d4d84b83bf336d0749619250e1f4c4354",
+   "question": "Will the lowest temperature in Wellington be 10\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 70.0,
+   "rewards": 0.293,
+   "equity": 0.293,
+   "markout": 0.0,
+   "equity_mid": 0.293,
+   "fills": [],
+   "samples": 144,
+   "scored": 144,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0xb6ebaa6c54f944a3a5f0456ba651f93fb653d8bed601547c5a093b8dc6f9588f",
+   "question": "Will Alphabet\u2019s market capitalization be between $3.50T and $4.00T at the end of October 2",
+   "n": 20.0,
+   "rate": 52.0,
+   "rewards": 0.3014,
+   "equity": -0.6386,
+   "markout": -0.94,
+   "equity_mid": -0.2586,
+   "fills": [
+    {
+     "t": 1792919453.0745387,
+     "token": "8850469765319727790515826768091325144504403112482084486086211196064103261377",
+     "px": 0.533,
+     "q": 20.0,
+     "how": "crossed"
+    }
+   ],
+   "samples": 144,
+   "scored": 60,
+   "end_date": "2026-10-31 23:59:00+00"
+  },
+  {
+   "cid": "0x18e0c7cf54d2180883c72c296f2a353e2a61b27ca731be9d59badc060c778038",
+   "question": "Will Shadowrocket be #1 Paid App in the US Apple App Store on October 30?",
+   "n": 20.0,
+   "rate": 76.0,
+   "rewards": 0.1319,
+   "equity": 3.5319,
+   "markout": 3.4,
+   "equity_mid": 4.6319,
+   "fills": [
+    {
+     "t": 1792917025.3650267,
+     "token": "10480806963935340101864310025998075425380469619051215961334568980938064881210",
+     "px": 0.37,
+     "q": 20.0,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 21,
+   "end_date": "2026-10-31 03:59:00+00"
+  },
+  {
+   "cid": "0xc91ebfb4e24145f2cc67b3599548ce7e1a53c6a213ada32692f8324ae4568454",
+   "question": "Will there be no next GPT Terra model (5.7+) release by November 30, 2026?",
+   "n": 20.0,
+   "rate": 48.0,
+   "rewards": 0.2644,
+   "equity": 0.6644,
+   "markout": 0.4,
+   "equity_mid": 1.1644,
+   "fills": [
+    {
+     "t": 1792920707.2449956,
+     "token": "60185177171403726351572003350353409919901169162596503586575435503473940170663",
+     "px": 0.8,
+     "q": 20.0,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 79,
+   "end_date": "2026-12-01 04:59:00+00"
+  },
+  {
+   "cid": "0x1e513ee7d46a6b2fb70465542f24952a87fa211d098b97e76e953721f5c8d6be",
+   "question": "Shipping targeted in Hormuz on October 23, 2026?",
+   "n": 20.0,
+   "rate": 30.0,
+   "rewards": 0.2115,
+   "equity": 1.2115,
+   "markout": 1.0,
+   "equity_mid": 1.7115,
+   "fills": [
+    {
+     "t": 1792917667.442799,
+     "token": "48484934997462990193112043370896264119490947154325339639002323305395629520175",
+     "px": 0.71,
+     "q": 20.0,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 31,
+   "end_date": "2026-11-01 03:59:00+00"
+  },
+  {
+   "cid": "0x580985e4a5ba5d94da30d31e74a8213351285ea8e7ca342a31fe3c1b98092ef4",
+   "question": "Will the highest temperature in Madrid be 23\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 21.0,
+   "rewards": 0.0627,
+   "equity": -0.9373,
+   "markout": -1.0,
+   "equity_mid": -0.3373,
+   "fills": [
+    {
+     "t": 1792923058.5627334,
+     "token": "97534546747468156172545605218995264085414894086387584233033311291441223622940",
+     "px": 0.81,
+     "q": 20.0,
+     "how": "through"
+    }
+   ],
+   "samples": 144,
+   "scored": 39,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0xf1da85e6b4b6e9d5e8eba8215f96c106b3e7ce2205d27806f9007a3440cba00e",
+   "question": "Will the lowest temperature in London be 11\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 31.0,
+   "rewards": 0.1317,
+   "equity": -0.0683,
+   "markout": -0.2,
+   "equity_mid": 0.0317,
+   "fills": [
+    {
+     "t": 1792917274.8421264,
+     "token": "115409229750887659643407211538684930289428138903218132779175730826291633965679",
+     "px": 0.29,
+     "q": 20.0,
+     "how": "crossed"
+    }
+   ],
+   "samples": 144,
+   "scored": 25,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0x99d77041ac6c3ca39e1ba60a6bac9f1b3828415a57a12b367c79c88a0991ab96",
+   "question": "Will \"Nobody Wants This: Season 3\" be the top US Netflix show this week?",
+   "n": 20.0,
+   "rate": 75.0,
+   "rewards": 0.1996,
+   "equity": 0.1996,
+   "markout": 0.0,
+   "equity_mid": 0.3996,
+   "fills": [
+    {
+     "t": 1792918935.565883,
+     "token": "22893786026735068899446843445827976533729817669469874964982784053724509901446",
+     "px": 0.78,
+     "q": 20.0,
+     "how": "through"
+    }
+   ],
+   "samples": 144,
+   "scored": 51,
+   "end_date": "2026-10-28 03:59:00+00"
+  },
+  {
+   "cid": "0xcb251bef81c1eaa9267a4bc8b9811922722d9afc9a6e7f5477b2167884011ba2",
+   "question": "Will the highest score achieved on Humanity\u2019s Last Exam in 2026 be 60% or higher?",
+   "n": 20.0,
+   "rate": 40.0,
+   "rewards": 1.1066,
+   "equity": 1.1066,
+   "markout": 0.0,
+   "equity_mid": 1.1066,
+   "fills": [],
+   "samples": 144,
+   "scored": 144,
+   "end_date": "2027-01-01 04:59:00+00"
+  },
+  {
+   "cid": "0x7b18feba678751e51421afd81ff2fd2c409f818a96544bce565d9f411b79d0c9",
+   "question": "Will the lowest temperature in Paris be 11\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 36.0,
+   "rewards": 0.2279,
+   "equity": 0.0279,
+   "markout": -0.2,
+   "equity_mid": 0.1279,
+   "fills": [
+    {
+     "t": 1792922516.632998,
+     "token": "98203059813151529984342321624160704784890861764465481665795123610053532213898",
+     "px": 0.69,
+     "q": 20.0,
+     "how": "crossed"
+    }
+   ],
+   "samples": 144,
+   "scored": 110,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0xbd5fd171d494065e0aee99a28c5a1d2501af75e298ff4553f146827e34270942",
+   "question": "Will the lowest temperature in Seoul (Incheon) be 9\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 30.0,
+   "rewards": 0.0806,
+   "equity": 0.0806,
+   "markout": 0.0,
+   "equity_mid": 0.1806,
+   "fills": [
+    {
+     "t": 1792918427.4676306,
+     "token": "15947863551300858690131519008188311096444690326395680097636110357933995664273",
+     "px": 0.32,
+     "q": 20.0,
+     "how": "crossed"
+    }
+   ],
+   "samples": 144,
+   "scored": 43,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0x20e9de1e1a205c6a8a5a311a157cf13281c6bae9891ce0ba3422446fcc1e1236",
+   "question": "Will the lowest temperature in Warsaw be 0\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 26.0,
+   "rewards": 0.0274,
+   "equity": 0.2274,
+   "markout": 0.2,
+   "equity_mid": 0.3274,
+   "fills": [
+    {
+     "t": 1792917213.037455,
+     "token": "82274895059585304046700964577327544871028176757610766607291652826133136970145",
+     "px": 0.78,
+     "q": 20.0,
+     "how": "crossed"
+    }
+   ],
+   "samples": 144,
+   "scored": 18,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0xad584f22a6af5165f5bdd91697208795dc4390c45b549d6636cb7a8a6719c4cd",
+   "question": "Will the highest temperature in Chongqing be 19\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 33.0,
+   "rewards": 0.0325,
+   "equity": -0.9675,
+   "markout": -1.0,
+   "equity_mid": -0.6675,
+   "fills": [
+    {
+     "t": 1792916673.8651166,
+     "token": "2068354709014790932027389057218230897834495710470476343697803830640080931787",
+     "px": 0.35,
+     "q": 20.0,
+     "how": "crossed"
+    }
+   ],
+   "samples": 144,
+   "scored": 15,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0x0b2af95dd6050edc1f61c345a95fd11191caee02a4c5bfb4099f2a10de870215",
+   "question": "Will PP win the Ceuta seat in the 2026 Spanish general election?",
+   "n": 20.0,
+   "rate": 21.0,
+   "rewards": 0.0634,
+   "equity": 3.4634,
+   "markout": 3.4,
+   "equity_mid": 4.1634,
+   "fills": [
+    {
+     "t": 1792922208.186369,
+     "token": "100255611425821638690117381889645005232677467255471456258660604257752681409194",
+     "px": 0.66,
+     "q": 20.0,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 52,
+   "end_date": "2026-11-30 04:59:00+00"
+  },
+  {
+   "cid": "0x753b27603913f1c8fd4df847f65b68f040ebabf37554256382461590f77e583a",
+   "question": "Will Kimi K3.1 Pro debut in the top 10 of the Text Arena leaderboard by June 30, 2027?",
+   "n": 50.0,
+   "rate": 50.0,
+   "rewards": 0.2754,
+   "equity": 0.2754,
+   "markout": 0.0,
+   "equity_mid": 0.2754,
+   "fills": [],
+   "samples": 144,
+   "scored": 144,
+   "end_date": "2027-07-01 03:59:00+00"
+  },
+  {
+   "cid": "0x904856fa91ce6dc47f9d5353ffb752df0f278448f014fb6e0c27f7dea11ad3e7",
+   "question": "Will the lowest temperature in Shanghai be 16\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 32.0,
+   "rewards": 0.0361,
+   "equity": 0.0361,
+   "markout": 0.0,
+   "equity_mid": 0.0361,
+   "fills": [],
+   "samples": 144,
+   "scored": 31,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0x71aea22b1d501782b53672b335462ce3a835d84991379da65bf5bf44cc7402e1",
+   "question": "Will the lowest temperature in Tokyo be 16\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 38.0,
+   "rewards": 0.1029,
+   "equity": 0.0905,
+   "markout": -0.0124,
+   "equity_mid": 0.1739,
+   "fills": [
+    {
+     "t": 1792919482.638406,
+     "token": "95850620936285911983874855194832478163693474867421568371017011270753767227929",
+     "px": 0.34,
+     "q": 0.6176480000000026,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 61,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0x51b5e9f6da5066243bd0a35699205565dc1a5fe39f005ee522528b2c92c984c6",
+   "question": "Will Trump's approval rating be at least 39.0 on October 30, 2026?",
+   "n": 20.0,
+   "rate": 25.0,
+   "rewards": 0.0701,
+   "equity": 0.0701,
+   "markout": 0.0,
+   "equity_mid": 0.0701,
+   "fills": [],
+   "samples": 144,
+   "scored": 12,
+   "end_date": "2026-10-31 03:59:00+00"
+  },
+  {
+   "cid": "0x5df180a46b5b4be1fc5f8956ca3d9c90e4677a94e2315ebba6dbd3eb5053ac1d",
+   "question": "Will Donald Trump post 200+ Truth Social posts from October 23 to October 30, 2026?",
+   "n": 50.0,
+   "rate": 53.0,
+   "rewards": 0.2573,
+   "equity": 0.2573,
+   "markout": -0.0,
+   "equity_mid": 0.5573,
+   "fills": [
+    {
+     "t": 1792918879.9454143,
+     "token": "33761223775500949143964424360230674715161376790614120308604894092082868844676",
+     "px": 0.55,
+     "q": 30.0,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 51,
+   "end_date": "2026-10-30 16:00:00+00"
+  },
+  {
+   "cid": "0x2b241433d051b2f22cec168dbec1010c7a6edb194e3b9d752b18db8bc0c305da",
+   "question": "Will the highest temperature in London be 17\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 37.0,
+   "rewards": 0.0228,
+   "equity": -0.0745,
+   "markout": -0.0973,
+   "equity_mid": -0.0647,
+   "fills": [
+    {
+     "t": 1792916522.9140172,
+     "token": "76320005585863262857496308219894712326466198531025894029270632835179745405114",
+     "px": 0.56,
+     "q": 1.946429,
+     "how": "queue"
+    }
+   ],
+   "samples": 144,
+   "scored": 12,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0x8060726f51e770c3384c596f3f225bd92306c32da9afbb9a30561e7622bf07d4",
+   "question": "Houthi military action against Saudi Arabia on October 25?",
+   "n": 20.0,
+   "rate": 30.0,
+   "rewards": 0.3451,
+   "equity": 0.3451,
+   "markout": 0.0,
+   "equity_mid": 0.3451,
+   "fills": [],
+   "samples": 144,
+   "scored": 121,
+   "end_date": "2026-11-01 03:59:00+00"
+  },
+  {
+   "cid": "0x77882a94a9fc66f74617508e4fa2b9db802b1c3b2460de654e5b4486b42ece1a",
+   "question": "Will the highest temperature in Ankara be 18\u00b0C on October 27?",
+   "n": 20.0,
+   "rate": 26.0,
+   "rewards": 0.1185,
+   "equity": 0.1185,
+   "markout": -0.0,
+   "equity_mid": 0.1185,
+   "fills": [],
+   "samples": 144,
+   "scored": 144,
+   "end_date": "2026-10-27 12:00:00+00"
+  },
+  {
+   "cid": "0xf50dc6ed48466f71549771b826df004820346dd8bbacd5ad4d9133a1818c5f97",
+   "question": "Coca-Cola (KO) Q3 global unit case volume growth <3.5%?",
+   "n": 20.0,
+   "rate": 48.0,
+   "rewards": 0.3947,
+   "equity": 0.3947,
+   "markout": 0.0,
+   "equity_mid": 0.3947,
+   "fills": [],
+   "samples": 144,
+   "scored": 78,
+   "end_date": "2026-10-27 13:30:00+00"
+  },
+  {
+   "cid": "0x97b1a139bdc0da2564cb12b39920e039d9090d4219b2ec6cbdf36bd6382c1555",
+   "question": "Will Argentina's monthly inflation in October 2026 be between 1.9% and 2.1%?",
+   "n": 20.0,
+   "rate": 95.0,
+   "rewards": 0.0443,
+   "equity": -3.1557,
+   "markout": -3.2,
+   "equity_mid": -2.2557,
+   "fills": [
+    {
+     "t": 1792917429.5375218,
+     "token": "8405653511450359894166911893404891686128153783442498186338776737080969223962",
+     "px": 0.58,
+     "q": 20.0,
+     "how": "crossed"
+    }
+   ],
+   "samples": 144,
+   "scored": 27,
+   "end_date": "2026-11-12 19:00:00+00"
+  },
+  {
+   "cid": "0x303e52f6be764e2c081b57469d56b6196c1e23b5f8d91dd02ed734808fa37c9e",
+   "question": "Will Kimi K3.1 Pro debut with an HLE-Diamond score of 30% or higher?",
+   "n": 50.0,
+   "rate": 50.0,
+   "rewards": 0.7696,
+   "equity": 0.7696,
+   "markout": -0.0,
+   "equity_mid": 0.7696,
+   "fills": [],
+   "samples": 144,
+   "scored": 144,
+   "end_date": "2027-07-01 03:59:00+00"
+  }
+ ],
+ "total_equity": 4.2479,
+ "total_rewards": 6.6976,
+ "capital": 690.0
+}

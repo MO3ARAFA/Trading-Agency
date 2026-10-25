@@ -1,0 +1,10 @@
+{
+ "phase": "15R2",
+ "created": "2026-10-25",
+ "prior_result": "Candidate R (stand down and hold after a fill) was cut at 2.42 h of its 4 h by a container restart; evaluated at the cut: rewards +6.70, fills 18/30 markets, bid-marked net +4.25 on 690, t=0.48, 100 USD account -3.07 -> FAIL. Diagnosis: held one-sided inventory after fills dominates variance.",
+ "change": "R2 = R + after a fill, buy the sold outcome back at the real ask book (walking depth) after a 1 s latency, paying the market's taker fee (Gamma feeSchedule; 0.05 if unknown), then requote; a market stops after 5 fills. Everything else unchanged (selection, quotes, queue fills, reward scoring, bid marks).",
+ "session": "one live paper session of 4 h with --hedge, k=30, started after this file is committed. If the container restarts, the session is evaluated at its last 5-minute summary when >= 3 h elapsed; otherwise it is discarded and rerun once with the same rules.",
+ "pass_rule": "same as PREREG_P15R: mean per-market return > 0 with t > 2.0 across the 30 markets AND the 100 USD account (first markets in selection order with capital <= 100 USD) ends net > 0 (bid-marked).",
+ "code_sha256": "a0ba67a41e8b8cddb7a07983754c41917bf59705fe502d511d8343f19e4651ca",
+ "sha256": "d722dda2f7b924912c59c856faa7e86a741669cb19fa271eaefb678b0bd91b5d"
+}
