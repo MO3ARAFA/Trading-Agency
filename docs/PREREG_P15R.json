@@ -1,0 +1,12 @@
+{
+ "phase": "15R",
+ "created": "2026-10-25",
+ "hypothesis": "Two-sided reward-scoring asks from complete sets on Polymarket rewarded markets earn liquidity rewards larger than the adverse selection on the asks that fill.",
+ "evidence_before": "Snapshot estimates only (runs/p15/reward_est.json); no reward P&L has been measured. The 3-minute smoke run is excluded from the test.",
+ "session": "one live paper session of 4 h, started after this file is committed; k=30 markets chosen by reward_farm.select(max_min_size=50, min_hours=48) at the session start",
+ "metric": "per market: equity at session end / capital (USDC split), equity = cash from fills + unsold pairs x 1 + held outcome x best BID + accrued rewards - capital",
+ "pass_rule": "mean per-market return > 0 with t > 2.0 across the 30 markets (one market per event, so markets are independent clusters) AND the 100 USD account (the first markets in selection order whose capital sums to <= 100 USD) ends with net USD > 0. Reported but not used to pass: mid-marked equity.",
+ "caveats": "rewards are computed with the published formula against the visible book (multiplier b = 1, no knowledge of other makers' identities, which overstates competitors' Q and understates ours); held outcomes are not resolved within the session.",
+ "code_sha256": "3b2a77bc3e089b10150185b1c0f41c3e2bfd0dd5edc568b5e86fe9872aee4b2e",
+ "sha256": "68950ba781b0c1341fc2c4e90e50b87929926c88860bab63cc5e37efb773a1a1"
+}
