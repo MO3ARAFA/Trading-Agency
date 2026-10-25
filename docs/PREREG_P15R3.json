@@ -1,0 +1,10 @@
+{
+ "phase": "15R3",
+ "created": "2026-10-25",
+ "design": "see quant_agency/reward_mm.py docstring: zero-fee calm rewarded markets, passive YES+NO bids costing <= 0.98, OBI/sweep toxicity gate, passive re-pairing, zero-fee merge, published reward scoring, bid-marked inventory, 60 s checkpoints",
+ "session": "one live paper session: 300 s warm-up (calm-market filter) + 2700 s live, k=40, started after this commit; if interrupted, evaluated from the last 60 s checkpoint when >= 30 live minutes elapsed, else rerun once",
+ "pass_rule": "mean per-market return > 0 with t > 2.5 across the live markets (one per event) AND the 100 USD account (first markets in selection order with capital <= 100) net USD > 0, bid-marked",
+ "known_limits": "short window: fill risk may be under-sampled; rewards are computed from the published formula, not received; smoke run (2 min) excluded",
+ "code_sha256": "b25930000a7d476c35d33c29c0b97a6ed47dfd739cbfbe60c3615fd9837fe791",
+ "sha256": "134d92b6e2221ec7014e2c83526f08e97cfb7e3cde0d36ca633fd0f4d51d031e"
+}

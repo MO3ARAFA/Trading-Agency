@@ -147,3 +147,54 @@ def test_r2_buys_back_the_sold_outcome_and_requotes(tmp_path):
     assert f.pairs == pytest.approx(20.0) and not f.held and f.hedge_cost == pytest.approx(cost + fee)
     assert f.equity(e.books) == pytest.approx(20 * 0.52 - cost - fee)
     assert not f.stopped and f.asks                                        # quoting resumed
+
+
+# ---------------------------------------------------------------- R3: passive bid pairs, toxicity gate, zero-fee merge
+from quant_agency import reward_mm as rm
+
+
+def _mm(tmp_path):
+    x = rm.Mkt("c", "q", "Y", "N", 20.0, 4.5, 144.0, "2027")
+    e = rm.RewardMM([x], str(tmp_path))
+    e.books.snapshot("Y", [{"price": "0.49", "size": "100"}], [{"price": "0.51", "size": "100"}])
+    e.books.snapshot("N", [{"price": "0.49", "size": "100"}], [{"price": "0.51", "size": "100"}])
+    return e, x
+
+
+def test_r3_quotes_two_bids_that_cost_at_most_098(tmp_path):
+    e, x = _mm(tmp_path)
+    e.requote(0.0)
+    assert x.bids["Y"].price == pytest.approx(0.49) and x.bids["N"].price == pytest.approx(0.49)
+    assert x.bids["Y"].price + x.bids["N"].price <= 0.98 + 1e-9
+
+
+def test_r3_both_fills_merge_into_usdc(tmp_path):
+    e, x = _mm(tmp_path)
+    e.requote(0.0)
+    for b in x.bids.values():
+        b.t_live = 0.0
+    e.on_trade("Y", 0.48, 5.0, "SELL")                                     # trades through our 0.49 YES bid
+    e.on_trade("N", 0.48, 5.0, "SELL")
+    assert x.merges == 1 and not any(v > 1e-9 for v in x.held.values())
+    assert x.cash == pytest.approx(20 * (1 - 0.49 - 0.49) - rm.GAS_MERGE)
+
+
+def test_r3_toxicity_gate_pulls_a_threatened_bid(tmp_path):
+    e, x = _mm(tmp_path)
+    e.requote(0.0)
+    e.books.snapshot("Y", [{"price": "0.49", "size": "10"}], [{"price": "0.51", "size": "500"}])   # OBI = -0.96 against the YES bid
+    e.on_top("Y")
+    assert x.bids["Y"].cancel_at is not None and x.pulls == 1
+    import time as _t
+    e.requote(_t.time() + 2.0)
+    assert "Y" not in x.bids
+
+
+def test_r3_one_sided_fill_keeps_the_other_bid_resting(tmp_path):
+    e, x = _mm(tmp_path)
+    e.requote(0.0)
+    for b in x.bids.values():
+        b.t_live = 0.0
+    e.on_trade("Y", 0.48, 5.0, "SELL")
+    assert x.held == {"Y": 20.0} and "N" in x.bids and x.done.get("Y")
+    assert x.equity(e.books) == pytest.approx(-20 * 0.49 + 20 * 0.49)       # paid 9.8, holds 20 YES worth 0.49 at the bid

@@ -1,0 +1,38 @@
+{
+ "oos_a": {
+  "stats": {
+   "n": 81,
+   "mean_bps": 471.7,
+   "median_bps": 2090.8,
+   "se": 958.9,
+   "t": 0.492,
+   "clusters": 10,
+   "win": 0.815,
+   "stopped": 6,
+   "worst_bps": -21490.0
+  },
+  "account": {
+   "final_equity": 102.76,
+   "max_drawdown": 0.0425,
+   "trades": 81
+  }
+ },
+ "oos_b": {
+  "stats": {
+   "n": 217,
+   "mean_bps": -732.7,
+   "median_bps": 1447.2,
+   "se": 657.6,
+   "t": -1.114,
+   "clusters": 14,
+   "win": 0.608,
+   "stopped": 21,
+   "worst_bps": -21746.9
+  },
+  "account": {
+   "final_equity": 88.58,
+   "max_drawdown": 0.1516,
+   "trades": 217
+  }
+ }
+}
