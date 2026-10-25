@@ -198,3 +198,12 @@ def test_r3_one_sided_fill_keeps_the_other_bid_resting(tmp_path):
     e.on_trade("Y", 0.48, 5.0, "SELL")
     assert x.held == {"Y": 20.0} and "N" in x.bids and x.done.get("Y")
     assert x.equity(e.books) == pytest.approx(-20 * 0.49 + 20 * 0.49)       # paid 9.8, holds 20 YES worth 0.49 at the bid
+
+
+def test_bracket_ladders_group_by_stem_and_order_by_end_date():
+    from quant_agency import bracket_arb as ba
+    ev = {"markets": [{"question": "Will X happen by June 30?", "endDate": "2027-06-30", "acceptingOrders": True, "clobTokenIds": "[\"a\",\"b\"]"},
+                      {"question": "Will X happen by March 31?", "endDate": "2027-03-31", "acceptingOrders": True, "clobTokenIds": "[\"c\",\"d\"]"},
+                      {"question": "Will Y happen?", "endDate": "2027-01-01", "acceptingOrders": True, "clobTokenIds": "[\"e\",\"f\"]"}]}
+    lad = ba.ladders([ev])
+    assert len(lad) == 1 and [m["endDate"] for m in lad[0]] == ["2027-03-31", "2027-06-30"]
