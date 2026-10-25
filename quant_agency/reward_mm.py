@@ -79,7 +79,8 @@ class Mkt:
 
 
 class RewardMM:
-    def __init__(self, mkts: List[Mkt], out_dir: str, lat: float = 1.0, seed: int = 3):
+    def __init__(self, mkts: List[Mkt], out_dir: str, lat: float = 1.0, seed: int = 3, depth_frac: float = 0.0):
+        self.depth_frac = depth_frac                                       # R4: quote at least this fraction of the reward spread from mid
         self.m = {x.cid: x for x in mkts}
         self.tok = {}
         for x in mkts:
@@ -102,7 +103,7 @@ class RewardMM:
         if ty is None or tn is None:
             return None
         mid = (ty[0] + ty[1]) / 2.0
-        d = max(0.01, math.ceil(((ty[1] - ty[0]) / 2.0) * 100 - 1e-9) / 100.0)
+        d = max(0.01, math.ceil(((ty[1] - ty[0]) / 2.0) * 100 - 1e-9) / 100.0, math.ceil(self.depth_frac * x.v - 1e-9) / 100.0)
         if d * 100 >= x.v:
             return None
         by, bn = round(mid - d, 2), round((1 - mid) - d, 2)
@@ -297,11 +298,11 @@ def universe(k: int, min_hours: float = 72.0, max_min_size: float = 50.0) -> Lis
     return out
 
 
-async def run(duration_s: float, out_dir: str, k: int, warmup_s: float = 300.0) -> dict:
+async def run(duration_s: float, out_dir: str, k: int, warmup_s: float = 300.0, depth_frac: float = 0.0) -> dict:
     import aiohttp
     import orjson
     cands = await asyncio.to_thread(universe, k)
-    eng = RewardMM(cands, out_dir)
+    eng = RewardMM(cands, out_dir, depth_frac=depth_frac)
     toks = [t for x in cands for t in (x.yes, x.no)]
     mids0: Dict[str, float] = {}
     phase = "warmup"
@@ -396,12 +397,13 @@ def main(argv=None):
     p.add_argument("--out", default="runs/p15/r3")
     p.add_argument("--eval", default=None)
     p.add_argument("--warmup", type=float, default=300.0)
+    p.add_argument("--depth-frac", type=float, default=0.0, help="R4: quote at least this fraction of the reward spread away from mid")
     a = p.parse_args(argv)
     if a.eval:
         print(json.dumps(evaluate(a.eval), indent=1))
         return
     out = os.path.join(a.out, time.strftime("%Y%m%d_%H%M%S"))
-    sm = asyncio.run(run(a.duration, out, a.k, a.warmup))
+    sm = asyncio.run(run(a.duration, out, a.k, a.warmup, a.depth_frac))
     print(json.dumps(evaluate(out), indent=1))
     print("artifacts:", out)
 

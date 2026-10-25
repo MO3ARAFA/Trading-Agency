@@ -207,3 +207,12 @@ def test_bracket_ladders_group_by_stem_and_order_by_end_date():
                       {"question": "Will Y happen?", "endDate": "2027-01-01", "acceptingOrders": True, "clobTokenIds": "[\"e\",\"f\"]"}]}
     lad = ba.ladders([ev])
     assert len(lad) == 1 and [m["endDate"] for m in lad[0]] == ["2027-03-31", "2027-06-30"]
+
+
+def test_r4_quotes_deep_in_the_reward_band(tmp_path):
+    x = rm.Mkt("c", "q", "Y", "N", 20.0, 4.5, 144.0, "2027")
+    e = rm.RewardMM([x], str(tmp_path), depth_frac=0.6)
+    e.books.snapshot("Y", [{"price": "0.49", "size": "100"}], [{"price": "0.51", "size": "100"}])
+    e.books.snapshot("N", [{"price": "0.49", "size": "100"}], [{"price": "0.51", "size": "100"}])
+    e.requote(0.0)
+    assert x.bids["Y"].price == pytest.approx(0.47)                         # 0.6 x 4.5 c = 2.7 c -> 3 c below mid

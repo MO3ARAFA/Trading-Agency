@@ -1,0 +1,10 @@
+{
+ "phase": "15R4",
+ "created": "2026-10-25",
+ "prior": "R3 failed: rewards +3.47, 4 fills -6.10 at bid, t=-0.57 across 40 markets (docs/live_runs/phase15/candidateR3)",
+ "change": "R4 = R3 with --depth-frac 0.6: each bid at least 0.6 x the reward max spread below the mid (score 0.16 of a top-of-band order), everything else identical",
+ "session": "300 s warm-up + 2700 s live, k=40, started after this commit; interrupted -> evaluate the last checkpoint if >= 30 live minutes, else rerun once",
+ "pass_rule": "mean per-market return > 0 with t > 2.5 AND 100 USD account net > 0 (bid-marked). This is the 5th live reward-family attempt (R, R2, R3, R4 + smoke runs excluded): a Bonferroni-adjusted bar across the family would be t > 2.9, reported alongside.",
+ "code_sha256": "e74767710374fdd4a9a7cd9ca3eb6c1b8d3ee2324931eb36c65fccf568bd3169",
+ "sha256": "9afc7186fce2a412d65a26cd43502012a8ddb7eb8a7196b167f8c37c0f196195"
+}

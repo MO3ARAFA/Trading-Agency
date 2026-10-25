@@ -1,0 +1,17 @@
+{
+ "minutes": 45.0,
+ "markets": 40,
+ "mean_ret": -0.0014674,
+ "t": -0.5684241475138537,
+ "total_rewards": 3.4658,
+ "total_equity": -2.6342,
+ "fills": 4,
+ "merges": 0,
+ "pulls": 640,
+ "account": {
+  "markets": 3,
+  "capital": 90.0,
+  "net_usd": 0.8262
+ },
+ "pass": false
+}
