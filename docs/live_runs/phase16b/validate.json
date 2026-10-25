@@ -1,0 +1,90 @@
+{
+ "ranked": 93,
+ "10": {
+  "copies": 6095,
+  "closed": 5979,
+  "how": {
+   "resolve": 5726,
+   "mirror": 253,
+   "open": 116
+  },
+  "stats": {
+   "n": 5979,
+   "markets": 871,
+   "mean": -0.11722151478425095,
+   "se": 0.07328301530011985,
+   "t": -1.5995727564455067,
+   "win": 0.43803311590566985
+  },
+  "account": {
+   "taken": 125,
+   "skipped": {
+    "same_market": 1123,
+    "wallet_cap": 1363,
+    "cash": 3484
+   },
+   "final": 40.31,
+   "cash": 28.31,
+   "open_at_cost": 12.0,
+   "open_positions": 3
+  }
+ },
+ "25": {
+  "copies": 19310,
+  "closed": 19013,
+  "how": {
+   "resolve": 15850,
+   "mirror": 3163,
+   "open": 297
+  },
+  "stats": {
+   "n": 19013,
+   "markets": 1804,
+   "mean": -0.0557246250021523,
+   "se": 0.045444130320363665,
+   "t": -1.2262227180785525,
+   "win": 0.47730500184084573
+  },
+  "account": {
+   "taken": 115,
+   "skipped": {
+    "same_market": 1557,
+    "wallet_cap": 1330,
+    "cash": 16308
+   },
+   "final": 58.98,
+   "cash": 38.98,
+   "open_at_cost": 20.0,
+   "open_positions": 5
+  }
+ },
+ "50": {
+  "copies": 34651,
+  "closed": 34224,
+  "how": {
+   "resolve": 28418,
+   "mirror": 5806,
+   "open": 427
+  },
+  "stats": {
+   "n": 34224,
+   "markets": 3420,
+   "mean": -0.04159250215556925,
+   "se": 0.03362048586105861,
+   "t": -1.2371178193990449,
+   "win": 0.49193548387096775
+  },
+  "account": {
+   "taken": 329,
+   "skipped": {
+    "same_market": 5789,
+    "wallet_cap": 2374,
+    "cash": 26159
+   },
+   "final": 86.98,
+   "cash": 58.98,
+   "open_at_cost": 28.0,
+   "open_positions": 7
+  }
+ }
+}
